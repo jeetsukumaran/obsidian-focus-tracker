@@ -1,0 +1,10 @@
+{
+	"id": "focus-tracker",
+	"name": "Focus Tracker",
+	"version": "1.2.1",
+	"description": "Track your focus (or habit, effort, practice, productivity, mood, etc.) quantitatively over time.",
+	"minAppVersion": "1.1.0",
+	"author": "Jeet Sukumaran",
+	"authorUrl": "https://github.com/jeetsukumaran",
+	"isDesktopOnly": false
+}

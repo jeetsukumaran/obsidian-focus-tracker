@@ -1,0 +1,227 @@
+/* @settings
+
+name: Focus Tracker 21
+id: ht21
+settings:
+  -
+    id: ht21-cell
+    title: Table cell font
+    type: heading
+    level: 3
+  -
+    id: ht21-cell-fontfamily
+    title: Header font family
+    type: variable-text
+    description: Used for the header row
+    default: '"Source Code Pro", monospace'
+  -
+    id: ht21-cell-font-size
+    title: Header font size
+    type: variable-number
+    description: Used for the header row
+    default: 13
+    format: px
+  -
+    id: ht21-line
+    title: Line width and color
+    type: heading
+    level: 3
+  -
+    id: ht21-border-width
+    title: Line width
+    description: Width of line between rows
+    type: variable-number
+    default: 1
+    format: px
+  -
+    id: ht21-border-color
+    title: Line color
+    description: Color of line between rows
+    type: variable-color
+    format: hex
+    opacity: false
+    default: '#d0d7de'
+  -
+    id: ht21-tick
+    title: Tick bar
+    type: heading
+    level: 3
+  -
+    id: ht21-tick-height
+    title: Height of tick element
+    type: variable-number
+    default: 16
+    format: px
+  -
+    id: ht21-tick-width
+    title: Height of tick element
+    type: variable-number
+    default: 20
+    format: px
+  -
+    id: ht21-tick-radius
+    title: Radius of tick endings
+    type: variable-number
+    default: 10
+    format: px
+  -
+    id: ht21-tick-color
+    title: Color
+    type: variable-color
+    opacity: false
+    format: hex
+    default: '#096CDC'
+  -
+    id: ht21-color
+    title: Background color
+    type: heading
+    level: 3
+  -
+    id: ht21-tick-hover-color
+    title: Background hover color on tick
+    type: variable-color
+    opacity: false
+    format: hex
+    default: '#d0d7de'
+  -
+    id: ht21-row-hover-color
+    title: Background hover color on row
+    type: variable-color
+    opacity: false
+    format: hex
+    default: '#fafafa'
+  -
+    id: ht21-weekend-color
+    title: Background color on weekend columns
+    type: variable-color
+    opacity: false
+    format: hex
+    default: '#fafafa'
+*/
+body {
+  --ht21-cell-fontfamily: "Source Code Pro", monospace;
+	--ht21-cell-font-size: 13px;
+	--ht21-border-width: 1px;
+	--ht21-border-color: var(--color-base-30);
+	--ht21-tick-height: 16px;
+	--ht21-tick-width: 20px;
+	--ht21-tick-color: var(--checkbox-color);
+	--ht21-tick-radius: 10px;
+	--ht21-tick-hover-color: var(--color-base-30);
+	--ht21-row-hover-color: var(--color-base-10);
+  --ht21-weekend-color: var(--color-base-10);
+}
+
+.cm-preview-code-block.markdown-rendered:has(.block-language-focustracker),
+.block-language-focustracker {
+	width: fit-content;
+}
+
+.focus-tracker {
+	display: table;
+	table-layout: fixed;
+	border-collapse: collapse;
+}
+
+.focus-tracker__row {
+	display: table-row;
+}
+
+.focus-tracker__row + .focus-tracker__row {
+	border-top: var(--ht21-border-width) solid var(--ht21-border-color);
+}
+
+.focus-tracker__row:not(.focus-tracker__header):hover {
+	background-color: var(--ht21-row-hover-color);
+}
+
+.focus-tracker__cell {
+	box-sizing: border-box;
+	display: table-cell;
+	font-family: var(--ht21-cell-fontfamily);
+	font-size: var(--ht21-cell-font-size);
+	height: 32px;
+	min-width: 24px;
+	vertical-align: middle;
+}
+.focus-tracker__cell:not(:last-child) {
+	border-right: var(--ht21-border-width) solid var(--ht21-border-color);
+}
+
+.focus-tracker__cell--name {
+	padding: 0 4px;
+}
+.focus-tracker__cell--name a {
+	max-width: 100%;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	width: fit-content;
+	display: inline-block;
+}
+
+.focus-tracker__cell--saturday,
+.focus-tracker__cell--sunday {
+	background-color: var(--ht21-weekend-color);
+}
+
+.focus-tracker__cell--name + .focus-tracker__cell {
+	display: none;
+}
+
+.focus-tracker__header .focus-tracker__cell {
+	text-align: center;
+}
+
+/* HABIT TICK */
+
+.focus-tick {
+	line-height: 0;
+	text-align: center;
+}
+.focus-tick:hover {
+	cursor: pointer;
+	background-color: var(--ht21-tick-hover-color);
+}
+
+.focus-tick--true:before {
+	background: var(--ht21-tick-color);
+	border-radius: var(--ht21-tick-radius);
+	content: '';
+	display: inline-block;
+	height: var(--ht21-tick-height);
+	width: calc(var(--ht21-tick-width) * 0.8);
+	transition: all 0.3s ease;
+}
+
+.focus-tick--true + .focus-tick--true {
+	text-align: left;
+}
+.focus-tick--true + .focus-tick--true:before {
+	border-top-left-radius: 0;
+	border-bottom-left-radius: 0;
+	margin-left: 0;
+	width: var(--ht21-tick-width);
+}
+
+.focus-tick--true:has(+ .focus-tick--true):before {
+	border-top-right-radius: 0;
+	border-bottom-right-radius: 0;
+	width: 100%;
+}
+
+.focus-tick--false + .focus-tick--true:has(+ .focus-tick--true):before {
+	width: var(--ht21-tick-width);
+	margin-left: 4px;
+}
+
+@media (max-width: 399px) {
+	/* iPhone 14pro and lower, portrait */
+	.focus-tracker__cell {
+		display: none;
+	}
+	.focus-tracker__cell--name,
+	.focus-tracker__cell:nth-last-child(-n + 7) {
+		display: table-cell;
+	}
+}
