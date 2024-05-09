@@ -206,7 +206,8 @@ export default class FocusTracker {
                     this.stepFocusLogEntry(target, 1);
                 }
                 // Update tooltip with the new rating
-                target.title = `Current rating: ${focusRating}; left-click to increment, shift left-click to decrement`;
+                // target.title = `Current rating: ${focusRating}; left-click to increment, shift left-click to decrement`;
+                // let title = `Current rating: ${focusRating}; left-click to increment, shift left-click to decrement`;
             }
         });
 
