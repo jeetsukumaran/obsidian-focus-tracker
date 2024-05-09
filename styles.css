@@ -1,40 +1,40 @@
 /* @settings
 
 name: Focus Tracker 21
-id: ht21
+id: focustracker
 settings:
   -
-    id: ht21-cell
+    id: focustracker-cell
     title: Table cell font
     type: heading
     level: 3
   -
-    id: ht21-cell-fontfamily
+    id: focustracker-cell-fontfamily
     title: Header font family
     type: variable-text
     description: Used for the header row
     default: '"Source Code Pro", monospace'
   -
-    id: ht21-cell-font-size
+    id: focustracker-cell-font-size
     title: Header font size
     type: variable-number
     description: Used for the header row
     default: 13
     format: px
   -
-    id: ht21-line
+    id: focustracker-line
     title: Line width and color
     type: heading
     level: 3
   -
-    id: ht21-border-width
+    id: focustracker-border-width
     title: Line width
     description: Width of line between rows
     type: variable-number
     default: 1
     format: px
   -
-    id: ht21-border-color
+    id: focustracker-border-color
     title: Line color
     description: Color of line between rows
     type: variable-color
@@ -42,56 +42,56 @@ settings:
     opacity: false
     default: '#d0d7de'
   -
-    id: ht21-tick
+    id: focustracker-tick
     title: Tick bar
     type: heading
     level: 3
   -
-    id: ht21-tick-height
+    id: focustracker-tick-height
     title: Height of tick element
     type: variable-number
     default: 16
     format: px
   -
-    id: ht21-tick-width
+    id: focustracker-tick-width
     title: Height of tick element
     type: variable-number
     default: 20
     format: px
   -
-    id: ht21-tick-radius
+    id: focustracker-tick-radius
     title: Radius of tick endings
     type: variable-number
     default: 10
     format: px
   -
-    id: ht21-tick-color
+    id: focustracker-tick-color
     title: Color
     type: variable-color
     opacity: false
     format: hex
     default: '#096CDC'
   -
-    id: ht21-color
+    id: focustracker-color
     title: Background color
     type: heading
     level: 3
   -
-    id: ht21-tick-hover-color
+    id: focustracker-tick-hover-color
     title: Background hover color on tick
     type: variable-color
     opacity: false
     format: hex
     default: '#d0d7de'
   -
-    id: ht21-row-hover-color
+    id: focustracker-row-hover-color
     title: Background hover color on row
     type: variable-color
     opacity: false
     format: hex
     default: '#fafafa'
   -
-    id: ht21-weekend-color
+    id: focustracker-weekend-color
     title: Background color on weekend columns
     type: variable-color
     opacity: false
@@ -99,17 +99,17 @@ settings:
     default: '#fafafa'
 */
 body {
-  --ht21-cell-fontfamily: "Source Code Pro", monospace;
-	--ht21-cell-font-size: 13px;
-	--ht21-border-width: 1px;
-	--ht21-border-color: var(--color-base-30);
-	--ht21-tick-height: 16px;
-	--ht21-tick-width: 20px;
-	--ht21-tick-color: var(--checkbox-color);
-	--ht21-tick-radius: 10px;
-	--ht21-tick-hover-color: var(--color-base-30);
-	--ht21-row-hover-color: var(--color-base-10);
-  --ht21-weekend-color: var(--color-base-10);
+  --focustracker-cell-fontfamily: "Source Code Pro", monospace;
+	--focustracker-cell-font-size: 13px;
+	--focustracker-border-width: 1px;
+	--focustracker-border-color: var(--color-base-30);
+	--focustracker-tick-height: 16px;
+	--focustracker-tick-width: 20px;
+	--focustracker-tick-color: var(--checkbox-color);
+	--focustracker-tick-radius: 10px;
+	--focustracker-tick-hover-color: var(--color-base-30);
+	--focustracker-row-hover-color: var(--color-base-10);
+  --focustracker-weekend-color: var(--color-base-10);
 }
 
 .cm-preview-code-block.markdown-rendered:has(.block-language-focustracker),
@@ -128,24 +128,24 @@ body {
 }
 
 .focus-tracker__row + .focus-tracker__row {
-	border-top: var(--ht21-border-width) solid var(--ht21-border-color);
+	border-top: var(--focustracker-border-width) solid var(--focustracker-border-color);
 }
 
 .focus-tracker__row:not(.focus-tracker__header):hover {
-	background-color: var(--ht21-row-hover-color);
+	background-color: var(--focustracker-row-hover-color);
 }
 
 .focus-tracker__cell {
 	box-sizing: border-box;
 	display: table-cell;
-	font-family: var(--ht21-cell-fontfamily);
-	font-size: var(--ht21-cell-font-size);
+	font-family: var(--focustracker-cell-fontfamily);
+	font-size: var(--focustracker-cell-font-size);
 	height: 32px;
 	min-width: 24px;
 	vertical-align: middle;
 }
 .focus-tracker__cell:not(:last-child) {
-	border-right: var(--ht21-border-width) solid var(--ht21-border-color);
+	border-right: var(--focustracker-border-width) solid var(--focustracker-border-color);
 }
 
 .focus-tracker__cell--name {
@@ -162,7 +162,7 @@ body {
 
 .focus-tracker__cell--saturday,
 .focus-tracker__cell--sunday {
-	background-color: var(--ht21-weekend-color);
+	background-color: var(--focustracker-weekend-color);
 }
 
 .focus-tracker__cell--name + .focus-tracker__cell {
@@ -181,16 +181,16 @@ body {
 }
 .focus-tick:hover {
 	cursor: pointer;
-	background-color: var(--ht21-tick-hover-color);
+	background-color: var(--focustracker-tick-hover-color);
 }
 
 .focus-tick--true:before {
-	background: var(--ht21-tick-color);
-	border-radius: var(--ht21-tick-radius);
+	background: var(--focustracker-tick-color);
+	border-radius: var(--focustracker-tick-radius);
 	content: '';
 	display: inline-block;
-	height: var(--ht21-tick-height);
-	width: calc(var(--ht21-tick-width) * 0.8);
+	height: var(--focustracker-tick-height);
+	width: calc(var(--focustracker-tick-width) * 0.8);
 	transition: all 0.3s ease;
 }
 
@@ -201,7 +201,7 @@ body {
 	border-top-left-radius: 0;
 	border-bottom-left-radius: 0;
 	margin-left: 0;
-	width: var(--ht21-tick-width);
+	width: var(--focustracker-tick-width);
 }
 
 .focus-tick--true:has(+ .focus-tick--true):before {
@@ -211,7 +211,7 @@ body {
 }
 
 .focus-tick--false + .focus-tick--true:has(+ .focus-tick--true):before {
-	width: var(--ht21-tick-width);
+	width: var(--focustracker-tick-width);
 	margin-left: 4px;
 }
 

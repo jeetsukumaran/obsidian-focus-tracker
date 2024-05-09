@@ -269,7 +269,8 @@ export default class FocusTracker {
 
 			const focusCell = row.createEl("div", {
 				cls: `focus-tracker__cell
-				focus-tick focus-tick--${isTicked}
+				focus-tick
+				focus-tick--${isTicked}-disabled
 				focus-tracker__cell--${this.getDayOfWeek(currentDate)}`,
 			})
 
@@ -277,6 +278,7 @@ export default class FocusTracker {
 
 			focusCell.setAttribute("date", dateString)
 			focusCell.setAttribute("focus", path)
+			focusCell.setText(entryValue);
 			currentDate.setDate(currentDate.getDate() + 1)
 		}
 	}
