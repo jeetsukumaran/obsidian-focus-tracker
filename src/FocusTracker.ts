@@ -265,7 +265,7 @@ export default class FocusTracker {
 		for (let i = 0; i < this.settings.daysToLoad; i++) {
 			const dateString: string = this.getDateId(currentDate);
 			const entryValue: string = entries[dateString] || "";
-			let isTicked: boolean = entryValue === "";
+			let isTicked: boolean = entryValue !== "";
 
 			const focusCell = row.createEl("div", {
 				cls: `focus-tracker__cell
