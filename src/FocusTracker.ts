@@ -187,17 +187,18 @@ export default class FocusTracker {
 		rootElement.addEventListener("click", (e) => {
 			const target = e.target as HTMLDivElement
 			if (target?.classList.contains("focus-tick")) {
+                const focusRating: number = this.getFocusRatingFromElement(target);
 				this.stepFocusLogEntry(target, 1)
 			}
 		})
 		rootElement.addEventListener("contextmenu", (e) => {
 			const target = e.target as HTMLDivElement
 			e.preventDefault();
+            const focusRating: number = this.getFocusRatingFromElement(target);
 			if (target?.classList.contains("focus-tick")) {
 				this.stepFocusLogEntry(target, -1)
 			}
 		})
-
 		return rootElement
 	}
 
