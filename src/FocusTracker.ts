@@ -248,6 +248,8 @@ export default class FocusTracker {
 
 	async readFocusLogs(path: string): Promise<FocusLogsType> {
 		let rawData = {
+		    "2024-04-29": 3,
+		    "2024-04-30": 5,
 		    "2024-05-03": 0,
 		    "2024-05-04": 4,
 		    "2024-05-05": "X",
