@@ -44,7 +44,8 @@ interface FocusTrackerSettings {
 	lastDisplayedDate: string;
 	daysToShow: number;
 	logPropertyName: string;
-	scoringScale: string[];
+	ratingScale: string[];
+	titlePropertyName: string;
 	daysToLoad: number;
 	rootElement: HTMLDivElement | undefined;
 	focusTracksGoHere: HTMLDivElement | undefined;
@@ -55,7 +56,8 @@ const DEFAULT_SETTINGS = (): FocusTrackerSettings => ({
 	lastDisplayedDate: getTodayDate(),
 	daysToShow: DAYS_TO_SHOW,
 	logPropertyName: "focus-logs",
-	scoringScale: SCALE1,
+	ratingScale: SCALE1,
+	titlePropertyName: "title",
 	daysToLoad: DAYS_TO_LOAD,
 	rootElement: undefined,
 	focusTracksGoHere: undefined,
@@ -110,7 +112,7 @@ export default class FocusTracker {
 
 		// 2.3 render each focus
 		files.forEach(async (f) => {
-			this.renderFocusLogs(
+			await this.renderFocusLogs(
                 f.path,
                 await this.readFocusLogs(f.path),
 			)
@@ -248,7 +250,7 @@ export default class FocusTracker {
 		return this.normalizeLogs(fmLogs);
 	}
 
-	renderFocusLogs(
+	async renderFocusLogs(
         path: string,
         entries: FocusLogsType,
 	) {
@@ -258,7 +260,14 @@ export default class FocusTracker {
 		}
 		const parent = this.settings.focusTracksGoHere
 
-		const name = path.split("/").pop()?.replace(".md", "")
+		// const name = path.split("/").pop()?.replace(".md", "")
+		let name = path.split('/').pop()?.replace('.md', '') || path;
+		if (this.settings.titlePropertyName) {
+			let frontmatter = await this.getFrontmatter(path)
+			if (frontmatter && frontmatter[this.settings.titlePropertyName]) {
+				name = frontmatter[this.settings.titlePropertyName] || name;
+			}
+		}
 
 		// no. this needs to be queried inside this.settings.rootElement;
 		let row = parent.querySelector(`*[data-id="${this.pathToId(path)}"]`)
@@ -294,7 +303,7 @@ export default class FocusTracker {
 		for (let i = 0; i < this.settings.daysToLoad; i++) {
 			const dateString: string = this.getDateId(currentDate);
 			const entryValue: number = entries[dateString] || 0;
-			const displayValue: string = this.getDisplayValue(entryValue, this.settings.scoringScale);
+			const displayValue: string = this.getDisplayValue(entryValue, this.settings.ratingScale);
 			let isTicked: boolean = entryValue !== 0;
 
 			const focusCell = row.createEl("div", {
@@ -308,10 +317,10 @@ export default class FocusTracker {
 
 			focusCell.setAttribute("date", dateString);
 			focusCell.setAttribute("focus", path);
-			focusCell.setAttribute("focusScore", entryValue.toString());
+			focusCell.setAttribute("focusRating", entryValue.toString());
 			focusCell.setAttribute("bg-color", this.getColorForValue(
                 entryValue,
-                this.settings.scoringScale.length,
+                this.settings.ratingScale.length,
                 "cyan",
                 false,
 			));
@@ -372,8 +381,8 @@ export default class FocusTracker {
     }
 
 
-    getFocusScoreFromElement(el: HTMLElement): number {
-        const attrValue = el.getAttribute("focusScore");
+    getFocusRatingFromElement(el: HTMLElement): number {
+        const attrValue = el.getAttribute("focusRating");
         if (!attrValue || attrValue === null || attrValue.trim() === "") {
             return 0;  // Returns 0 for null, undefined, or empty string attributes
         }
@@ -399,7 +408,7 @@ export default class FocusTracker {
                 return "";
             }
             const index = scale.indexOf(input);
-            // unrecognized but non-blank string is treated as a score
+            // unrecognized but non-blank string is treated as a rating
             return index !== -1 ? scale[index] : scale.at(-1) || scale[1] || "X";
         } else if (typeof input === 'number') {
             return input >= 0 && input < scale.length ? scale[input] : scale.at(-1) || scale[1] || "*";
@@ -419,8 +428,8 @@ export default class FocusTracker {
 
 		this.app.fileManager.processFrontMatter(file, (frontmatter) => {
 			let entries = frontmatter[this.settings.logPropertyName] || {};
-            const currentValue: number = this.getFocusScoreFromElement(el);
-            const maxScaleIndex:number = this.settings.scoringScale.length;
+            const currentValue: number = this.getFocusRatingFromElement(el);
+            const maxScaleIndex:number = this.settings.ratingScale.length;
             let newValue = currentValue + 1;
             if (newValue >= maxScaleIndex) {
                 newValue = 0;
@@ -429,7 +438,7 @@ export default class FocusTracker {
 			frontmatter[this.settings.logPropertyName] = entries
 		})
 
-		this.renderFocusLogs(file.path, await this.readFocusLogs(file.path))
+		await this.renderFocusLogs(file.path, await this.readFocusLogs(file.path))
 	}
 
 	writeFile(file: TAbstractFile, content: string) {
