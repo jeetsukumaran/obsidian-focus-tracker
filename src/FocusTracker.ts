@@ -1,44 +1,46 @@
-// Working with files and folders in your plugin: https://www.youtube.com/watch?v=_QFUOyIB1nY
-// Display data in views and status bar: https://www.youtube.com/watch?v=zR86pftlOsg&ab_channel=Obsidian
-// Easy and fast UI development with Svelte: https://www.youtube.com/watch?v=mCF80HBfUWA&ab_channel=Obsidian
-// https://github.com/OliverBalfour/obsidian-pandoc/blob/master/renderer.ts
-// example of replacing codeblocks https://github.com/joleaf/obsidian-email-block-plugin
-// https://ourgreenstory.com/nl/sticky-whiteboard/focus-tracker/
-// listen to file change https://github.com/obsidianmd/obsidian-api/blob/c01fc3074deeb3dfc6ee02546d113b448735b294/obsidian.d.ts#L3724
+import {
+    App,
+    parseYaml,
+    Notice,
+    TAbstractFile,
+    TFile
+} from "obsidian"
 
-import {App, parseYaml, Notice, TAbstractFile, TFile} from 'obsidian'
-
-const PLUGIN_NAME = 'Focus Tracker 21'
-/* i want to show that a streak is already ongoing even if the previous dates are not rendered
-  so I load an extra date in the range, but never display it in the UI */
+const PLUGIN_NAME = "Focus Tracker"
 const DAYS_TO_SHOW = 21
 const DAYS_TO_LOAD = DAYS_TO_SHOW + 1
 
+export type FocusLogsType = {
+	[date: string]: string;
+}
+
 interface FocusTrackerSettings {
-	path: string
-	lastDisplayedDate: string
-	daysToShow: number
-	daysToLoad: number
-	rootElement: HTMLDivElement | undefined
-	focussGoHere: HTMLDivElement | undefined
+	path: string;
+	lastDisplayedDate: string;
+	daysToShow: number;
+	logPropertyName: string;
+	daysToLoad: number;
+	rootElement: HTMLDivElement | undefined;
+	focusTracksGoHere: HTMLDivElement | undefined;
 }
 
 const DEFAULT_SETTINGS = (): FocusTrackerSettings => ({
-	path: '',
+	path: "",
 	lastDisplayedDate: getTodayDate(),
 	daysToShow: DAYS_TO_SHOW,
+	logPropertyName: "focus-logs",
 	daysToLoad: DAYS_TO_LOAD,
 	rootElement: undefined,
-	focussGoHere: undefined,
+	focusTracksGoHere: undefined,
 })
 
-const ALLOWED_USER_SETTINGS = ['path', 'lastDisplayedDate', 'daysToShow']
+const ALLOWED_USER_SETTINGS = ["path", "lastDisplayedDate", "daysToShow"]
 
 function getTodayDate() {
 	const today = new Date()
 	const year = today.getFullYear()
-	const month = String(today.getMonth() + 1).padStart(2, '0')
-	const day = String(today.getDate()).padStart(2, '0')
+	const month = String(today.getMonth() + 1).padStart(2, "0")
+	const day = String(today.getDate()).padStart(2, "0")
 
 	return `${year}-${month}-${day}`
 }
@@ -66,7 +68,7 @@ export default class FocusTracker {
 		this.settings.rootElement = el
 		// console.log(`${PLUGIN_NAME} got with these settings:`, this.settings)
 
-		// 1. get all the focuss
+		// 1. get all the focus tracks
 		const files = this.loadFiles()
 
 		if (files.length === 0) {
@@ -74,19 +76,22 @@ export default class FocusTracker {
 			return
 		}
 
-		console.log(
-			`${PLUGIN_NAME} loaded successfully ${files.length} file(s) from ${this.settings.path}`,
-		)
+		// console.log(
+		// 	`${PLUGIN_NAME} loaded successfully ${files.length} file(s) from ${this.settings.path}`,
+		// )
 
-		// 2.1 render the element that holds all focuss
-		this.settings.focussGoHere = this.renderRoot(el)
+		// 2.1 render the element that holds all focus tracks
+		this.settings.focusTracksGoHere = this.renderRoot(el)
 
 		// 2.2 render the header
-		this.renderHeader(this.settings.focussGoHere)
+		this.renderHeader(this.settings.focusTracksGoHere)
 
 		// 2.3 render each focus
 		files.forEach(async (f) => {
-			this.renderFocus(f.path, await this.getFocusEntries(f.path))
+			this.renderFocus(
+                f.path,
+                await this.readFocusLogs(f.path),
+			)
 		})
 	}
 
@@ -94,9 +99,9 @@ export default class FocusTracker {
 		return this.app.vault
 			.getMarkdownFiles()
 			.filter((file) => {
-				// only focuss
+				// only focus tracks
 				if (!file.path.includes(this.settings.path)) {
-					// console.log(`${file.path} doesn't match ${this.settings.path}`);
+					// console.log(`${file.path} doesn"t match ${this.settings.path}`);
 					return false
 				}
 
@@ -112,8 +117,6 @@ export default class FocusTracker {
 				DEFAULT_SETTINGS(),
 				this.removePrivateSettings(JSON.parse(rawSettings)),
 			)
-			/* i want to show that a streak is already ongoing even if the previous dates are not rendered
-  		so I load an extra date in the range, but never display it in the UI */
 			settings.daysToLoad = settings.daysToShow + 1
 			return settings
 		} catch (error) {
@@ -136,19 +139,19 @@ export default class FocusTracker {
 	}
 
 	renderNoFocussFoundMessage() {
-		this.settings.rootElement?.createEl('div', {
-			text: `No focuss found under ${this.settings.path}`,
+		this.settings.rootElement?.createEl("div", {
+			text: `No focus tracks found under ${this.settings.path}`,
 		})
 	}
 
 	renderRoot(parent) {
-		const rootElement = parent.createEl('div', {
-			cls: 'focus-tracker',
+		const rootElement = parent.createEl("div", {
+			cls: "focus-tracker",
 		})
-		rootElement.setAttribute('id', this.id)
-		rootElement.addEventListener('click', (e) => {
+		rootElement.setAttribute("id", this.id)
+		rootElement.addEventListener("click", (e) => {
 			const target = e.target as HTMLDivElement
-			if (target?.classList.contains('focus-tick')) {
+			if (target?.classList.contains("focus-tick")) {
 				this.toggleFocus(target)
 			}
 		})
@@ -157,13 +160,13 @@ export default class FocusTracker {
 	}
 
 	renderHeader(parent) {
-		const header = parent.createEl('div', {
-			cls: 'focus-tracker__header focus-tracker__row',
+		const header = parent.createEl("div", {
+			cls: "focus-tracker__header focus-tracker__row",
 		})
 
-		header.createEl('div', {
-			text: '',
-			cls: 'focus-tracker__cell--name focus-tracker__cell',
+		header.createEl("div", {
+			text: "",
+			cls: "focus-tracker__cell--name focus-tracker__cell",
 		})
 
 		const currentDate = this.createDateFromFormat(
@@ -172,7 +175,7 @@ export default class FocusTracker {
 		currentDate.setDate(currentDate.getDate() - this.settings.daysToLoad + 1)
 		for (let i = 0; i < this.settings.daysToLoad; i++) {
 			const day = currentDate.getDate().toString()
-			header.createEl('div', {
+			header.createEl("div", {
 				cls: `focus-tracker__cell focus-tracker__cell--${this.getDayOfWeek(
 					currentDate,
 				)}`,
@@ -192,10 +195,10 @@ export default class FocusTracker {
 
 		try {
 			return await this.app.vault.read(file).then((result) => {
-				const frontmatter = result.split('---')[1]
-
-				if (!frontmatter) return {}
-
+				const frontmatter = result.split("---")[1]
+				if (!frontmatter) {
+				    return {}
+				}
 				return parseYaml(frontmatter)
 			})
 		} catch (error) {
@@ -203,78 +206,86 @@ export default class FocusTracker {
 		}
 	}
 
-	async getFocusEntries(path: string) {
-		// let entries = await this.getFrontmatter(path)?.entries || [];
-		const fm = await this.getFrontmatter(path)
-		// console.log(`Found ${fm.entries} for ${path}`);
-		return fm.entries || []
+	async readFocusLogs(path: string): Promise<FocusLogsType> {
+		return {
+		    "2024-05-03": "X",
+		    "2024-05-04": "X",
+		    "2024-05-05": "X",
+		    "2024-05-06": "X",
+		}
+		// const fm = await this.getFrontmatter(path)
+		// if (!fm[logPropertyName]) {
+		// }
+		// return fm.entries || []
 	}
 
-	renderFocus(path: string, entries: string[]) {
-		// console.log('rendering a focus')
-		if (!this.settings.focussGoHere) {
-			new Notice(`${PLUGIN_NAME}: missing div that holds all focuss`)
+	renderFocus(
+        path: string,
+        entries: FocusLogsType,
+	) {
+		if (!this.settings.focusTracksGoHere) {
+			new Notice(`${PLUGIN_NAME}: missing div that holds all focus tracks`)
 			return null
 		}
-		const parent = this.settings.focussGoHere
+		const parent = this.settings.focusTracksGoHere
 
-		const name = path.split('/').pop()?.replace('.md', '')
+		const name = path.split("/").pop()?.replace(".md", "")
 
 		// no. this needs to be queried inside this.settings.rootElement;
 		let row = parent.querySelector(`*[data-id="${this.pathToId(path)}"]`)
 
 		if (!row) {
-			row = this.settings.focussGoHere.createEl('div', {
-				cls: 'focus-tracker__row',
+			row = this.settings.focusTracksGoHere.createEl("div", {
+				cls: "focus-tracker__row",
 			})
-			row.setAttribute('data-id', this.pathToId(path))
+			row.setAttribute("data-id", this.pathToId(path))
 		} else {
 			this.removeAllChildNodes(row)
 		}
 
-		const focusTitle = row.createEl('div', {
-			cls: 'focus-tracker__cell--name focus-tracker__cell',
+		const focusTitle = row.createEl("div", {
+			cls: "focus-tracker__cell--name focus-tracker__cell",
 		})
 
-		const focusTitleLink = focusTitle.createEl('a', {
+		const focusTitleLink = focusTitle.createEl("a", {
 			text: name,
-			cls: 'internal-link',
+			cls: "internal-link",
 		})
 
-		focusTitleLink.setAttribute('href', path)
-		focusTitleLink.setAttribute('aria-label', path)
+		focusTitleLink.setAttribute("href", path)
+		focusTitleLink.setAttribute("aria-label", path)
 
 		const currentDate = this.createDateFromFormat(
 			this.settings.lastDisplayedDate,
 		)
 		currentDate.setDate(currentDate.getDate() - this.settings.daysToLoad + 1) // todo, why +1?
 
-		const entriesSet = new Set(entries)
+		// const entriesSet = new Set(entries)
 
-		// console.log('entries', entries);
 		for (let i = 0; i < this.settings.daysToLoad; i++) {
-			const dateString = this.getDateId(currentDate)
-			const isTicked = entriesSet.has(dateString)
+			const dateString: string = this.getDateId(currentDate);
+			const entryValue: string = entries[dateString] || "";
+			let isTicked: boolean = entryValue === "";
 
-			const focusCell = row.createEl('div', {
+			const focusCell = row.createEl("div", {
 				cls: `focus-tracker__cell
 				focus-tick focus-tick--${isTicked}
 				focus-tracker__cell--${this.getDayOfWeek(currentDate)}`,
 			})
 
-			focusCell.setAttribute('ticked', isTicked.toString())
+			focusCell.setAttribute("ticked", isTicked.toString())
 
-			focusCell.setAttribute('date', dateString)
-			focusCell.setAttribute('focus', path)
+			focusCell.setAttribute("date", dateString)
+			focusCell.setAttribute("focus", path)
 			currentDate.setDate(currentDate.getDate() + 1)
 		}
 	}
 
 	async toggleFocus(el) {
-		const focus = el.getAttribute('focus')
-		const date = el.getAttribute('date')
+		const focus = el.getAttribute("focus")
+		const date = el.getAttribute("date")
 		const file: TAbstractFile|null = this.app.vault.getAbstractFileByPath(focus)
-		const isTicked = el.getAttribute('ticked')
+		const isTicked = el.getAttribute("ticked")
 
 		if (!file ||!(file instanceof TFile)) {
 			new Notice(`${PLUGIN_NAME}: file missing while trying to toggle focus`)
@@ -282,17 +293,17 @@ export default class FocusTracker {
 		}
 
 		this.app.fileManager.processFrontMatter(file, (frontmatter) => {
-			let entries = frontmatter['entries'] || []
-			if (isTicked === 'true') {
+			let entries = frontmatter["entries"] || []
+			if (isTicked === "true") {
 				entries = entries.filter((e) => e !== date)
 			} else {
 				entries.push(date)
 				entries.sort()
 			}
-			frontmatter['entries'] = entries
+			frontmatter["entries"] = entries
 		})
 
-		this.renderFocus(file.path, await this.getFocusEntries(file.path))
+		this.renderFocus(file.path, await this.readFocusLogs(file.path))
 	}
 
 	writeFile(file: TAbstractFile, content: string) {
@@ -326,13 +337,13 @@ export default class FocusTracker {
 
 	pathToId(path) {
 		return path
-			.replaceAll('/', '_')
-			.replaceAll('.', '__')
-			.replaceAll(' ', '___')
+			.replaceAll("/", "_")
+			.replaceAll(".", "__")
+			.replaceAll(" ", "___")
 	}
 
 	createDateFromFormat(dateString) {
-		const [year, month, day] = dateString.split('-').map(Number)
+		const [year, month, day] = dateString.split("-").map(Number)
 		const date = new Date()
 
 		date.setFullYear(year)
@@ -344,8 +355,8 @@ export default class FocusTracker {
 
 	getDateId(date) {
 		const year = date.getFullYear()
-		const month = String(date.getMonth() + 1).padStart(2, '0')
-		const day = String(date.getDate()).padStart(2, '0')
+		const month = String(date.getMonth() + 1).padStart(2, "0")
+		const day = String(date.getDate()).padStart(2, "0")
 
 		let dateId = `${year}-${month}-${day}`
 
@@ -354,13 +365,13 @@ export default class FocusTracker {
 
 	getDayOfWeek(date) {
 		const daysOfWeek = [
-			'sunday',
-			'monday',
-			'tuesday',
-			'wednesday',
-			'thursday',
-			'friday',
-			'saturday',
+			"sunday",
+			"monday",
+			"tuesday",
+			"wednesday",
+			"thursday",
+			"friday",
+			"saturday",
 		]
 		const dayIndex = date.getDay()
 		const dayName = daysOfWeek[dayIndex]

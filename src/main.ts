@@ -1,7 +1,9 @@
-import {Plugin} from 'obsidian'
+import {
+    Plugin,
+} from 'obsidian'
 import FocusTracker from './FocusTracker'
 
-const PLUGIN_NAME = 'Focus Tracker 21'
+const PLUGIN_NAME = 'Focus Tracker'
 
 export default class FocusTracker21 extends Plugin {
 	async onload() {
