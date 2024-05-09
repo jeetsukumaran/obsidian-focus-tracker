@@ -23,6 +23,11 @@ const SCALE1 = [
 ];
 
 const SCALE2 = [
+    "⚪",
+    "⚫",
+];
+
+const SCALE1_square = [
     "",
     "🟥",
     "🟧",
@@ -35,6 +40,11 @@ const SCALE2 = [
     // "⬜",
 ];
 
+// const OUT_OF_BOUNDS = "✅"
+const OUT_OF_BOUNDS_INDEX_POSITIVE = "❗"
+const OUT_OF_BOUNDS_INDEX_NEGATIVE = "⭕"
+const UNKNOWN_RATING = "❓"
+
 export type FocusLogsType = {
 	[date: string]: number;
 }
@@ -45,6 +55,7 @@ interface FocusTrackerSettings {
 	daysToShow: number;
 	logPropertyName: string;
 	ratingScale: string[];
+	ratingScaleAlternate: string[];
 	titlePropertyName: string;
 	daysToLoad: number;
 	rootElement: HTMLDivElement | undefined;
@@ -57,6 +68,7 @@ const DEFAULT_SETTINGS = (): FocusTrackerSettings => ({
 	daysToShow: DAYS_TO_SHOW,
 	logPropertyName: "focus-logs",
 	ratingScale: SCALE1,
+	ratingScaleAlternate: SCALE2,
 	titlePropertyName: "title",
 	daysToLoad: DAYS_TO_LOAD,
 	rootElement: undefined,
@@ -310,7 +322,7 @@ export default class FocusTracker {
 		for (let i = 0; i < this.settings.daysToLoad; i++) {
 			const dateString: string = this.getDateId(currentDate);
 			const entryValue: number = entries[dateString] || 0;
-			const displayValue: string = this.getDisplayValue(entryValue, this.settings.ratingScale);
+			const displayValue: string = this.getDisplaySymbol(entryValue);
 			let isTicked: boolean = entryValue !== 0;
 
 			const focusCell = row.createEl("div", {
@@ -416,18 +428,49 @@ export default class FocusTracker {
         return 0; // Default return for unexpected input types
     }
 
-    getDisplayValue(input: string | number, scale: string[]): string {
+    // getDisplayValue(input: string | number, scale: string[]): string {
+    //     if (typeof input === 'string') {
+    //         if (input === "") {
+    //             return "";
+    //         }
+    //         const index = scale.indexOf(input);
+    //         // unrecognized but non-blank string is treated as a rating
+    //         return index !== -1 ? scale[index] : scale.at(-1) || scale[1] || "X";
+    //     } else if (typeof input === 'number') {
+    //         return input >= 0 && input < scale.length ? scale[input] : scale.at(-1) || scale[1] || "*";
+    //     }
+    //     return scale[0]; // Default return for unexpected input types
+    // }
+
+    getDisplaySymbol(input: string | number): string {
+        let index: number = 0;
+        let symbol = " ";
+        let ratingScale: string[] = this.settings.ratingScale;
+        let oobSymbol = OUT_OF_BOUNDS_INDEX_POSITIVE;
         if (typeof input === 'string') {
             if (input === "") {
-                return "";
+                index = 0;
+            } else {
+                // index === -1 if the value of the log entry is not a rating symbol
+                // index = scale.indexOf(input);
+                if (index === -1) {
+                    return UNKNOWN_RATING;
+                }
             }
-            const index = scale.indexOf(input);
-            // unrecognized but non-blank string is treated as a rating
-            return index !== -1 ? scale[index] : scale.at(-1) || scale[1] || "X";
         } else if (typeof input === 'number') {
-            return input >= 0 && input < scale.length ? scale[input] : scale.at(-1) || scale[1] || "*";
+            index = input;
         }
-        return scale[0]; // Default return for unexpected input types
+        if (index < 0) {
+            index = -1 * index;
+            ratingScale = this.settings.ratingScaleAlternate;
+            oobSymbol = OUT_OF_BOUNDS_INDEX_NEGATIVE;
+        }
+        if (index >= ratingScale.length) {
+            return oobSymbol;
+        } else {
+            symbol = ratingScale[index];
+        }
+        return symbol;
     }
 
 	async cycleFocusLogEntry(
