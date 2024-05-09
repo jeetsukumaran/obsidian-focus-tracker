@@ -44,6 +44,7 @@ interface FocusTrackerSettings {
 	lastDisplayedDate: string;
 	daysToShow: number;
 	logPropertyName: string;
+	scoringScale: string[];
 	daysToLoad: number;
 	rootElement: HTMLDivElement | undefined;
 	focusTracksGoHere: HTMLDivElement | undefined;
@@ -54,6 +55,7 @@ const DEFAULT_SETTINGS = (): FocusTrackerSettings => ({
 	lastDisplayedDate: getTodayDate(),
 	daysToShow: DAYS_TO_SHOW,
 	logPropertyName: "focus-logs",
+	scoringScale: SCALE1,
 	daysToLoad: DAYS_TO_LOAD,
 	rootElement: undefined,
 	focusTracksGoHere: undefined,
@@ -247,16 +249,6 @@ export default class FocusTracker {
 
 
 	async readFocusLogs(path: string): Promise<FocusLogsType> {
-		// let rawData = {
-		//     "2024-04-29": 3,
-		//     "2024-04-30": 5,
-		//     "2024-05-03": 0,
-		//     "2024-05-04": 4,
-		//     "2024-05-05": "X",
-		//     "2024-05-06": -3,
-		//     "2024-05-01": [1, 2],
-		//     "2024-05-02": {"a": 1},
-		// };
         const frontmatter = await this.getFrontmatter(path);
 		const fmLogs = frontmatter[this.settings.logPropertyName] || {};
 		return this.normalizeLogs(fmLogs);
@@ -308,7 +300,7 @@ export default class FocusTracker {
 		for (let i = 0; i < this.settings.daysToLoad; i++) {
 			const dateString: string = this.getDateId(currentDate);
 			const entryValue: number = entries[dateString] || 0;
-			const displayValue: string = this.getDisplayValue(entryValue, SCALE1);
+			const displayValue: string = this.getDisplayValue(entryValue, this.settings.scoringScale);
 			let isTicked: boolean = entryValue !== 0;
 
 			const focusCell = row.createEl("div", {
@@ -327,6 +319,16 @@ export default class FocusTracker {
 			currentDate.setDate(currentDate.getDate() + 1);
 		}
 	}
+
+    getFocusScoreFromElement(el: HTMLElement): number {
+        const attrValue = el.getAttribute("focusScore");
+        if (!attrValue || attrValue === null || attrValue.trim() === "") {
+            return 0;  // Returns 0 for null, undefined, or empty string attributes
+        }
+        const numValue = Number(attrValue);
+        return isNaN(numValue) || numValue === 0 ? 0 : 10; // Returns 0 if the value is NaN or 0, otherwise returns 10
+    }
+
 
 	getScaleValue(input: string | number, scale: string[]): number {
         if (typeof input === 'string') {
@@ -357,7 +359,6 @@ export default class FocusTracker {
 		const focus = el.getAttribute("focus")
 		const date = el.getAttribute("date")
 		const file: TAbstractFile|null = this.app.vault.getAbstractFileByPath(focus)
-		const isTicked = el.getAttribute("ticked")
 
 		if (!file ||!(file instanceof TFile)) {
 			new Notice(`${PLUGIN_NAME}: file missing while trying to cycle focus entry`)
@@ -365,14 +366,15 @@ export default class FocusTracker {
 		}
 
 		this.app.fileManager.processFrontMatter(file, (frontmatter) => {
-			let entries = frontmatter["entries"] || []
-			if (isTicked === "true") {
-				entries = entries.filter((e) => e !== date)
-			} else {
-				entries.push(date)
-				entries.sort()
-			}
-			frontmatter["entries"] = entries
+			let entries = frontmatter[this.settings.logPropertyName] || {};
+            const currentValue: number = this.getFocusScoreFromElement(el);
+            const maxScaleIndex:number = this.settings.scoringScale.length;
+            let newValue = currentValue + 1;
+            if (newValue >= maxScaleIndex) {
+                newValue = 0;
+            }
+            entries[date] = newValue;
+			frontmatter[this.settings.logPropertyName] = entries
 		})
 
 		this.renderFocusLogs(file.path, await this.readFocusLogs(file.path))
