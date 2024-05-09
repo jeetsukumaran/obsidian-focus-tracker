@@ -93,7 +93,6 @@ export default class FocusTracker {
 		this.id = this.generateUniqueId()
 		this.settings = this.loadSettings(src)
 		this.settings.rootElement = el
-		// console.log(`${PLUGIN_NAME} got with these settings:`, this.settings)
 
 		// 1. get all the focus tracks
 		const files = this.loadFiles()
@@ -102,10 +101,6 @@ export default class FocusTracker {
 			this.renderNoFocussFoundMessage()
 			return
 		}
-
-		// console.log(
-		// 	`${PLUGIN_NAME} loaded successfully ${files.length} file(s) from ${this.settings.path}`,
-		// )
 
 		// 2.1 render the element that holds all focus tracks
 		this.settings.focusTracksGoHere = this.renderRoot(el)
@@ -128,7 +123,6 @@ export default class FocusTracker {
 			.filter((file) => {
 				// only focus tracks
 				if (!file.path.includes(this.settings.path)) {
-					// console.log(`${file.path} doesn"t match ${this.settings.path}`);
 					return false
 				}
 
@@ -242,7 +236,6 @@ export default class FocusTracker {
                 result[date] = numValue;
             } else {
                 result[date] = !value ? 0 : 10;
-                console.log(value)
             }
         });
         return result;
@@ -327,7 +320,8 @@ export default class FocusTracker {
             return 0;  // Returns 0 for null, undefined, or empty string attributes
         }
         const numValue = Number(attrValue);
-        return isNaN(numValue) || numValue === 0 ? 0 : 10; // Returns 0 if the value is NaN or 0, otherwise returns 10
+        // Returns 0 if the value is NaN or 0, otherwise returns 10
+        return isNaN(numValue) || numValue === 0 ? 0 : numValue;
     }
 
 
