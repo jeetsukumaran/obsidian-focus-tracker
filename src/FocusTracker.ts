@@ -300,7 +300,7 @@ export default class FocusTracker {
 			const focusCell = row.createEl("div", {
 				cls: `focus-tracker__cell
 				focus-tick
-				focus-tick--${isTicked}-disabled
+				focus-tick--${isTicked}--disabled
 				focus-tracker__cell--${this.getDayOfWeek(currentDate)}`,
 			})
 

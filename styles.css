@@ -184,16 +184,16 @@ body {
 	background-color: var(--focustracker-tick-hover-color);
 }
 
-.focus-tick--true:before {
-	/* background: var(--focustracker-tick-color); */
-	/* background: attr(bg-color) !important; */
-	border-radius: var(--focustracker-tick-radius);
-	content: '';
-	display: inline-block;
-	height: var(--focustracker-tick-height);
-	width: calc(var(--focustracker-tick-width) * 0.8);
-	transition: all 0.3s ease;
-}
+/* .focus-tick--true:before { */
+/* 	background: var(--focustracker-tick-color); */
+/* 	/1* background: attr(bg-color) !important; *1/ */
+/* 	border-radius: var(--focustracker-tick-radius); */
+/* 	content: ''; */
+/* 	display: inline-block; */
+/* 	height: var(--focustracker-tick-height); */
+/* 	width: calc(var(--focustracker-tick-width) * 0.8); */
+/* 	transition: all 0.3s ease; */
+/* } */
 
 .focus-tick--true + .focus-tick--true {
 	text-align: left;
