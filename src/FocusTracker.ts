@@ -56,7 +56,7 @@ const DEFAULT_SETTINGS = (): FocusTrackerSettings => ({
 	lastDisplayedDate: getTodayDate(),
 	daysToShow: DAYS_TO_SHOW,
 	logPropertyName: "focus-logs",
-	ratingScale: SCALE1,
+	ratingScale: SCALE2,
 	titlePropertyName: "title",
 	daysToLoad: DAYS_TO_LOAD,
 	rootElement: undefined,
