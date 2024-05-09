@@ -309,10 +309,68 @@ export default class FocusTracker {
 			focusCell.setAttribute("date", dateString);
 			focusCell.setAttribute("focus", path);
 			focusCell.setAttribute("focusScore", entryValue.toString());
+			focusCell.setAttribute("bg-color", this.getColorForValue(
+                entryValue,
+                this.settings.scoringScale.length,
+                "cyan",
+                false,
+			));
 			focusCell.setText(displayValue);
 			currentDate.setDate(currentDate.getDate() + 1);
 		}
 	}
+
+
+    getColorForValue(currentValue: number, maxScale: number, baseColor: string, isLightMode: boolean): string {
+        // Base colors mapped to their hex values
+        const colorMap: { [key: string]: string } = {
+            red: '#ff0000',
+            blue: '#0000ff',
+            green: '#008000',
+            cyan: '#00ffff',
+            magenta: '#ff00ff',
+            yellow: '#ffff00',
+            black: '#000000',
+            white: '#ffffff',
+            gray: '#808080',
+            orange: '#ffa500',
+            purple: '#800080',
+            pink: '#ffc0cb'
+        };
+
+        // Get the base hex color from the map
+        let hexColor = colorMap[baseColor.toLowerCase()] || '#000000';
+
+        // Calculate the scale index
+        let scaleIndex = currentValue <= 0 ? 0 : currentValue >= maxScale ? maxScale : currentValue;
+
+        // Convert hex color to RGB
+        let r = parseInt(hexColor.substring(1, 3), 16);
+        let g = parseInt(hexColor.substring(3, 5), 16);
+        let b = parseInt(hexColor.substring(5, 7), 16);
+
+        // Calculate the percentage change for lightening or darkening
+        let percentageChange = (scaleIndex / maxScale) * 100;
+
+        // Adjust color brightness based on the mode and current value
+        let adjustBrightness = (colorComponent: number, percentage: number): number => {
+            if (isLightMode) {
+                return Math.min(255, Math.round(colorComponent + (255 - colorComponent) * percentage / 100));
+            } else {
+                return Math.max(0, Math.round(colorComponent * (1 - percentage / 100)));
+            }
+        };
+
+        // Apply brightness adjustment
+        r = adjustBrightness(r, percentageChange);
+        g = adjustBrightness(g, percentageChange);
+        b = adjustBrightness(b, percentageChange);
+
+        // Convert back to hex
+        const toHex = (colorComponent: number) => colorComponent.toString(16).padStart(2, '0');
+        return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
+    }
+
 
     getFocusScoreFromElement(el: HTMLElement): number {
         const attrValue = el.getAttribute("focusScore");
