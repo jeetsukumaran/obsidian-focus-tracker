@@ -175,7 +175,14 @@ export default class FocusTracker {
 		rootElement.addEventListener("click", (e) => {
 			const target = e.target as HTMLDivElement
 			if (target?.classList.contains("focus-tick")) {
-				this.cycleFocusLogEntry(target)
+				this.cycleFocusLogEntry(target, 1)
+			}
+		})
+		rootElement.addEventListener("contextmenu", (e) => {
+			const target = e.target as HTMLDivElement
+			e.preventDefault();
+			if (target?.classList.contains("focus-tick")) {
+				this.cycleFocusLogEntry(target, -1)
 			}
 		})
 
@@ -317,7 +324,7 @@ export default class FocusTracker {
 			focusCell.setAttribute("ticked", isTicked.toString())
 
 			focusCell.setAttribute("date", dateString);
-			focusCell.setAttribute("focus", path);
+			focusCell.setAttribute("focusTrackerPath", path);
 			focusCell.setAttribute("focusRating", entryValue.toString());
 
             // const bgColor = this.getColorForValue(
@@ -423,13 +430,16 @@ export default class FocusTracker {
         return scale[0]; // Default return for unexpected input types
     }
 
-	async cycleFocusLogEntry(el) {
-		const focus = el.getAttribute("focus")
-		const date = el.getAttribute("date")
-		const file: TAbstractFile|null = this.app.vault.getAbstractFileByPath(focus)
+	async cycleFocusLogEntry(
+	    el,
+	    step: number = 1,
+	) {
+		const focusTrackerPath = el.getAttribute("focusTrackerPath");
+		const date = el.getAttribute("date");
+		const file: TAbstractFile | null = this.app.vault.getAbstractFileByPath(focusTrackerPath)
 
 		if (!file ||!(file instanceof TFile)) {
-			new Notice(`${PLUGIN_NAME}: file missing while trying to cycle focus entry`)
+			new Notice(`${PLUGIN_NAME}: file missing while trying to change focus rating`)
 			return
 		}
 
@@ -437,7 +447,7 @@ export default class FocusTracker {
 			let entries = frontmatter[this.settings.logPropertyName] || {};
             const currentValue: number = this.getFocusRatingFromElement(el);
             const maxScaleIndex:number = this.settings.ratingScale.length;
-            let newValue = currentValue + 1;
+            let newValue = currentValue + step;
             if (newValue >= maxScaleIndex) {
                 newValue = 0;
             }
