@@ -173,7 +173,7 @@ body {
 	text-align: center;
 }
 
-/* HABIT TICK */
+/* FOCUS TICK */
 
 .focus-tick {
 	line-height: 0;
@@ -185,7 +185,8 @@ body {
 }
 
 .focus-tick--true:before {
-	background: var(--focustracker-tick-color);
+	/* background: var(--focustracker-tick-color); */
+	/* background: attr(bg-color) !important; */
 	border-radius: var(--focustracker-tick-radius);
 	content: '';
 	display: inline-block;
