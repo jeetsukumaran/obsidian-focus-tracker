@@ -309,6 +309,7 @@ export default class FocusTracker {
 			const focusCell = row.createEl("div", {
 				cls: `focus-tracker__cell
 				focus-tick
+				focus-tick-entry
 				focus-tick--${isTicked}--disabled
 				focus-tracker__cell--${this.getDayOfWeek(currentDate)}`,
 			})
@@ -318,12 +319,18 @@ export default class FocusTracker {
 			focusCell.setAttribute("date", dateString);
 			focusCell.setAttribute("focus", path);
 			focusCell.setAttribute("focusRating", entryValue.toString());
-			focusCell.setAttribute("bg-color", this.getColorForValue(
-                entryValue,
-                this.settings.ratingScale.length,
-                "cyan",
-                false,
-			));
+
+            // const bgColor = this.getColorForValue(
+            //     entryValue,
+            //     this.settings.ratingScale.length,
+            //     "cyan",
+            //     false,
+            // );
+            // // Need to set here rather than CSS to dynamically change background
+            // // to reflect rating.
+			// focusCell.style.setProperty("--focus-cell-bg-color", bgColor + "44");
+			// focusCell.setAttribute("bg-color", bgColor);
+
 			focusCell.setText(displayValue);
 			currentDate.setDate(currentDate.getDate() + 1);
 		}

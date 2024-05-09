@@ -178,6 +178,15 @@ body {
 .focus-tick {
 	line-height: 0;
 	text-align: center;
+	/* border-radius: 40rem; */
+}
+.focus-tick-entry {
+    /* background-color: blue; */
+    /* content: attr(bg-color); */
+    /* content: " "; */
+    /* background-color: attr(bg-color, "#ffffff00"); */
+    /* --bg-color: attr(bg-color-x, "#ffff00"); */
+    /* background-color: var(--focus-cell-bg-color) !important; */
 }
 .focus-tick:hover {
 	cursor: pointer;
