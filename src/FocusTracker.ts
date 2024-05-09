@@ -242,6 +242,7 @@ export default class FocusTracker {
                 result[date] = numValue;
             } else {
                 result[date] = !value ? 0 : 10;
+                console.log(value)
             }
         });
         return result;
@@ -347,10 +348,9 @@ export default class FocusTracker {
             }
             const index = scale.indexOf(input);
             // unrecognized but non-blank string is treated as a score
-            // return index !== -1 ? scale[index] : scale.at(-1) || "X";
-            return index !== -1 ? scale[index] : scale.at(-1) || "X";
+            return index !== -1 ? scale[index] : scale.at(-1) || scale[1] || "X";
         } else if (typeof input === 'number') {
-            return input >= 0 && input < scale.length ? scale[input] : scale.at(-1) || "X";
+            return input >= 0 && input < scale.length ? scale[input] : scale.at(-1) || scale[1] || "*";
         }
         return scale[0]; // Default return for unexpected input types
     }
@@ -370,9 +370,9 @@ export default class FocusTracker {
             const currentValue: number = this.getFocusScoreFromElement(el);
             const maxScaleIndex:number = this.settings.scoringScale.length;
             let newValue = currentValue + 1;
-            if (newValue >= maxScaleIndex) {
-                newValue = 0;
-            }
+            // if (newValue >= maxScaleIndex) {
+            //     newValue = 0;
+            // }
             entries[date] = newValue;
 			frontmatter[this.settings.logPropertyName] = entries
 		})
