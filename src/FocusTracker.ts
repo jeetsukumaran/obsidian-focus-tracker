@@ -187,14 +187,14 @@ export default class FocusTracker {
 		rootElement.addEventListener("click", (e) => {
 			const target = e.target as HTMLDivElement
 			if (target?.classList.contains("focus-tick")) {
-				this.cycleFocusLogEntry(target, 1)
+				this.stepFocusLogEntry(target, 1)
 			}
 		})
 		rootElement.addEventListener("contextmenu", (e) => {
 			const target = e.target as HTMLDivElement
 			e.preventDefault();
 			if (target?.classList.contains("focus-tick")) {
-				this.cycleFocusLogEntry(target, -1)
+				this.stepFocusLogEntry(target, -1)
 			}
 		})
 
@@ -473,7 +473,7 @@ export default class FocusTracker {
         return symbol;
     }
 
-	async cycleFocusLogEntry(
+	async stepFocusLogEntry(
 	    el,
 	    step: number = 1,
 	) {
@@ -493,6 +493,8 @@ export default class FocusTracker {
             let newValue = currentValue + step;
             if (newValue >= maxScaleIndex) {
                 newValue = 0;
+            } else if (newValue < 0) {
+                newValue = maxScaleIndex - 1;
             }
             entries[date] = newValue;
 			frontmatter[this.settings.logPropertyName] = entries
