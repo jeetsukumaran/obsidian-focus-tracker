@@ -9,9 +9,34 @@ import {
 const PLUGIN_NAME = "Focus Tracker"
 const DAYS_TO_SHOW = 21
 const DAYS_TO_LOAD = DAYS_TO_SHOW + 1
+const SCALE1 = [
+    "",
+    "🔴",
+    "🟠",
+    "🟡",
+    "🟢",
+    "🔵",
+    "🟣",
+    // "🟤",
+    // "⚪",
+    // "⚫",
+];
+
+const SCALE2 = [
+    "",
+    "🟥",
+    "🟧",
+    "🟨",
+    "🟩",
+    "🟦",
+    "🟪",
+    // "🟫",
+    // "⬛",
+    // "⬜",
+];
 
 export type FocusLogsType = {
-	[date: string]: string;
+	[date: string]: string | number;
 }
 
 interface FocusTrackerSettings {
@@ -152,7 +177,7 @@ export default class FocusTracker {
 		rootElement.addEventListener("click", (e) => {
 			const target = e.target as HTMLDivElement
 			if (target?.classList.contains("focus-tick")) {
-				this.toggleFocus(target)
+				this.cycleFocusLogEntry(target)
 			}
 		})
 
@@ -264,8 +289,10 @@ export default class FocusTracker {
 
 		for (let i = 0; i < this.settings.daysToLoad; i++) {
 			const dateString: string = this.getDateId(currentDate);
-			const entryValue: string = entries[dateString] || "";
-			let isTicked: boolean = entryValue !== "";
+			const entryValue: string | number = entries[dateString] || "";
+			const scaleValue: number = this.getScaleValue(entryValue, SCALE1);
+			const displayValue: string = this.getDisplayValue(entryValue, SCALE1);
+			let isTicked: boolean = entryValue !== "" && entryValue !== 0;
 
 			const focusCell = row.createEl("div", {
 				cls: `focus-tracker__cell
@@ -276,21 +303,46 @@ export default class FocusTracker {
 
 			focusCell.setAttribute("ticked", isTicked.toString())
 
-			focusCell.setAttribute("date", dateString)
-			focusCell.setAttribute("focus", path)
-			focusCell.setText(entryValue);
-			currentDate.setDate(currentDate.getDate() + 1)
+			focusCell.setAttribute("date", dateString);
+			focusCell.setAttribute("focus", path);
+			focusCell.setAttribute("focusScore", scaleValue.toString());
+			focusCell.setText(displayValue);
+			currentDate.setDate(currentDate.getDate() + 1);
 		}
 	}
 
-	async toggleFocus(el) {
+	getScaleValue(input: string | number, scale: string[]): number {
+        if (typeof input === 'string') {
+            const index = scale.indexOf(input);
+            return index !== -1 ? index : 0;
+        } else if (typeof input === 'number') {
+            return input;
+        }
+        return 0; // Default return for unexpected input types
+    }
+
+    getDisplayValue(input: string | number, scale: string[]): string {
+        if (typeof input === 'string') {
+            if (input === "") {
+                return "";
+            }
+            const index = scale.indexOf(input);
+            // unrecognized but non-blank string is treated as a score
+            return index !== -1 ? scale[index] : scale.at(-1) || "X";
+        } else if (typeof input === 'number') {
+            return input >= 0 && input < scale.length ? scale[input] : scale[0];
+        }
+        return scale[0]; // Default return for unexpected input types
+    }
+
+	async cycleFocusLogEntry(el) {
 		const focus = el.getAttribute("focus")
 		const date = el.getAttribute("date")
 		const file: TAbstractFile|null = this.app.vault.getAbstractFileByPath(focus)
 		const isTicked = el.getAttribute("ticked")
 
 		if (!file ||!(file instanceof TFile)) {
-			new Notice(`${PLUGIN_NAME}: file missing while trying to toggle focus`)
+			new Notice(`${PLUGIN_NAME}: file missing while trying to cycle focus entry`)
 			return
 		}
 
