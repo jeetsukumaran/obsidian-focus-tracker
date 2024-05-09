@@ -184,21 +184,41 @@ export default class FocusTracker {
 			cls: "focus-tracker",
 		})
 		rootElement.setAttribute("id", this.id)
-		rootElement.addEventListener("click", (e) => {
-			const target = e.target as HTMLDivElement
-			if (target?.classList.contains("focus-tick")) {
+
+		// rootElement.addEventListener("click", (e) => {
+		// 	const target = e.target as HTMLDivElement
+		// 	if (target?.classList.contains("focus-tick")) {
+                // const focusRating: number = this.getFocusRatingFromElement(target);
+		// 		this.stepFocusLogEntry(target, 1)
+		// 	}
+		// })
+
+        // Event listener for left-click and shift+left-click
+        rootElement.addEventListener("click", (e) => {
+            const target = e.target as HTMLDivElement;
+            if (target?.classList.contains("focus-tick")) {
                 const focusRating: number = this.getFocusRatingFromElement(target);
-				this.stepFocusLogEntry(target, 1)
-			}
-		})
-		rootElement.addEventListener("contextmenu", (e) => {
-			const target = e.target as HTMLDivElement
-			e.preventDefault();
-            const focusRating: number = this.getFocusRatingFromElement(target);
-			if (target?.classList.contains("focus-tick")) {
-				this.stepFocusLogEntry(target, -1)
-			}
-		})
+                if (e.shiftKey) {
+                    // Decrement rating on shift-click
+                    this.stepFocusLogEntry(target, -1);
+                } else {
+                    // Increment rating on plain left-click
+                    this.stepFocusLogEntry(target, 1);
+                }
+                // Update tooltip with the new rating
+                target.title = `Current rating: ${focusRating}; left-click to increment, shift left-click to decrement`;
+            }
+        });
+
+		// rootElement.addEventListener("contextmenu", (e) => {
+		// 	const target = e.target as HTMLDivElement
+		// 	e.preventDefault();
+            // const focusRating: number = this.getFocusRatingFromElement(target);
+		// 	if (target?.classList.contains("focus-tick")) {
+		// 		this.stepFocusLogEntry(target, -1)
+		// 	}
+		// })
+
 		return rootElement
 	}
 
