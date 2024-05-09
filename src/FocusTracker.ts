@@ -36,7 +36,7 @@ const SCALE2 = [
 ];
 
 export type FocusLogsType = {
-	[date: string]: string | number;
+	[date: string]: number;
 }
 
 interface FocusTrackerSettings {
@@ -113,7 +113,7 @@ export default class FocusTracker {
 
 		// 2.3 render each focus
 		files.forEach(async (f) => {
-			this.renderFocus(
+			this.renderFocusLogs(
                 f.path,
                 await this.readFocusLogs(f.path),
 			)
@@ -231,20 +231,34 @@ export default class FocusTracker {
 		}
 	}
 
+    normalizeLogs(source: { [date: string]: any }): { [date: string]: number } {
+        const result: { [date: string]: number } = {};
+        Object.keys(source).forEach(date => {
+            const value = source[date];
+            const numValue = Number(value);
+            if (!isNaN(numValue)) {
+                result[date] = numValue;
+            } else {
+                result[date] = !value ? 0 : 10;
+            }
+        });
+        return result;
+    }
+
+
 	async readFocusLogs(path: string): Promise<FocusLogsType> {
-		return {
-		    "2024-05-03": "X",
-		    "2024-05-04": "X",
+		let rawData = {
+		    "2024-05-03": 0,
+		    "2024-05-04": 4,
 		    "2024-05-05": "X",
-		    "2024-05-06": "X",
+		    "2024-05-06": -3,
+		    "2024-05-01": [1, 2],
+		    "2024-05-02": {"a": 1},
 		}
-		// const fm = await this.getFrontmatter(path)
-		// if (!fm[logPropertyName]) {
-		// }
-		// return fm.entries || []
+		return this.normalizeLogs(rawData);
 	}
 
-	renderFocus(
+	renderFocusLogs(
         path: string,
         entries: FocusLogsType,
 	) {
@@ -289,10 +303,9 @@ export default class FocusTracker {
 
 		for (let i = 0; i < this.settings.daysToLoad; i++) {
 			const dateString: string = this.getDateId(currentDate);
-			const entryValue: string | number = entries[dateString] || "";
-			const scaleValue: number = this.getScaleValue(entryValue, SCALE1);
+			const entryValue: number = entries[dateString] || 0;
 			const displayValue: string = this.getDisplayValue(entryValue, SCALE1);
-			let isTicked: boolean = entryValue !== "" && entryValue !== 0;
+			let isTicked: boolean = entryValue !== 0;
 
 			const focusCell = row.createEl("div", {
 				cls: `focus-tracker__cell
@@ -305,7 +318,7 @@ export default class FocusTracker {
 
 			focusCell.setAttribute("date", dateString);
 			focusCell.setAttribute("focus", path);
-			focusCell.setAttribute("focusScore", scaleValue.toString());
+			focusCell.setAttribute("focusScore", entryValue.toString());
 			focusCell.setText(displayValue);
 			currentDate.setDate(currentDate.getDate() + 1);
 		}
@@ -328,9 +341,10 @@ export default class FocusTracker {
             }
             const index = scale.indexOf(input);
             // unrecognized but non-blank string is treated as a score
+            // return index !== -1 ? scale[index] : scale.at(-1) || "X";
             return index !== -1 ? scale[index] : scale.at(-1) || "X";
         } else if (typeof input === 'number') {
-            return input >= 0 && input < scale.length ? scale[input] : scale[0];
+            return input >= 0 && input < scale.length ? scale[input] : scale.at(-1) || "X";
         }
         return scale[0]; // Default return for unexpected input types
     }
@@ -357,7 +371,7 @@ export default class FocusTracker {
 			frontmatter["entries"] = entries
 		})
 
-		this.renderFocus(file.path, await this.readFocusLogs(file.path))
+		this.renderFocusLogs(file.path, await this.readFocusLogs(file.path))
 	}
 
 	writeFile(file: TAbstractFile, content: string) {
