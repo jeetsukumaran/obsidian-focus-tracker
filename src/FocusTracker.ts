@@ -364,9 +364,9 @@ export default class FocusTracker {
             const currentValue: number = this.getFocusScoreFromElement(el);
             const maxScaleIndex:number = this.settings.scoringScale.length;
             let newValue = currentValue + 1;
-            // if (newValue >= maxScaleIndex) {
-            //     newValue = 0;
-            // }
+            if (newValue >= maxScaleIndex) {
+                newValue = 0;
+            }
             entries[date] = newValue;
 			frontmatter[this.settings.logPropertyName] = entries
 		})
