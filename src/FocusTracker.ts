@@ -247,17 +247,19 @@ export default class FocusTracker {
 
 
 	async readFocusLogs(path: string): Promise<FocusLogsType> {
-		let rawData = {
-		    "2024-04-29": 3,
-		    "2024-04-30": 5,
-		    "2024-05-03": 0,
-		    "2024-05-04": 4,
-		    "2024-05-05": "X",
-		    "2024-05-06": -3,
-		    "2024-05-01": [1, 2],
-		    "2024-05-02": {"a": 1},
-		}
-		return this.normalizeLogs(rawData);
+		// let rawData = {
+		//     "2024-04-29": 3,
+		//     "2024-04-30": 5,
+		//     "2024-05-03": 0,
+		//     "2024-05-04": 4,
+		//     "2024-05-05": "X",
+		//     "2024-05-06": -3,
+		//     "2024-05-01": [1, 2],
+		//     "2024-05-02": {"a": 1},
+		// };
+        const frontmatter = await this.getFrontmatter(path);
+		const fmLogs = frontmatter[this.settings.logPropertyName] || {};
+		return this.normalizeLogs(fmLogs);
 	}
 
 	renderFocusLogs(
