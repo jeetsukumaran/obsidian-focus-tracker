@@ -189,7 +189,7 @@ export default class FocusTracker {
             const target = e.target as HTMLElement;
             if (target?.classList.contains("focus-tick")) {
                 const focusRating: number = this.getFocusRatingFromElement(target);
-                if (e.shiftKey) {
+                if (e.altKey) {
                     // Decrement rating on shift-click
                     this.stepFocusLogEntry(target, -1);
                 } else {
@@ -197,7 +197,7 @@ export default class FocusTracker {
                     this.stepFocusLogEntry(target, 1);
                 }
                 // Update tooltip with the new rating
-                target.title = `Current rating: ${focusRating}; left-click to increment, shift left-click to decrement`;
+                target.title = `Current rating: ${focusRating}; left-click to increment, alt-left-click to decrement`;
             }
         });
 
