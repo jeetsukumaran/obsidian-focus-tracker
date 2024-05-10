@@ -2,6 +2,7 @@ import {
     App,
     parseYaml,
     Notice,
+    Menu,
     TAbstractFile,
     TFile
 } from "obsidian";
@@ -334,6 +335,24 @@ export default class FocusTracker {
                 }
             });
 
+            // focusCell.addEventListener("mouseover", (event) => {
+            //     this._context.app.workspace.trigger("hover-link", {
+            //         event,
+            //         source: VIEW_TYPE,
+            //         hoverParent: focusCell.parentElement,
+            //         targetEl: focusCell,
+            //         linktext: linkPath,
+            //     });
+            // });
+
+            focusCell.addEventListener('contextmenu', (event) => {
+                const menu = new Menu()
+
+                menu.addSeparator();
+
+                menu.showAtMouseEvent(event)
+            })
+
 
             indexDate.setDate(indexDate.getDate() + 1);
         }
@@ -440,7 +459,10 @@ export default class FocusTracker {
         return symbol;
     }
 
-    async stepFocusLogEntry(el: HTMLElement, step: number = 1): Promise<number> {
+    async stepFocusLogEntry(
+        el: HTMLElement,
+        step: number = 1
+    ) {
         const focusTrackerPath: string | null = el.getAttribute("focusTrackerPath");
         const date: string | null = el.getAttribute("date");
 
@@ -452,30 +474,27 @@ export default class FocusTracker {
         } else if (newValue < 0) {
             newValue = maxScaleIndex - 1;
         }
+        await this.setFocusRating(focusTrackerPath, date, newValue);
+    }
 
+    async setFocusRating(focusTrackerPath: string | null, date: string | null, newValue: number) {
         if (!focusTrackerPath || !date) {
             new Notice(`${PLUGIN_NAME}: Missing data attributes for focus tracking.`);
-            return currentValue;
         }
-
-        const file: TAbstractFile | null = this.app.vault.getAbstractFileByPath(focusTrackerPath);
-
+        const file: TAbstractFile | null = this.app.vault.getAbstractFileByPath(focusTrackerPath as string);
         if (!file || !(file instanceof TFile)) {
             new Notice(`${PLUGIN_NAME}: File missing while trying to change focus rating.`);
-            return currentValue;
         }
-
-        this.app.fileManager.processFrontMatter(file, (frontmatter: { [key: string]: any }) => {
+        this.app.fileManager.processFrontMatter(file as TFile, (frontmatter: { [key: string]: any }) => {
             let entries: { [key: string]: number } = frontmatter[this.settings.logPropertyName] || {};
-            entries[date] = newValue;
+            entries[date as string] = newValue;
             frontmatter[this.settings.logPropertyName] = entries;
-            new Notice(`Rating: ${newValue}`, 600);
+            new Notice(`Setting rating: ${newValue}`, 600);
         });
-
-        await this.renderFocusLogs(file.path, await this.readFocusLogs(file.path));
-
-        return newValue;
-
+        let fpath = file?.path || "";
+        if (fpath) {
+            await this.renderFocusLogs(fpath, await this.readFocusLogs(fpath));
+        }
     }
 
     writeFile(file: TAbstractFile, content: string): Promise<void> {
