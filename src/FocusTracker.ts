@@ -348,20 +348,46 @@ export default class FocusTracker {
             focusCell.addEventListener('contextmenu', (event) => {
                 event.preventDefault();
                 const menu = new Menu()
-                this.settings.ratingScale.forEach( (symbol: string, index: number) => {
-                    if (!symbol) {
+                this.settings.ratingScaleAlternate.slice().reverse().forEach( (symbol: string, rSymbolIndex: number) => {
+                    let symbolIndex = this.settings.ratingScaleAlternate.length - rSymbolIndex - 1;
+                    let newValue = -1 * (symbolIndex + 1);
+                    if (symbolIndex > 0) {
                         symbol = "clear";
+                        menu.addItem((item) =>
+                                     item
+                                     // .setTitle(`Set rating ${index}: ${symbol}`)
+                                     .setTitle(`${symbol}: rating = ${newValue}`)
+                                     .setIcon("open")
+                                     .onClick( async () =>  {
+                                         await this.setFocusRating(path, dateString, newValue);
+                                     })
+                                    )
                     }
-                    menu.addItem((item) =>
-                        item
-                            .setTitle(`Set rating ${index}: ${symbol}`)
-                            .setIcon("open")
-                            .onClick( async () =>  {
-                                await this.setFocusRating(path, dateString, index);
-                            })
-                        )
                 });
                 menu.addSeparator();
+                menu.addItem((item) =>
+                                item
+                                // .setTitle(`Set rating ${index}: ${symbol}`)
+                                .setTitle(`Clear`)
+                                .setIcon("open")
+                                .onClick( async () =>  {
+                                    await this.setFocusRating(path, dateString, 0);
+                                })
+                            )
+                menu.addSeparator();
+                this.settings.ratingScale.forEach( (symbol: string, index: number) => {
+                    if (index > 0) {
+                        menu.addItem((item) =>
+                            item
+                                // .setTitle(`Set rating ${index}: ${symbol}`)
+                                .setTitle(`${symbol}: rating = ${index}`)
+                                .setIcon("open")
+                                .onClick( async () =>  {
+                                    await this.setFocusRating(path, dateString, index);
+                                })
+                            )
+                    }
+                });
                 menu.showAtMouseEvent(event)
             })
 
