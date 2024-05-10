@@ -1,7 +1,7 @@
 {
 	"name": "focus-tracker",
 	"version": "1.2.1",
-	"description": "Track your focus (or habit, effort, practice, productivity, mood, etc.) quantitatively over time.",
+	"description": "Track and plan your focus direction and magnitude.",
 	"main": "main.js",
 	"scripts": {
 		"dev": "node esbuild.config.mjs",
