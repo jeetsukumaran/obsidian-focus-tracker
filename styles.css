@@ -114,10 +114,12 @@ body {
 
 .theme-light {
     --focustracker-background-color: #00000010;
+    --focustracker-weekend-color: #00000020;
 }
 
 .theme-dark {
     --focustracker-background-color: #ffffff10;
+    --focustracker-weekend-color: #ffffff10;
 }
 
 
@@ -160,6 +162,7 @@ body {
 	/* min-width: 24px; */
 	vertical-align: middle;
 	width: 20px;
+	font-weight: 500;
 }
 
 .focus-tracker__cell:not(:last-child) {
@@ -180,7 +183,8 @@ body {
 }
 
 .focus-tracker__cell--today {
-    border-top: dotted 4px !important;
+    border-top: solid 2px !important;
+    color: var(--text-muted);
 }
 
 .focus-tracker__cell--today::before {
@@ -202,8 +206,9 @@ body {
 
 
 .focus-tracker__cell--future {
+    font-weight: 100;
     font-style: italic;
-    opacity: 0.4;
+    background-color: #00000000;
 }
 
 .focus-tracker__cell--saturday,
@@ -216,7 +221,8 @@ body {
 }
 
 .focus-tracker__header .focus-tracker__cell {
-    border-top: solid 4px #00000000;
+    font-size: 80%;
+    border-top: solid 2px #00000000;
     padding-bottom: 0.3rem;
 	text-align: center;
 }
