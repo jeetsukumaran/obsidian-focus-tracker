@@ -110,7 +110,19 @@ body {
 	--focustracker-tick-radius: 10px;
 	--focustracker-tick-hover-color: var(--color-base-30);
 	--focustracker-row-hover-color: var(--color-base-10);
-    --focustracker-weekend-color: var(--color-base-40);
+}
+
+.theme-light {
+    --focustracker-background-color: #00000010;
+}
+
+.theme-dark {
+    --focustracker-background-color: #ffffff10;
+}
+
+
+.focus-tracker-container {
+    background-color: var(--focustracker-background-color);
 }
 
 .cm-preview-code-block.markdown-rendered:has(.block-language-focustracker),
@@ -129,7 +141,10 @@ body {
 }
 
 .focus-tracker__row + .focus-tracker__row {
-	border-top: var(--focustracker-border-width) solid var(--focustracker-border-color);
+	/* border-top: var(--focustracker-border-width) solid var(--focustracker-border-color); */
+}
+
+.focus-tracker__row.focus-tracker__header {
 }
 
 .focus-tracker__row:not(.focus-tracker__header):hover {
@@ -141,13 +156,15 @@ body {
 	display: table-cell;
 	font-family: var(--focustracker-cell-fontfamily);
 	font-size: var(--focustracker-cell-font-size);
-	height: 24px;
-	min-width: 24px;
+	/* height: 24px; */
+	/* min-width: 24px; */
 	vertical-align: middle;
+	width: 20px;
 }
 
 .focus-tracker__cell:not(:last-child) {
-	border-right: var(--focustracker-border-width) solid var(--focustracker-border-color);
+	/* border-right: var(--focustracker-border-width) solid var(--focustracker-border-color); */
+	border-right: solid 6px #00000000;
 }
 
 .focus-tracker__cell--name {
@@ -163,15 +180,17 @@ body {
 }
 
 .focus-tracker__cell--today {
-    font-weight: bold;
-    border-bottom: solid 2px;
+    border-top: dotted 4px !important;
 }
 
 .focus-tracker__cell--today::before {
     /* display: absolute; */
     /* top: 0; */
     /* left: 0; */
-    /* content: "|"; */
+    /* content: " "; */
+    /* width: 100%; */
+    /* height: 100%; */
+    /* border-bottom: solid 1px; */
 }
 
 .focus-tracker__cell--today::after {
@@ -197,6 +216,8 @@ body {
 }
 
 .focus-tracker__header .focus-tracker__cell {
+    border-top: solid 4px #00000000;
+    padding-bottom: 0.3rem;
 	text-align: center;
 }
 
@@ -234,16 +255,8 @@ body {
     padding: 1rem;
     border-radius: 0.8rem;
     min-width: 0;
-    width: 100%;
+    width: fit-content;
     display: flex;
-}
-
-.theme-light .focus-tracker-container {
-    background-color: #00000010;
-}
-
-.theme-dark .focus-tracker-container {
-    background-color: #ffffff10;
 }
 
 /* .focus-tick--true:before { */
