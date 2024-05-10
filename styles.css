@@ -109,7 +109,7 @@ body {
 	--focustracker-tick-radius: 10px;
 	--focustracker-tick-hover-color: var(--color-base-30);
 	--focustracker-row-hover-color: var(--color-base-10);
-  --focustracker-weekend-color: var(--color-base-10);
+    --focustracker-weekend-color: var(--color-base-30);
 }
 
 .cm-preview-code-block.markdown-rendered:has(.block-language-focustracker),
@@ -162,7 +162,7 @@ body {
 
 .focus-tracker__cell--saturday,
 .focus-tracker__cell--sunday {
-	background-color: var(--focustracker-weekend-color);
+	/* background-color: var(--focustracker-weekend-color); */
 }
 
 .focus-tracker__cell--name + .focus-tracker__cell {
