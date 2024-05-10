@@ -174,19 +174,6 @@ export default class FocusTracker {
             cls: "focus-tracker",
         });
         rootElement.setAttribute("id", this.id);
-
-        rootElement.addEventListener("click", (e: MouseEvent) => {
-            const target = e.target as HTMLElement;
-            if (target?.classList.contains("focus-tick")) {
-                if (e.altKey) {
-                    // Decrement rating on shift-click
-                    this.stepFocusLogEntry(target, -1);
-                } else {
-                    // Increment rating on plain left-click
-                    this.stepFocusLogEntry(target, 1);
-                }
-            }
-        });
         return rootElement;
     }
 
@@ -335,8 +322,19 @@ export default class FocusTracker {
             focusCell.setAttribute("date", dateString);
             focusCell.setAttribute("focusTrackerPath", path);
             focusCell.setAttribute("focusRating", entryValue.toString());
-
             focusCell.setText(displayValue);
+
+            focusCell.addEventListener("click", (e: MouseEvent) => {
+                if (e.altKey) {
+                    // Decrement rating on shift-click
+                    this.stepFocusLogEntry(focusCell, -1);
+                } else {
+                    // Increment rating on plain left-click
+                    this.stepFocusLogEntry(focusCell, 1);
+                }
+            });
+
+
             indexDate.setDate(indexDate.getDate() + 1);
         }
     }
