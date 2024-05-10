@@ -196,7 +196,6 @@ export default class FocusTracker {
                     // Increment rating on plain left-click
                     this.stepFocusLogEntry(target, 1);
                 }
-                // Update tooltip with the new rating
                 target.title = `Current rating: ${focusRating}; left-click to increment, alt-left-click to decrement`;
             }
         });
@@ -443,39 +442,42 @@ export default class FocusTracker {
         return symbol;
     }
 
-    async stepFocusLogEntry(el: HTMLElement, step: number = 1): Promise<void> {
+    async stepFocusLogEntry(el: HTMLElement, step: number = 1): Promise<number> {
         const focusTrackerPath: string | null = el.getAttribute("focusTrackerPath");
         const date: string | null = el.getAttribute("date");
 
+        const currentValue: number = this.getFocusRatingFromElement(el);
+        const maxScaleIndex: number = this.settings.ratingScale.length;
+        let newValue: number = currentValue + step;
+        if (newValue >= maxScaleIndex) {
+            newValue = 0;
+        } else if (newValue < 0) {
+            newValue = maxScaleIndex - 1;
+        }
+
         if (!focusTrackerPath || !date) {
             new Notice(`${PLUGIN_NAME}: Missing data attributes for focus tracking.`);
-            return;
+            return currentValue;
         }
 
         const file: TAbstractFile | null = this.app.vault.getAbstractFileByPath(focusTrackerPath);
 
         if (!file || !(file instanceof TFile)) {
             new Notice(`${PLUGIN_NAME}: File missing while trying to change focus rating.`);
-            return;
+            return currentValue;
         }
 
         this.app.fileManager.processFrontMatter(file, (frontmatter: { [key: string]: any }) => {
             let entries: { [key: string]: number } = frontmatter[this.settings.logPropertyName] || {};
-            const currentValue: number = this.getFocusRatingFromElement(el);
-            const maxScaleIndex: number = this.settings.ratingScale.length;
-            let newValue: number = currentValue + step;
-
-            if (newValue >= maxScaleIndex) {
-                newValue = 0;
-            } else if (newValue < 0) {
-                newValue = maxScaleIndex - 1;
-            }
-
             entries[date] = newValue;
             frontmatter[this.settings.logPropertyName] = entries;
+            new Notice(`Rating: ${newValue}`, 600);
         });
 
         await this.renderFocusLogs(file.path, await this.readFocusLogs(file.path));
+
+        return newValue;
+
     }
 
     writeFile(file: TAbstractFile, content: string): Promise<void> {
