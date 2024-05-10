@@ -352,7 +352,6 @@ export default class FocusTracker {
                     let symbolIndex = this.settings.ratingScaleAlternate.length - rSymbolIndex - 1;
                     let newValue = -1 * (symbolIndex + 1);
                     if (symbolIndex > 0) {
-                        symbol = "clear";
                         menu.addItem((item) =>
                                      item
                                      // .setTitle(`Set rating ${index}: ${symbol}`)
