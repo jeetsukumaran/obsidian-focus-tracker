@@ -330,7 +330,7 @@ export default class FocusTracker {
                 cls: `focus-tracker__cell
                 focus-tick
                 focus-tick-entry
-                focus-tick--${isTicked}--disabled
+                focus-tick--${isTicked}
                 focus-tracker__cell--${this.getDayOfWeek(currentDate)}`,
             });
 

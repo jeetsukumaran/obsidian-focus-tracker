@@ -103,8 +103,8 @@ body {
 	--focustracker-cell-font-size: 13px;
 	--focustracker-border-width: 1px;
 	--focustracker-border-color: var(--color-base-30);
-	--focustracker-tick-height: 16px;
-	--focustracker-tick-width: 20px;
+	--focustracker-tick-height: 13px;
+	--focustracker-tick-width: 13px;
 	--focustracker-tick-color: var(--checkbox-color);
 	--focustracker-tick-radius: 10px;
 	--focustracker-tick-hover-color: var(--color-base-30);
@@ -132,7 +132,7 @@ body {
 }
 
 .focus-tracker__row:not(.focus-tracker__header):hover {
-	background-color: var(--focustracker-row-hover-color);
+	/* background-color: var(--focustracker-row-hover-color); */
 }
 
 .focus-tracker__cell {
@@ -140,7 +140,7 @@ body {
 	display: table-cell;
 	font-family: var(--focustracker-cell-fontfamily);
 	font-size: var(--focustracker-cell-font-size);
-	height: 32px;
+	height: 24px;
 	min-width: 24px;
 	vertical-align: middle;
 }
@@ -190,7 +190,7 @@ body {
 }
 .focus-tick:hover {
 	cursor: pointer;
-	background-color: var(--focustracker-tick-hover-color);
+	/* background-color: var(--focustracker-tick-hover-color); */
 }
 
 /* .focus-tick--true:before { */
