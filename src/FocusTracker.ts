@@ -175,11 +175,9 @@ export default class FocusTracker {
         });
         rootElement.setAttribute("id", this.id);
 
-        // Event listener for left-click and shift+left-click
         rootElement.addEventListener("click", (e: MouseEvent) => {
             const target = e.target as HTMLElement;
             if (target?.classList.contains("focus-tick")) {
-                const focusRating: number = this.getFocusRatingFromElement(target);
                 if (e.altKey) {
                     // Decrement rating on shift-click
                     this.stepFocusLogEntry(target, -1);
@@ -187,10 +185,8 @@ export default class FocusTracker {
                     // Increment rating on plain left-click
                     this.stepFocusLogEntry(target, 1);
                 }
-                target.title = `Current rating: ${focusRating}; left-click to increment, alt-left-click to decrement`;
             }
         });
-
         return rootElement;
     }
 
@@ -319,6 +315,9 @@ export default class FocusTracker {
         for (let i = 0; i < this.settings.daysToLoad; i++) {
             const dateString: string = this.getDateId(indexDate);
             const entryValue: number = entries[dateString] || 0;
+            // let toolTip: string = `${name}: ${dateString}: Rating = ${entryValue}`
+            let toolTip: string = `Rating = ${entryValue} (left-click: increment, alt-left-click: decrement)`
+
             const displayValue: string = this.getDisplaySymbol(entryValue);
             let isTicked: boolean = entryValue !== 0;
             const focusCell = row.createEl("div", {
@@ -327,6 +326,7 @@ export default class FocusTracker {
                 focus-tick-entry
                 focus-tick--${isTicked}
                 focus-tracker__cell--${this.getDayOfWeek(indexDate)}`,
+                title: toolTip,
             });
 
             focusCell.setAttribute("ticked", isTicked.toString());
