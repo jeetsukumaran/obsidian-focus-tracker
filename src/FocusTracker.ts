@@ -316,7 +316,8 @@ export default class FocusTracker {
             const dateString: string = this.getDateId(indexDate);
             const entryValue: number = entries[dateString] || 0;
             // let toolTip: string = `${name}: ${dateString}: Rating = ${entryValue}`
-            let toolTip: string = `Rating = ${entryValue} (left-click: increment, alt-left-click: decrement)`
+            // let toolTip: string = `Rating = ${entryValue} (left-click: increment, alt-left-click: decrement)`
+            let toolTip: string = `Rating = ${entryValue}`
 
             const displayValue: string = this.getDisplaySymbol(entryValue);
             let isTicked: boolean = entryValue !== 0;
