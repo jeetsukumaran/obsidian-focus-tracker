@@ -21,12 +21,21 @@ const SCALE1 = [
     // "⚫",
 ];
 
+// const SCALE2 = [
+//     "🏻",
+//     "🏼",
+//     "🏽",
+//     "🏾",
+//     "🏿",
+// ];
+
 const SCALE2 = [
-    "🏻",
-    "🏼",
-    "🏽",
-    "🏾",
-    "🏿",
+    "🏁",
+    "🚩",
+    "🏴",
+    "🏳️",
+    "📌",
+    "🔥",
 ];
 
 
@@ -350,12 +359,12 @@ export default class FocusTracker {
                 const menu = new Menu()
                 this.settings.ratingScaleAlternate.slice().reverse().forEach( (symbol: string, rSymbolIndex: number) => {
                     let symbolIndex = this.settings.ratingScaleAlternate.length - rSymbolIndex - 1;
-                    let newValue = -1 * (symbolIndex + 1);
+                    let newValue = -1 * (symbolIndex);
                     if (symbolIndex > 0) {
                         menu.addItem((item) =>
                                      item
                                      // .setTitle(`Set rating ${index}: ${symbol}`)
-                                     .setTitle(`${symbol}: rating = ${newValue}`)
+                                     .setTitle(`${symbol} (rating = ${newValue})`)
                                      .setIcon("open")
                                      .onClick( async () =>  {
                                          await this.setFocusRating(path, dateString, newValue);
@@ -379,7 +388,7 @@ export default class FocusTracker {
                         menu.addItem((item) =>
                             item
                                 // .setTitle(`Set rating ${index}: ${symbol}`)
-                                .setTitle(`${symbol}: rating = ${index}`)
+                                .setTitle(`${symbol} (rating = ${index})`)
                                 .setIcon("open")
                                 .onClick( async () =>  {
                                     await this.setFocusRating(path, dateString, index);
