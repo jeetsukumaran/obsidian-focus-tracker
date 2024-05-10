@@ -68,7 +68,7 @@ interface FocusTrackerSettings {
     logPropertyName: string;
     ratingScale: string[];
     ratingScaleAlternate: string[];
-    titlePropertyName: string;
+    titlePropertyNames: string[];
     daysToLoad: number;
     rootElement: HTMLElement | undefined;
     focusTracksGoHere: HTMLElement | undefined;
@@ -81,7 +81,7 @@ const DEFAULT_SETTINGS = (): FocusTrackerSettings => ({
     logPropertyName: "focus-logs",
     ratingScale: SCALE1,
     ratingScaleAlternate: SCALE2,
-    titlePropertyName: "title",
+    titlePropertyNames: ["focus-tracker-title", "title"],
     daysToLoad: DAYS_TO_LOAD,
     rootElement: undefined,
     focusTracksGoHere: undefined,
@@ -110,6 +110,7 @@ function getDaysDifference(startDateId: string, endDateId: string): number {
 }
 
 export default class FocusTracker {
+    rootElement: HTMLElement;
     settings: FocusTrackerSettings;
     app: App;
     id: string;
@@ -118,25 +119,23 @@ export default class FocusTracker {
         this.app = app;
         this.id = this.generateUniqueId();
         this.settings = this.loadSettings(src);
-        this.settings.rootElement = el;
+        this.rootElement = el;
+        this.refresh();
+    }
 
+    refresh() {
         // 1. get all the focus tracks
         const files = this.loadFiles();
-
         if (files.length === 0) {
             this.renderNoFocussFoundMessage();
             return;
         }
-
-        const focusTrackerContainer = el.createEl("div", {
+        this.rootElement.empty();
+        const focusTrackerContainer = this.rootElement.createEl("div", {
             cls: "focus-tracker-container",
         });
         this.settings.focusTracksGoHere = this.renderRoot(focusTrackerContainer);
-
-        // 2.2 render the header
         this.renderHeader(this.settings.focusTracksGoHere);
-
-        // 2.3 render each focus
         files.forEach(async (f) => {
             await this.renderFocusLogs(
                 f.path,
@@ -188,7 +187,8 @@ export default class FocusTracker {
     }
 
     renderNoFocussFoundMessage(): void {
-        this.settings.rootElement?.createEl("div", {
+        this.rootElement?.empty();
+        this.rootElement?.createEl("div", {
             text: `No focus tracks found under ${this.settings.path}`,
         });
     }
@@ -214,7 +214,7 @@ export default class FocusTracker {
 
         header.createEl("div", {
             text: "",
-            cls: "focus-tracker__cell--name focus-tracker__cell",
+            cls: "focus-tracker__cell--focus-target-label focus-tracker__cell",
         });
         const focalDate = new Date();
         const lastDate = this.getLastDate();
@@ -288,12 +288,14 @@ export default class FocusTracker {
         }
         const parent = this.settings.focusTracksGoHere;
 
-        let name = path.split('/').pop()?.replace('.md', '') || path;
-        if (this.settings.titlePropertyName) {
-            let frontmatter = await this.getFrontmatter(path);
-            if (frontmatter && frontmatter[this.settings.titlePropertyName]) {
-                name = frontmatter[this.settings.titlePropertyName] || name;
-            }
+        let focusTargetLabel = path.split('/').pop()?.replace('.md', '') || path;
+        if (this.settings.titlePropertyNames && this.settings.titlePropertyNames.length > 0) {
+            let frontmatter = await this.getFrontmatter(path) || {};
+            this.settings.titlePropertyNames.slice().reverse().forEach( (propertyName: string) => {
+                if (frontmatter[propertyName]) {
+                    focusTargetLabel = frontmatter[propertyName] || focusTargetLabel;
+                }
+            });
         }
 
         let row = parent.querySelector(`*[data-id="${this.pathToId(path)}"]`);
@@ -308,11 +310,11 @@ export default class FocusTracker {
         }
 
         const focusTitle = row.createEl("div", {
-            cls: "focus-tracker__cell--name focus-tracker__cell",
+            cls: "focus-tracker__cell--focus-target-label focus-tracker__cell",
         });
 
         const focusTitleLink = focusTitle.createEl("a", {
-            text: name,
+            text: focusTargetLabel,
             cls: "internal-link",
         });
 

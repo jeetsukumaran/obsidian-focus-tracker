@@ -70,10 +70,10 @@ body {
 	border-right: solid 6px #00000000;
 }
 
-.focus-tracker__cell--name {
+.focus-tracker__cell--focus-target-label {
 	padding: 0 4px;
 }
-.focus-tracker__cell--name a {
+.focus-tracker__cell--focus-target-label a {
 	max-width: 100%;
 	overflow: hidden;
 	text-overflow: ellipsis;
@@ -116,7 +116,7 @@ body {
 	background-color: var(--focustracker-weekend-color);
 }
 
-.focus-tracker__cell--name + .focus-tracker__cell {
+.focus-tracker__cell--focus-target-label + .focus-tracker__cell {
 	display: none;
 }
 
@@ -202,7 +202,7 @@ body {
 	.focus-tracker__cell {
 		display: none;
 	}
-	.focus-tracker__cell--name,
+	.focus-tracker__cell--focus-target-label,
 	.focus-tracker__cell:nth-last-child(-n + 7) {
 		display: table-cell;
 	}
