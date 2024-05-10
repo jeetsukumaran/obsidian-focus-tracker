@@ -50,6 +50,7 @@ const SCALE2 = [
     "🏁",
     "🎯",
     "🚀",
+    "🐂",
 ];
 
 
@@ -123,7 +124,7 @@ export default class FocusTracker {
         this.refresh();
     }
 
-    refresh() {
+    async refresh() {
         // 1. get all the focus tracks
         const files = this.loadFiles();
         if (files.length === 0) {
@@ -136,12 +137,41 @@ export default class FocusTracker {
         });
         this.settings.focusTracksGoHere = this.renderRoot(focusTrackerContainer);
         this.renderHeader(this.settings.focusTracksGoHere);
-        files.forEach(async (f) => {
+
+        let focalTargetLabels: [string, TFile][] = await Promise.all(files.map(async (f) => {
+            return [await this.getFocusTargetLabel(f.path), f];
+        }));
+
+        // Sort the array based on the labels (first element of the tuple)
+        focalTargetLabels.sort((a, b) => a[0].localeCompare(b[0]));
+
+        // Iterate through the sorted array to render logs
+        for (const [focusTargetLabel, f] of focalTargetLabels) {
+            const focusLogs = await this.readFocusLogs(f.path);
             await this.renderFocusLogs(
                 f.path,
-                await this.readFocusLogs(f.path),
+                focusTargetLabel,
+                focusLogs
             );
-        });
+        }
+
+
+
+        // let focalTargetLabels: Promise<[string, TFile][]> = Promise.all(files.map(async (f) => {
+        //     return [await this.getFocusTargetLabel(f.path), f];
+        // }));
+        // focalTargetLabels.sort((a, b) => a[0].localeCompare(b[0]));
+        // focalTargetLabels.forEach(async (focusTargetLabel: string, f: TFile) => {
+        //     await this.renderFocusLogs(
+        //         f.path,
+        //         focusTargetLabel,
+        //         await this.readFocusLogs(f.path),
+        //     );
+        // });
+
+
+
+
     }
 
     loadFiles(): TFile[] {
@@ -278,16 +308,7 @@ export default class FocusTracker {
         return this.normalizeLogs(fmLogs);
     }
 
-    async renderFocusLogs(
-        path: string,
-        entries: FocusLogsType,
-    ): Promise<void> {
-        if (!this.settings.focusTracksGoHere) {
-            new Notice(`${PLUGIN_NAME}: missing div that holds all focus tracks`);
-            return;
-        }
-        const parent = this.settings.focusTracksGoHere;
-
+    async getFocusTargetLabel(path: string): Promise<string> {
         let focusTargetLabel = path.split('/').pop()?.replace('.md', '') || path;
         if (this.settings.titlePropertyNames && this.settings.titlePropertyNames.length > 0) {
             let frontmatter = await this.getFrontmatter(path) || {};
@@ -297,6 +318,19 @@ export default class FocusTracker {
                 }
             });
         }
+        return focusTargetLabel;
+    }
+
+    async renderFocusLogs(
+        path: string,
+        focusTargetLabel: string,
+        entries: FocusLogsType,
+    ): Promise<void> {
+        if (!this.settings.focusTracksGoHere) {
+            new Notice(`${PLUGIN_NAME}: missing div that holds all focus tracks`);
+            return;
+        }
+        const parent = this.settings.focusTracksGoHere;
 
         let row = parent.querySelector(`*[data-id="${this.pathToId(path)}"]`);
 
@@ -558,7 +592,12 @@ export default class FocusTracker {
         });
         let fpath = file?.path || "";
         if (fpath) {
-            await this.renderFocusLogs(fpath, await this.readFocusLogs(fpath));
+            await this.renderFocusLogs(
+                fpath,
+                await this.getFocusTargetLabel(fpath),
+                await this.readFocusLogs(fpath),
+
+            );
         }
     }
 
