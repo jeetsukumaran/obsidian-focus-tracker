@@ -346,10 +346,22 @@ export default class FocusTracker {
             // });
 
             focusCell.addEventListener('contextmenu', (event) => {
+                event.preventDefault();
                 const menu = new Menu()
-
+                this.settings.ratingScale.forEach( (symbol: string, index: number) => {
+                    if (!symbol) {
+                        symbol = "clear";
+                    }
+                    menu.addItem((item) =>
+                        item
+                            .setTitle(`Set rating ${index}: ${symbol}`)
+                            .setIcon("open")
+                            .onClick( async () =>  {
+                                await this.setFocusRating(path, dateString, index);
+                            })
+                        )
+                });
                 menu.addSeparator();
-
                 menu.showAtMouseEvent(event)
             })
 
