@@ -10,39 +10,24 @@ const PLUGIN_NAME = "Focus Tracker";
 const DAYS_TO_SHOW = 21;
 const DAYS_TO_LOAD = DAYS_TO_SHOW + 1;
 const SCALE1 = [
-    // "",
-    // "⚫",
-    // "🔘",
-    "⚪",
+    "",
     "🔴",
     "🟠",
     "🟡",
     "🟢",
-    // "🔵",
-    // "🟣",
-    // "🟤",
+    "🔵",
     // "⚪",
     // "⚫",
 ];
 
 const SCALE2 = [
-    "⚪",
-    "⚫",
+    "🏻",
+    "🏼",
+    "🏽",
+    "🏾",
+    "🏿",
 ];
 
-const SCALE1_square = [
-    // "",
-    "⬜",
-    "🟥",
-    "🟧",
-    "🟨",
-    "🟩",
-    "🟦",
-    "🟪",
-    // "🟫",
-    // "⬛",
-    // "⬜",
-];
 
 const OUT_OF_BOUNDS_INDEX_POSITIVE = "❗";
 const OUT_OF_BOUNDS_INDEX_NEGATIVE = "⭕";
