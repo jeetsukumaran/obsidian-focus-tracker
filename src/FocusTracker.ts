@@ -30,11 +30,19 @@ const SCALE1 = [
 // ];
 
 const SCALE2 = [
+    // "🔜",
+    // "🔝",
+    // "🏁",
+    // "🚩",
+    // "⭐",
+    // "🔥",
+    // "🟣".
+    "💛",
+    "💚",
+    "💙",
+    "💜",
     "🏁",
     "🚩",
-    "🏴",
-    "🏳️",
-    "📌",
     "🔥",
 ];
 
@@ -364,7 +372,7 @@ export default class FocusTracker {
                         menu.addItem((item) =>
                                      item
                                      // .setTitle(`Set rating ${index}: ${symbol}`)
-                                     .setTitle(`${symbol} (rating = ${newValue})`)
+                                     .setTitle(`${symbol} (flag = ${newValue})`)
                                      .setIcon("open")
                                      .onClick( async () =>  {
                                          await this.setFocusRating(path, dateString, newValue);
