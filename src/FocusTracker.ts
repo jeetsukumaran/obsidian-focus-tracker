@@ -104,8 +104,10 @@ export default class FocusTracker {
             return;
         }
 
-        // 2.1 render the element that holds all focus tracks
-        this.settings.focusTracksGoHere = this.renderRoot(el);
+        const focusTrackerContainer = el.createEl("div", {
+            cls: "focus-tracker-container",
+        });
+        this.settings.focusTracksGoHere = this.renderRoot(focusTrackerContainer);
 
         // 2.2 render the header
         this.renderHeader(this.settings.focusTracksGoHere);
@@ -192,6 +194,16 @@ export default class FocusTracker {
         return rootElement;
     }
 
+    getLastDate() {
+        let focalDate = this.createDateFromFormat(getTodayDate());
+        let lastDate = new Date();
+        lastDate.setDate(focalDate.getDate() + 7);
+        // const currentDate = this.createDateFromFormat(
+        //     this.settings.lastDisplayedDate,
+        // );
+        return lastDate;
+    }
+
     renderHeader(parent: HTMLElement): void {
         const header = parent.createEl("div", {
             cls: "focus-tracker__header focus-tracker__row",
@@ -201,10 +213,8 @@ export default class FocusTracker {
             text: "",
             cls: "focus-tracker__cell--name focus-tracker__cell",
         });
-
-        const currentDate = this.createDateFromFormat(
-            this.settings.lastDisplayedDate,
-        );
+        const lastDate = this.getLastDate();
+        let currentDate = lastDate;
         currentDate.setDate(currentDate.getDate() - this.settings.daysToLoad + 1);
         for (let i = 0; i < this.settings.daysToLoad; i++) {
             const day = currentDate.getDate().toString();
@@ -300,9 +310,8 @@ export default class FocusTracker {
         focusTitleLink.setAttribute("href", path);
         focusTitleLink.setAttribute("aria-label", path);
 
-        const currentDate = this.createDateFromFormat(
-            this.settings.lastDisplayedDate,
-        );
+        const lastDate = this.getLastDate();
+        let currentDate = lastDate;
         currentDate.setDate(currentDate.getDate() - this.settings.daysToLoad + 1); // todo, why +1?
 
         for (let i = 0; i < this.settings.daysToLoad; i++) {

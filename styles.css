@@ -201,6 +201,23 @@ body {
     content: "⚫";
 }
 
+.focus-tracker-container {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+    padding: 1rem;
+    border-radius: 0.8rem;
+    min-width: 0;
+    width: 100%;
+    display: flex;
+}
+
+.theme-light .focus-tracker-container {
+    background-color: #00000010;
+}
+
+.theme-dark .focus-tracker-container {
+    background-color: #ffffff10;
+}
 
 /* .focus-tick--true:before { */
 /* 	background: var(--focustracker-tick-color); */
@@ -244,3 +261,4 @@ body {
 		display: table-cell;
 	}
 }
+
