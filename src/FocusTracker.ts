@@ -195,12 +195,8 @@ export default class FocusTracker {
     }
 
     getLastDate() {
-        let focalDate = this.createDateFromFormat(getTodayDate());
         let lastDate = new Date();
-        lastDate.setDate(focalDate.getDate() + 7);
-        // const currentDate = this.createDateFromFormat(
-        //     this.settings.lastDisplayedDate,
-        // );
+        lastDate.setDate(lastDate.getDate() + 7);
         return lastDate;
     }
 
@@ -213,18 +209,24 @@ export default class FocusTracker {
             text: "",
             cls: "focus-tracker__cell--name focus-tracker__cell",
         });
+        const focalDate = new Date();
         const lastDate = this.getLastDate();
-        let currentDate = lastDate;
-        currentDate.setDate(currentDate.getDate() - this.settings.daysToLoad + 1);
+        let indexDate = lastDate;
+        indexDate.setDate(indexDate.getDate() - this.settings.daysToLoad + 1);
         for (let i = 0; i < this.settings.daysToLoad; i++) {
-            const day = currentDate.getDate().toString();
-            header.createEl("div", {
-                cls: `focus-tracker__cell focus-tracker__cell--${this.getDayOfWeek(
-                    currentDate,
-                )}`,
+            const day = indexDate.getDate().toString();
+            let headerLabelEl = header.createEl("div", {
+                cls: `focus-tracker__cell focus-tracker__cell--${this.getDayOfWeek(indexDate,)}`,
                 text: day,
             });
-            currentDate.setDate(currentDate.getDate() + 1);
+            // is today
+            if (indexDate.toISOString() === focalDate.toISOString()) {
+                headerLabelEl.addClass("focus-tracker__cell--today");
+            } else if (indexDate >= focalDate) {
+                headerLabelEl.addClass("focus-tracker__cell--future");
+            }
+
+            indexDate.setDate(indexDate.getDate() + 1);
         }
     }
 
@@ -311,21 +313,20 @@ export default class FocusTracker {
         focusTitleLink.setAttribute("aria-label", path);
 
         const lastDate = this.getLastDate();
-        let currentDate = lastDate;
-        currentDate.setDate(currentDate.getDate() - this.settings.daysToLoad + 1); // todo, why +1?
+        let indexDate = lastDate;
+        indexDate.setDate(indexDate.getDate() - this.settings.daysToLoad + 1); // todo, why +1?
 
         for (let i = 0; i < this.settings.daysToLoad; i++) {
-            const dateString: string = this.getDateId(currentDate);
+            const dateString: string = this.getDateId(indexDate);
             const entryValue: number = entries[dateString] || 0;
             const displayValue: string = this.getDisplaySymbol(entryValue);
             let isTicked: boolean = entryValue !== 0;
-
             const focusCell = row.createEl("div", {
                 cls: `focus-tracker__cell
                 focus-tick
                 focus-tick-entry
                 focus-tick--${isTicked}
-                focus-tracker__cell--${this.getDayOfWeek(currentDate)}`,
+                focus-tracker__cell--${this.getDayOfWeek(indexDate)}`,
             });
 
             focusCell.setAttribute("ticked", isTicked.toString());
@@ -335,7 +336,7 @@ export default class FocusTracker {
             focusCell.setAttribute("focusRating", entryValue.toString());
 
             focusCell.setText(displayValue);
-            currentDate.setDate(currentDate.getDate() + 1);
+            indexDate.setDate(indexDate.getDate() + 1);
         }
     }
 

@@ -99,7 +99,8 @@ settings:
     default: '#fafafa'
 */
 body {
-  --focustracker-cell-fontfamily: "Source Code Pro", monospace;
+  /* --focustracker-cell-fontfamily: "Source Code Pro", monospace; */
+  --focustracker-cell-fontfamily: "Ubuntu", sans-serif;
 	--focustracker-cell-font-size: 13px;
 	--focustracker-border-width: 1px;
 	--focustracker-border-color: var(--color-base-30);
@@ -109,7 +110,7 @@ body {
 	--focustracker-tick-radius: 10px;
 	--focustracker-tick-hover-color: var(--color-base-30);
 	--focustracker-row-hover-color: var(--color-base-10);
-    --focustracker-weekend-color: var(--color-base-30);
+    --focustracker-weekend-color: var(--color-base-40);
 }
 
 .cm-preview-code-block.markdown-rendered:has(.block-language-focustracker),
@@ -144,6 +145,7 @@ body {
 	min-width: 24px;
 	vertical-align: middle;
 }
+
 .focus-tracker__cell:not(:last-child) {
 	border-right: var(--focustracker-border-width) solid var(--focustracker-border-color);
 }
@@ -160,9 +162,34 @@ body {
 	display: inline-block;
 }
 
+.focus-tracker__cell--today {
+    font-weight: bold;
+    border-bottom: solid 2px;
+}
+
+.focus-tracker__cell--today::before {
+    /* display: absolute; */
+    /* top: 0; */
+    /* left: 0; */
+    /* content: "|"; */
+}
+
+.focus-tracker__cell--today::after {
+    /* display: absolute; */
+    /* top: 0; */
+    /* right: 0; */
+    /* content: "|"; */
+}
+
+
+.focus-tracker__cell--future {
+    font-style: italic;
+    opacity: 0.4;
+}
+
 .focus-tracker__cell--saturday,
 .focus-tracker__cell--sunday {
-	/* background-color: var(--focustracker-weekend-color); */
+	background-color: var(--focustracker-weekend-color);
 }
 
 .focus-tracker__cell--name + .focus-tracker__cell {
