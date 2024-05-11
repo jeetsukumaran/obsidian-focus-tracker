@@ -62,7 +62,7 @@ export type FocusLogsType = {
     [date: string]: number;
 };
 
-interface FocusTrackerSettings {
+interface FocusTrackerConfiguration {
     path: string;
     lastDisplayedDate: string;
     daysToShow: number;
@@ -75,7 +75,7 @@ interface FocusTrackerSettings {
     focusTracksGoHere: HTMLElement | undefined;
 };
 
-const DEFAULT_SETTINGS = (): FocusTrackerSettings => ({
+const DEFAULT_CONFIGURATION = (): FocusTrackerConfiguration => ({
     path: "",
     lastDisplayedDate: getTodayDate(),
     daysToShow: DAYS_TO_SHOW,
@@ -88,7 +88,7 @@ const DEFAULT_SETTINGS = (): FocusTrackerSettings => ({
     focusTracksGoHere: undefined,
 });
 
-const ALLOWED_USER_SETTINGS = ["path", "lastDisplayedDate", "daysToShow"];
+const ALLOWED_USER_CONFIGURATION = ["path", "lastDisplayedDate", "daysToShow"];
 
 function getTodayDate(): string {
     const today = new Date();
@@ -112,14 +112,14 @@ function getDaysDifference(startDateId: string, endDateId: string): number {
 
 export default class FocusTracker {
     rootElement: HTMLElement;
-    settings: FocusTrackerSettings;
+    configuration: FocusTrackerConfiguration;
     app: App;
     id: string;
 
     constructor(src: string, el: HTMLElement, ctx: any, app: App) {
         this.app = app;
         this.id = this.generateUniqueId();
-        this.settings = this.loadSettings(src);
+        this.configuration = this.loadConfiguration(src);
         this.rootElement = el;
         this.refresh();
     }
@@ -135,8 +135,8 @@ export default class FocusTracker {
         const focusTrackerContainer = this.rootElement.createEl("div", {
             cls: "focus-tracker-container",
         });
-        this.settings.focusTracksGoHere = this.renderRoot(focusTrackerContainer);
-        this.renderHeader(this.settings.focusTracksGoHere);
+        this.configuration.focusTracksGoHere = this.renderRoot(focusTrackerContainer);
+        this.renderHeader(this.configuration.focusTracksGoHere);
 
         let focalTargetLabels: [string, TFile][] = await Promise.all(files.map(async (f) => {
             return [await this.getFocusTargetLabel(f.path), f];
@@ -179,7 +179,7 @@ export default class FocusTracker {
             .getMarkdownFiles()
             .filter((file: TFile) => {
                 // only focus tracks
-                if (!file.path.includes(this.settings.path)) {
+                if (!file.path.includes(this.configuration.path)) {
                     return false;
                 }
 
@@ -188,28 +188,29 @@ export default class FocusTracker {
             .sort((a: TFile, b: TFile) => a.name.localeCompare(b.name));
     }
 
-    loadSettings(rawSettings: string): FocusTrackerSettings {
+    loadConfiguration(rawConfiguration: string): FocusTrackerConfiguration {
         try {
-            let settings = Object.assign(
+            let configuration = Object.assign(
                 {},
-                DEFAULT_SETTINGS(),
-                this.removePrivateSettings(JSON.parse(rawSettings)),
+                DEFAULT_CONFIGURATION(),
+                // this.removePrivateConfiguration(JSON.parse(rawConfiguration)),
+                this.removePrivateConfiguration(parseYaml(rawConfiguration)),
             );
-            settings.daysToLoad = settings.daysToShow + 1;
-            return settings;
+            configuration.daysToLoad = configuration.daysToShow + 1;
+            return configuration;
         } catch (error) {
             new Notice(
-                `${PLUGIN_NAME}: received invalid settings. continuing with default settings`,
+                `${PLUGIN_NAME}: received invalid configuration. continuing with default configuration`,
             );
-            return DEFAULT_SETTINGS();
+            return DEFAULT_CONFIGURATION();
         }
     }
 
-    removePrivateSettings(userSettings: {[key: string]: any}): {[key: string]: any} {
+    removePrivateConfiguration(userConfiguration: {[key: string]: any}): {[key: string]: any} {
         const result: {[key: string]: any} = {};
-        ALLOWED_USER_SETTINGS.forEach((key) => {
-            if (userSettings[key]) {
-                result[key] = userSettings[key];
+        ALLOWED_USER_CONFIGURATION.forEach((key) => {
+            if (userConfiguration[key]) {
+                result[key] = userConfiguration[key];
             }
         });
 
@@ -219,7 +220,7 @@ export default class FocusTracker {
     renderNoFocussFoundMessage(): void {
         this.rootElement?.empty();
         this.rootElement?.createEl("div", {
-            text: `No focus tracks found under ${this.settings.path}`,
+            text: `No focus tracks found under ${this.configuration.path}`,
         });
     }
 
@@ -249,8 +250,8 @@ export default class FocusTracker {
         const focalDate = new Date();
         const lastDate = this.getLastDate();
         let indexDate = lastDate;
-        indexDate.setDate(indexDate.getDate() - this.settings.daysToLoad + 1);
-        for (let i = 0; i < this.settings.daysToLoad; i++) {
+        indexDate.setDate(indexDate.getDate() - this.configuration.daysToLoad + 1);
+        for (let i = 0; i < this.configuration.daysToLoad; i++) {
             const day = indexDate.getDate().toString();
             let headerLabelEl = header.createEl("div", {
                 cls: `focus-tracker__cell focus-tracker__cell--${this.getDayOfWeek(indexDate,)}`,
@@ -304,15 +305,15 @@ export default class FocusTracker {
 
     async readFocusLogs(path: string): Promise<FocusLogsType> {
         const frontmatter = await this.getFrontmatter(path);
-        const fmLogs = frontmatter[this.settings.logPropertyName] || {};
+        const fmLogs = frontmatter[this.configuration.logPropertyName] || {};
         return this.normalizeLogs(fmLogs);
     }
 
     async getFocusTargetLabel(path: string): Promise<string> {
         let focusTargetLabel = path.split('/').pop()?.replace('.md', '') || path;
-        if (this.settings.titlePropertyNames && this.settings.titlePropertyNames.length > 0) {
+        if (this.configuration.titlePropertyNames && this.configuration.titlePropertyNames.length > 0) {
             let frontmatter = await this.getFrontmatter(path) || {};
-            this.settings.titlePropertyNames.slice().reverse().forEach( (propertyName: string) => {
+            this.configuration.titlePropertyNames.slice().reverse().forEach( (propertyName: string) => {
                 if (frontmatter[propertyName]) {
                     focusTargetLabel = frontmatter[propertyName] || focusTargetLabel;
                 }
@@ -326,16 +327,16 @@ export default class FocusTracker {
         focusTargetLabel: string,
         entries: FocusLogsType,
     ): Promise<void> {
-        if (!this.settings.focusTracksGoHere) {
+        if (!this.configuration.focusTracksGoHere) {
             new Notice(`${PLUGIN_NAME}: missing div that holds all focus tracks`);
             return;
         }
-        const parent = this.settings.focusTracksGoHere;
+        const parent = this.configuration.focusTracksGoHere;
 
         let row = parent.querySelector(`*[data-id="${this.pathToId(path)}"]`);
 
         if (!row) {
-            row = this.settings.focusTracksGoHere.createEl("div", {
+            row = this.configuration.focusTracksGoHere.createEl("div", {
                 cls: "focus-tracker__row",
             });
             row.setAttribute("data-id", this.pathToId(path));
@@ -357,9 +358,9 @@ export default class FocusTracker {
 
         const lastDate = this.getLastDate();
         let indexDate = lastDate;
-        indexDate.setDate(indexDate.getDate() - this.settings.daysToLoad + 1); // todo, why +1?
+        indexDate.setDate(indexDate.getDate() - this.configuration.daysToLoad + 1); // todo, why +1?
 
-        for (let i = 0; i < this.settings.daysToLoad; i++) {
+        for (let i = 0; i < this.configuration.daysToLoad; i++) {
             const dateString: string = this.getDateId(indexDate);
             const entryValue: number = entries[dateString] || 0;
             // let toolTip: string = `${name}: ${dateString}: Rating = ${entryValue}`
@@ -407,9 +408,9 @@ export default class FocusTracker {
             focusCell.addEventListener('contextmenu', (event) => {
                 event.preventDefault();
                 const menu = new Menu()
-                this.settings.ratingScale.slice().reverse().forEach( (symbol: string, rSymbolIndex: number) => {
-                // this.settings.ratingScale.forEach( (symbol: string, synbolIndex: number) => {
-                    let symbolIndex = this.settings.ratingScale.length - rSymbolIndex - 1;
+                this.configuration.ratingScale.slice().reverse().forEach( (symbol: string, rSymbolIndex: number) => {
+                // this.configuration.ratingScale.forEach( (symbol: string, synbolIndex: number) => {
+                    let symbolIndex = this.configuration.ratingScale.length - rSymbolIndex - 1;
                     let newValue = symbolIndex;
                     if (symbolIndex > 0) {
                         menu.addItem((item) =>
@@ -433,9 +434,9 @@ export default class FocusTracker {
                                 })
                             )
                 menu.addSeparator();
-                this.settings.ratingScaleAlternate.forEach( (symbol: string, symbolIndex: number) => {
-                // this.settings.ratingScaleAlternate.slice().reverse().forEach( (symbol: string, rSymbolIndex: number) => {
-                    // let symbolIndex = this.settings.ratingScaleAlternate.length - rSymbolIndex - 1;
+                this.configuration.ratingScaleAlternate.forEach( (symbol: string, symbolIndex: number) => {
+                // this.configuration.ratingScaleAlternate.slice().reverse().forEach( (symbol: string, rSymbolIndex: number) => {
+                    // let symbolIndex = this.configuration.ratingScaleAlternate.length - rSymbolIndex - 1;
                     let newValue = -1 * (symbolIndex);
                     if (symbolIndex > 0) {
                         menu.addItem((item) =>
@@ -530,7 +531,7 @@ export default class FocusTracker {
     getDisplaySymbol(input: string | number): string {
         let index: number = 0;
         let symbol = " ";
-        let ratingScale: string[] = this.settings.ratingScale;
+        let ratingScale: string[] = this.configuration.ratingScale;
         let oobSymbol = OUT_OF_BOUNDS_INDEX_POSITIVE;
         if (typeof input === 'string') {
             if (input === "") {
@@ -547,7 +548,7 @@ export default class FocusTracker {
         }
         if (index < 0) {
             index = -1 * index;
-            ratingScale = this.settings.ratingScaleAlternate;
+            ratingScale = this.configuration.ratingScaleAlternate;
             oobSymbol = OUT_OF_BOUNDS_INDEX_NEGATIVE;
         }
         if (index >= ratingScale.length) {
@@ -566,7 +567,7 @@ export default class FocusTracker {
         const date: string | null = el.getAttribute("date");
 
         const currentValue: number = this.getFocusRatingFromElement(el);
-        const maxScaleIndex: number = this.settings.ratingScale.length;
+        const maxScaleIndex: number = this.configuration.ratingScale.length;
         let newValue: number = currentValue + step;
         if (newValue >= maxScaleIndex) {
             newValue = 0;
@@ -585,9 +586,9 @@ export default class FocusTracker {
             new Notice(`${PLUGIN_NAME}: File missing while trying to change focus rating.`);
         }
         this.app.fileManager.processFrontMatter(file as TFile, (frontmatter: { [key: string]: any }) => {
-            let entries: { [key: string]: number } = frontmatter[this.settings.logPropertyName] || {};
+            let entries: { [key: string]: number } = frontmatter[this.configuration.logPropertyName] || {};
             entries[date as string] = newValue;
-            frontmatter[this.settings.logPropertyName] = entries;
+            frontmatter[this.configuration.logPropertyName] = entries;
             new Notice(`Setting rating: ${newValue}`, 600);
         });
         let fpath = file?.path || "";
