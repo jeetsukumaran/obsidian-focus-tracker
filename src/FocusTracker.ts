@@ -63,7 +63,7 @@ export type FocusLogsType = {
 };
 
 interface FocusTrackerConfiguration {
-    sourcePattern: string;
+    pathPattern: string;
     lastDisplayedDate: string;
     daysToShow: number;
     logPropertyName: string;
@@ -76,7 +76,7 @@ interface FocusTrackerConfiguration {
 };
 
 const DEFAULT_CONFIGURATION = (): FocusTrackerConfiguration => ({
-    sourcePattern: "",
+    pathPattern: "",
     lastDisplayedDate: getTodayDate(),
     daysToShow: DAYS_TO_SHOW,
     logPropertyName: "focus-logs",
@@ -117,6 +117,17 @@ function filterDictionary<T>(
 //     return filteredConfiguration;
 // }
 
+function kebabToCamel(s: string): string {
+    return s.replace(/(-\w)/g, m => m[1].toUpperCase());
+}
+
+function normalizeKeys<T>(dictionary: { [key: string]: T }): { [key: string]: T } {
+    const normalizedDictionary: { [key: string]: T } = {};
+    Object.keys(dictionary).forEach(key => {
+        normalizedDictionary[kebabToCamel(key)] = dictionary[key];
+    });
+    return normalizedDictionary;
+}
 
 function getTodayDate(): string {
     const today = new Date();
@@ -189,7 +200,7 @@ export default class FocusTracker {
             .getMarkdownFiles()
             .filter((file: TFile) => {
                 // only focus tracks
-                if (!file.path.includes(this.configuration.sourcePattern)) {
+                if (!file.path.includes(this.configuration.pathPattern)) {
                     return false;
                 }
 
@@ -207,7 +218,7 @@ export default class FocusTracker {
                 // parseYaml(configurationString).filter( [key: string, value: any] => {
                 //     return PRIVATE_CONFIGURATION.has(key);
                 // });
-                filterDictionary(parseYaml(configurationString), (key, value) => {
+                filterDictionary(normalizeKeys(parseYaml(configurationString)), (key, value) => {
                     return !PRIVATE_CONFIGURATION.has(key);
                 }),
             );
@@ -235,7 +246,7 @@ export default class FocusTracker {
     renderNoFocussFoundMessage(): void {
         this.rootElement?.empty();
         this.rootElement?.createEl("div", {
-            text: `No focus tracks found with path pattern: ${this.configuration.sourcePattern}`,
+            text: `No focus tracks found with path pattern: ${this.configuration.pathPattern}`,
         });
     }
 

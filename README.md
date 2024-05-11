@@ -9,12 +9,24 @@ Based on[Habit Tracker 21](https://github.com/zoreet/habit-tracker), but adapted
 
 ### Basic mechanisms
 
-#### Setup the focus track log files or folder
+#### Create a focus tracker
 
-Create a folder to track your focus, efforts, habits, etc.
+A focus tracker can be embedded or added to any note with a ``focustracker``  YAML-format codeblock:
+
+~~~
+```focustracker
+"path-pattern": "coordination/tracks/"
+```
+~~~
+
+##### Parameters
+
+- **path-pattern** _[mandatory]_: a (string) pattern found in the full path to a tracking log to be included in this view.
 
 
-For example, if the various activities, projects, etc. in your vault are organized as follows:
+#### Create files or folders to track your focus, efforts, habits, etc
+
+For example, imagine the various activities, projects, etc. in your vault are organized as follows:
 
 ```
 vault/
@@ -33,7 +45,42 @@ vault/
         ...
 ```
 
-You could create the following to track everything together, including habits and personal projects, with:
+Create files to track your focus, using a naming convention such as, for e.g. a filename that ends with "`.focus-log`":
+
+```
+vault/
+  coordination/
+    areas/
+        areas1.md
+        areas1.focus-log
+        areas2.md
+        areas2.focus-log
+    projects/
+        project1/
+            ...
+            project1.focus-log
+            ...
+        project2/
+            ...
+            project2.focus-log
+            ...
+        project3/
+        ...
+        project4/
+        ...
+```
+
+A focus tracker can be set up with the following code block:
+
+```focustracker
+path-pattern: "focus-log"
+```
+
+Any file in the vault with the substring "`focus-log`" in its path will show up in this focus tracker.
+
+##### Directory based
+
+Alternatively you could organize your content as follows:
 
 ```
 vault/
@@ -41,18 +88,30 @@ vault/
     areas/
     projects/
     tracks/
-        area1.md
-        area2.md
-        habit1.md
-        habit2.md
-        personal-prj1.md
-        personal-prj2.md
-        personal-prj3.md
-        project1.md
-        project2.md
-        project3.md
-        project4.md
+        areas/
+            area1.md
+            area2.md
+        habits/
+            habit1.md
+            habit2.md
+        personal/
+            personal-prj1.md
+            personal-prj2.md
+            personal-prj3.md
+        projects/
+            project1.md
+            project2.md
+            project3.md
+            project4.md
 ```
+
+```focustracker
+path-pattern: "coordination/tracks/"
+```
+
+
+
+#### Customizations
 
 You can adjust what these tracks are called or labeled in the focus tracker by providing a ``focus-tracker-title`` or ``title`` field in the frontmatter YAML metadata of the note:
 
@@ -72,21 +131,6 @@ title: "The winter of discontent".
 ---
 
 ```
-
-#### Start tracking (and planning) focus!
-
-A focus tracker can be embedded or added to any note with a ``focustracker``  YAML-format codeblock:
-
-~~~
-```focustracker
-"path": "coordination/tracks/"
-```
-~~~
-
-## Parameters
-
-- **path** _[mandatory]_: a string containing a path to a folder or specific focus target (an Obsidian note dedicated to collecting records about focus or effort invested in on specific project, habit, activity, etc.).
-    The `path` field can be a path to a specific note, i.e., a single focus target, or multiple if it is to a folder as all files on that path, including subfolders will be tracked.
 
 ## Acknowledgements
 
