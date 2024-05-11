@@ -63,7 +63,7 @@ export type FocusLogsType = {
 };
 
 interface FocusTrackerConfiguration {
-    path: string;
+    sourcePattern: string;
     lastDisplayedDate: string;
     daysToShow: number;
     logPropertyName: string;
@@ -76,7 +76,7 @@ interface FocusTrackerConfiguration {
 };
 
 const DEFAULT_CONFIGURATION = (): FocusTrackerConfiguration => ({
-    path: "",
+    sourcePattern: "",
     lastDisplayedDate: getTodayDate(),
     daysToShow: DAYS_TO_SHOW,
     logPropertyName: "focus-logs",
@@ -88,7 +88,35 @@ const DEFAULT_CONFIGURATION = (): FocusTrackerConfiguration => ({
     focusTracksGoHere: undefined,
 });
 
-const ALLOWED_USER_CONFIGURATION = ["path", "lastDisplayedDate", "daysToShow"];
+const PRIVATE_CONFIGURATION = new Set<string>([
+    "rootElement",
+    "focusTracksGoHere",
+]);
+
+function filterDictionary<T>(
+    dictionary: { [key: string]: T },
+    predicate: (key: string, value: T) => boolean
+): { [key: string]: T } {
+    return Object.fromEntries(
+        Object.entries(dictionary).filter(([key, value]) => predicate(key, value))
+    );
+}
+
+// Function to filter a configuration dictionary based on a set of private keys.
+// function filterConfiguration<T>(
+//     yamlString: string,
+//     privateKeys: Set<string>,
+//     parseFunction: (yaml: string) => { [key: string]: T }
+// ): { [key: string]: T } {
+//     const rawConfiguration: { [key: string]: T } = parseFunction(yamlString);
+//     const filteredConfiguration: { [key: string]: T } = Object.fromEntries(
+//         Object.entries(rawConfiguration).filter(([key, _]) => {
+//             return privateKeys.has(key);
+//         })
+//     );
+//     return filteredConfiguration;
+// }
+
 
 function getTodayDate(): string {
     const today = new Date();
@@ -179,7 +207,7 @@ export default class FocusTracker {
             .getMarkdownFiles()
             .filter((file: TFile) => {
                 // only focus tracks
-                if (!file.path.includes(this.configuration.path)) {
+                if (!file.path.includes(this.configuration.sourcePattern)) {
                     return false;
                 }
 
@@ -188,13 +216,18 @@ export default class FocusTracker {
             .sort((a: TFile, b: TFile) => a.name.localeCompare(b.name));
     }
 
-    loadConfiguration(rawConfiguration: string): FocusTrackerConfiguration {
+    loadConfiguration(configurationString: string): FocusTrackerConfiguration {
         try {
             let configuration = Object.assign(
                 {},
                 DEFAULT_CONFIGURATION(),
-                // this.removePrivateConfiguration(JSON.parse(rawConfiguration)),
-                this.removePrivateConfiguration(parseYaml(rawConfiguration)),
+                // this.removePrivateConfiguration(JSON.parse(configurationString)),
+                // parseYaml(configurationString).filter( [key: string, value: any] => {
+                //     return PRIVATE_CONFIGURATION.has(key);
+                // });
+                filterDictionary(parseYaml(configurationString), (key, value) => {
+                    return !PRIVATE_CONFIGURATION.has(key);
+                }),
             );
             configuration.daysToLoad = configuration.daysToShow + 1;
             return configuration;
@@ -206,21 +239,21 @@ export default class FocusTracker {
         }
     }
 
-    removePrivateConfiguration(userConfiguration: {[key: string]: any}): {[key: string]: any} {
-        const result: {[key: string]: any} = {};
-        ALLOWED_USER_CONFIGURATION.forEach((key) => {
-            if (userConfiguration[key]) {
-                result[key] = userConfiguration[key];
-            }
-        });
+    // removePrivateConfiguration(userConfiguration: {[key: string]: any}): {[key: string]: any} {
+    //     const result: {[key: string]: any} = {};
+    //     ALLOWED_USER_CONFIGURATION.forEach((key) => {
+    //         if (userConfiguration[key]) {
+    //             result[key] = userConfiguration[key];
+    //         }
+    //     });
 
-        return result;
-    }
+    //     return result;
+    // }
 
     renderNoFocussFoundMessage(): void {
         this.rootElement?.empty();
         this.rootElement?.createEl("div", {
-            text: `No focus tracks found under ${this.configuration.path}`,
+            text: `No focus tracks found with path pattern: ${this.configuration.sourcePattern}`,
         });
     }
 
