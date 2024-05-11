@@ -200,7 +200,7 @@ export default class FocusTracker {
         return this.app.vault
             .getMarkdownFiles()
             .filter((file: TFile) => {
-                pathPattern.test(file.path);
+                return pathPattern.test(file.path);
             })
             .sort((a: TFile, b: TFile) => a.name.localeCompare(b.name));
     }
