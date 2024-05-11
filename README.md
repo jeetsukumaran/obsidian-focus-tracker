@@ -6,23 +6,80 @@ Based on[Habit Tracker 21](https://github.com/zoreet/habit-tracker), but adapted
 
 ## Usage
 
-1. Create a folder to track your focus, efforts, habits, etc., for e.g., `journals/projects/focus` or `efforts/focus-logs`.
-2. Create empty files inside that folder for each habit you want to track. You can add a `title` frontmatter field to provide a meaningful label for this entry: e.g.,
+
+### Basic mechanisms
+
+#### Setup the focus track log files or folder
+
+Create a folder to track your focus, efforts, habits, etc.
+
+
+For example, if the various activities, projects, etc. in your vault are organized as follows:
+
+```
+vault/
+  coordination/
+    areas/
+        areas1.md
+        areas2.md
+    projects/
+        project1/
+        ...
+        project2/
+        ...
+        project3/
+        ...
+        project4/
+        ...
+```
+
+You could create the following to track everything together, including habits and personal projects, with:
+
+```
+vault/
+  coordination/
+    areas/
+    projects/
+    tracks/
+        area1.md
+        area2.md
+        habit1.md
+        habit2.md
+        personal-prj1.md
+        personal-prj2.md
+        personal-prj3.md
+        project1.md
+        project2.md
+        project3.md
+        project4.md
+```
+
+You can adjust what these tracks are called or labeled in the focus tracker by providing a ``focus-tracker-title`` or ``title`` field in the frontmatter YAML metadata of the note:
 
 ```
 ---
-title: "Project 21"`.
+title: "Project 1"`.
 ---
 
 ```
 
-3. Display the tracker, in for e.g., your home page or daily log:
+or:
+
+```
+---
+focus-tracker-title: "(02) Project Winter"
+title: "The winter of discontent".
+---
+
+```
+
+#### Start tracking (and planning) focus!
+
+A focus tracker can be embedded or added to any note with a ``focustracker``  YAML-format codeblock:
 
 ~~~
 ```focustracker
-{
-	"path": "efforts/focus-logs"
-}
+"path": "coordination/tracks/"
 ```
 ~~~
 
