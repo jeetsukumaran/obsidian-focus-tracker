@@ -182,24 +182,6 @@ export default class FocusTracker {
                 focusLogs
             );
         }
-
-
-
-        // let focalTargetLabels: Promise<[string, TFile][]> = Promise.all(files.map(async (f) => {
-        //     return [await this.getFocusTargetLabel(f.path), f];
-        // }));
-        // focalTargetLabels.sort((a, b) => a[0].localeCompare(b[0]));
-        // focalTargetLabels.forEach(async (focusTargetLabel: string, f: TFile) => {
-        //     await this.renderFocusLogs(
-        //         f.path,
-        //         focusTargetLabel,
-        //         await this.readFocusLogs(f.path),
-        //     );
-        // });
-
-
-
-
     }
 
     loadFiles(): TFile[] {
