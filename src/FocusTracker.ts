@@ -234,7 +234,7 @@ export default class FocusTracker {
 
     getLastDate() {
         let lastDate = new Date();
-        lastDate.setDate(lastDate.getDate() + 7);
+        lastDate.setDate(lastDate.getDate() + 8);
         return lastDate;
     }
 
