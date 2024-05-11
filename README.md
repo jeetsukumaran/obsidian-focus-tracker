@@ -51,10 +51,27 @@ Create files to track your focus, using a naming convention such as, for e.g. a 
 vault/
   coordination/
     areas/
-        areas1.md
-        areas1.focus-log
-        areas2.md
-        areas2.focus-log
+        focus-log.area1
+        focus-log.area2
+    logs/
+        focus-logs/
+            areas/
+                garage.md
+                space-lasers.md
+            personal/
+                reading1.md
+                writing2.md
+            projects/
+                project3.md
+                project4.md
+                project4.md
+                plan9-os.md
+        habit-logs/
+             log.habit1.md
+             log.habit2.md
+        practice-logs/
+             log.ex1.md
+             log.ex2.md
     projects/
         project1/
             ...
@@ -70,43 +87,28 @@ vault/
         ...
 ```
 
-A focus tracker can be set up with the following code block:
+Any file in the vault with the substring "`focus-log`" in its path will show up in this focus tracker,
 
 ```focustracker
 path-pattern: "focus-log"
 ```
 
-Any file in the vault with the substring "`focus-log`" in its path will show up in this focus tracker.
+while can also create more specialized focus-trackers, e.g.
 
-##### Directory based
-
-Alternatively you could organize your content as follows:
-
-```
-vault/
-  coordination/
-    areas/
-    projects/
-    tracks/
-        areas/
-            area1.md
-            area2.md
-        habits/
-            habit1.md
-            habit2.md
-        personal/
-            personal-prj1.md
-            personal-prj2.md
-            personal-prj3.md
-        projects/
-            project1.md
-            project2.md
-            project3.md
-            project4.md
+```focustracker
+path-pattern: "focus-log.*area"
 ```
 
 ```focustracker
-path-pattern: "coordination/tracks/"
+path-pattern: "coordination/logs/focus-logs/personal"
+```
+
+```focustracker
+path-pattern: "habit-logs/"
+```
+
+```focustracker
+path-pattern: "practice-logs/"
 ```
 
 
