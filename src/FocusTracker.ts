@@ -196,15 +196,11 @@ export default class FocusTracker {
     }
 
     loadFiles(): TFile[] {
+        let pathPattern = new RegExp(".*" + this.configuration.pathPattern + ".*");
         return this.app.vault
             .getMarkdownFiles()
             .filter((file: TFile) => {
-                // only focus tracks
-                if (!file.path.includes(this.configuration.pathPattern)) {
-                    return false;
-                }
-
-                return true;
+                pathPattern.test(file.path);
             })
             .sort((a: TFile, b: TFile) => a.name.localeCompare(b.name));
     }
