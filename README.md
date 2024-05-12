@@ -1,8 +1,19 @@
 # Focus Tracker
 
-Track your focus!
+Track and align your focus!
 
-Based on[Habit Tracker 21](https://github.com/zoreet/habit-tracker), but adapted for tracking focus, attention, and effort, you may find this useful if you to help channel your hyperfocus or set your time-block targets if you have a neurological configuration that faciliates ADHD characteristics and behaviorial patterns.
+## Synoposis
+
+### What
+
+Based on[Habit Tracker 21](https://github.com/zoreet/habit-tracker), but adapted for tracking past focus, attention, and effort, and help in directing focus and energy so as to better align with the directions you want to go.
+
+
+### Why
+
+One may find this useful as a component of their productivity/task-management system to help decide what areas need more attention in the future based on lack of attention or quality of attention in the past, leading to different prioritization of tasks, or as lead indicators in an OKR framework.
+
+I also find this useful as a component of my ADHD self-management system to help align my hyperfocus with my intent, setting time-block targets, etc..
 
 ## Usage
 

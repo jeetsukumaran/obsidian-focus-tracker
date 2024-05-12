@@ -2,7 +2,7 @@
 	"id": "focus-tracker",
 	"name": "Focus Tracker",
 	"version": "1.0.0",
-	"description": "Track and plan your focus direction and magnitude.",
+	"description": "Track and plan your focus alignment and magnitude.",
 	"minAppVersion": "1.4.14",
 	"author": "Jeet Sukumaran",
 	"authorUrl": "https://github.com/jeetsukumaran",
