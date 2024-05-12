@@ -59,7 +59,7 @@ const OUT_OF_BOUNDS_INDEX_NEGATIVE = "⭕";
 const UNKNOWN_RATING = "❓";
 
 export type FocusLogsType = {
-    [date: string]: number;
+    [date: string]: number | string;
 };
 
 interface FocusTrackerConfiguration {
@@ -311,15 +311,15 @@ export default class FocusTracker {
         }
     }
 
-    normalizeLogs(source: { [date: string]: any }): { [date: string]: number } {
-        const result: { [date: string]: number } = {};
+    normalizeLogs(source: { [date: string]: any }): FocusLogsType {
+        const result: FocusLogsType = {};
         Object.keys(source).forEach(date => {
             const value = source[date];
             const numValue = Number(value);
-            if (!isNaN(numValue)) {
-                result[date] = numValue;
+            if (isNaN(numValue)) {
+                result[date] = !value ? 0 : value.toString();
             } else {
-                result[date] = !value ? 0 : 10;
+                result[date] = numValue;
             }
         });
         return result;
@@ -384,28 +384,30 @@ export default class FocusTracker {
 
         for (let i = 0; i < this.configuration.daysToLoad; i++) {
             const dateString: string = this.getDateId(indexDate);
-            const entryValue: number = entries[dateString] || 0;
-            // let toolTip: string = `${name}: ${dateString}: Rating = ${entryValue}`
-            // let toolTip: string = `Rating = ${entryValue} (left-click: increment, alt-left-click: decrement)`
-            let toolTip: string = `Rating = ${entryValue}`
-
-            const displayValue: string = this.getDisplaySymbol(entryValue);
-            let isTicked: boolean = entryValue !== 0;
+            // const entryValue: number = entries[dateString] || 0;
+            const {
+                hasValue,
+                symbol,
+                tooltip,
+                entryScalarValue,
+                entryStringValue,
+            } = this.getDisplayValues(entries[dateString]);
             const focusCell = row.createEl("div", {
                 cls: `focus-tracker__cell
                 focus-tick
                 focus-tick-entry
-                focus-tick--${isTicked}
+                focus-tick--${hasValue}
                 focus-tracker__cell--${this.getDayOfWeek(indexDate)}`,
-                title: toolTip,
+                title: tooltip,
             });
 
-            focusCell.setAttribute("ticked", isTicked.toString());
+            focusCell.setAttribute("ticked", hasValue.toString());
 
             focusCell.setAttribute("date", dateString);
             focusCell.setAttribute("focusTrackerPath", path);
-            focusCell.setAttribute("focusRating", entryValue.toString());
-            focusCell.setText(displayValue);
+            focusCell.setAttribute("focusRating", entryScalarValue?.toString() || "");
+            focusCell.setAttribute("focusLabel", entryStringValue || "");
+            focusCell.setText(symbol);
 
             focusCell.addEventListener("click", (e: MouseEvent) => {
                 if (e.altKey) {
@@ -540,33 +542,55 @@ export default class FocusTracker {
         return isNaN(numValue) || numValue === 0 ? 0 : numValue;
     }
 
-    getScaleValue(input: string | number, scale: string[]): number {
-        if (typeof input === 'string') {
-            const index = scale.indexOf(input);
-            return index !== -1 ? index : 0;
-        } else if (typeof input === 'number') {
-            return input;
-        }
-        return 0; // Default return for unexpected input types
-    }
+    // getScaleValue(input: string | number, scale: string[]): number {
+    //     if (typeof input === 'string') {
+    //         const index = scale.indexOf(input);
+    //         return index !== -1 ? index : 0;
+    //     } else if (typeof input === 'number') {
+    //         return input;
+    //     }
+    //     return 0; // Default return for unexpected input types
+    // }
 
-    getDisplaySymbol(input: string | number): string {
+    getDisplayValues(input: string | number): {
+        hasValue: boolean,
+        symbol: string,
+        tooltip: string,
+        entryScalarValue: number | null,
+        entryStringValue: string | null,
+    } {
+        let result = {
+            hasValue: false,
+            symbol: " ",
+            tooltip: "",
+            entryScalarValue: null,
+            entryStringValue: "",
+        }
         let index: number = 0;
-        let symbol = " ";
         let ratingScale: string[] = this.configuration.ratingScale;
         let oobSymbol = OUT_OF_BOUNDS_INDEX_POSITIVE;
         if (typeof input === 'string') {
             if (input === "") {
                 index = 0;
+                result.hasValue = false;
             } else {
-                // index === -1 if the value of the log entry is not a rating symbol
-                // index = scale.indexOf(input);
-                if (index === -1) {
-                    return UNKNOWN_RATING;
-                }
+                result.symbol = input;
+                result.hasValue = true;
+                result.tooltip = input;
+                result.entryStringValue = input;
             }
-        } else if (typeof input === 'number') {
+            return result;
+        }
+        if (typeof input === 'number') {
             index = input;
+            // result.hasValue = index !== 0;
+            if (index === 0) {
+                result.hasValue = false;
+                result.tooltip = `Clear`;
+            } else {
+                result.hasValue = true;
+                result.tooltip = `Rating: ${index}`;
+            }
         }
         if (index < 0) {
             index = -1 * index;
@@ -574,11 +598,11 @@ export default class FocusTracker {
             oobSymbol = OUT_OF_BOUNDS_INDEX_NEGATIVE;
         }
         if (index >= ratingScale.length) {
-            return oobSymbol;
+            result.symbol = oobSymbol;
         } else {
-            symbol = ratingScale[index];
+            result.symbol = ratingScale[index];
         }
-        return symbol;
+        return result;
     }
 
     async stepFocusLogEntry(
