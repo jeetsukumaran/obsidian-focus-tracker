@@ -1,7 +1,7 @@
 {
 	"name": "focus-tracker",
 	"version": "1.0.0",
-	"description": "Track and plan your focus direction and magnitude.",
+	"description": "Track and plan your focus alignment and magnitude.",
 	"main": "main.js",
 	"scripts": {
 		"dev": "node esbuild.config.mjs",
