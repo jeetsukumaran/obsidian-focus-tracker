@@ -23,8 +23,7 @@ const flagArrays = {
 const SCALE1 = symbolArrays["colors1"];
 const SCALE2 = flagArrays["default"];
 
-const OUT_OF_BOUNDS_INDEX_POSITIVE = "❗";
-const OUT_OF_BOUNDS_INDEX_NEGATIVE = "⭕";
+const OUT_OF_BOUNDS = "❗";
 const UNKNOWN_RATING = "❓";
 
 export type FocusLogsType = {
@@ -373,7 +372,6 @@ export default class FocusTracker {
                 symbol,
                 tooltip,
                 entryScalarValue,
-                entryStringValue,
             } = this.getDisplayValues(entries[dateString]);
             const focusCell = row.createEl("div", {
                 cls: `focus-tracker__cell
@@ -389,7 +387,6 @@ export default class FocusTracker {
             focusCell.setAttribute("date", dateString);
             focusCell.setAttribute("focusTrackerPath", path);
             focusCell.setAttribute("focusRating", entryScalarValue?.toString() || "");
-            focusCell.setAttribute("focusLabel", entryStringValue || "");
             focusCell.setText(symbol);
 
             focusCell.addEventListener("click", (e: MouseEvent) => {
@@ -539,50 +536,41 @@ export default class FocusTracker {
         symbol: string,
         tooltip: string,
         entryScalarValue: number | null,
-        entryStringValue: string | null,
     } {
         let result = {
             hasValue: false,
             symbol: " ",
             tooltip: "",
             entryScalarValue: null,
-            entryStringValue: "",
         }
-        let index: number = 0;
-        let ratingScale: string[] = this.ratingSymbols;
-        let oobSymbol = OUT_OF_BOUNDS_INDEX_POSITIVE;
         if (typeof input === 'string') {
             if (input === "") {
-                index = 0;
                 result.hasValue = false;
             } else {
+                result.hasValue = true;
                 result.symbol = input;
-                result.hasValue = true;
                 result.tooltip = input;
-                result.entryStringValue = input;
             }
-            return result;
-        }
-        if (typeof input === 'number') {
-            index = input;
-            // result.hasValue = index !== 0;
-            if (index === 0) {
+        } else if (typeof input === 'number') {
+            let inputNumber: number = input;
+            if (inputNumber === 0) {
                 result.hasValue = false;
-                result.tooltip = `Clear`;
             } else {
                 result.hasValue = true;
-                result.tooltip = `Rating: ${index}`;
+                result.tooltip = `Rating: ${inputNumber}`;
+                let getSymbol = (symbolArray: string[], symbolIndex: number): string => {
+                    if (symbolIndex >= symbolArray.length) {
+                        return OUT_OF_BOUNDS;
+                    } else {
+                        return symbolArray[symbolIndex];
+                    }
+                };
+                if (inputNumber >= 1) {
+                    result.symbol = getSymbol(this.configuration.ratingSymbols, inputNumber - 1);
+                } else {
+                    result.symbol = getSymbol(this.configuration.flagSymbols, (-1 * inputNumber) - 1);
+                }
             }
-        }
-        if (index < 0) {
-            index = -1 * index;
-            ratingScale = this.configuration.flagSymbols;
-            oobSymbol = OUT_OF_BOUNDS_INDEX_NEGATIVE;
-        }
-        if (index >= ratingScale.length) {
-            result.symbol = oobSymbol;
-        } else {
-            result.symbol = ratingScale[index];
         }
         return result;
     }
