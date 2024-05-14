@@ -584,7 +584,7 @@ export default class FocusTracker {
         } else {
             newValue = (currentValue < 0 ? (0 - currentValue) : currentValue) + 1;
             const maxScaleIndex = currentValue < 0 ? this.ratingSymbols.length : this.flagSymbols.length;
-            newValue = newValue >= (maxScaleIndex - 1) ? 0 : newValue;
+            newValue = newValue > (maxScaleIndex - 1) ? 0 : newValue;
             newValue = currentValue < 0 ? 0 - newValue : newValue;
         }
         await this.setFocusRating(focusTrackerPath, date, newValue);
