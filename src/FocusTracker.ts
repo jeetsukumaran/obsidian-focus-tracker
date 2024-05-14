@@ -411,19 +411,17 @@ export default class FocusTracker {
                 event.preventDefault();
                 const menu = new Menu()
                 this.ratingSymbols.slice().reverse().forEach( (symbol: string, rSymbolIndex: number) => {
-                    let symbolIndex = this.configuration.ratingSymbols.length - rSymbolIndex - 1;
+                    let symbolIndex = this.configuration.ratingSymbols.length - rSymbolIndex;
                     let newValue = symbolIndex;
-                    if (symbolIndex > 0) {
-                        menu.addItem((item) =>
-                            item
-                                // .setTitle(`Set rating ${symbolIndex}: ${symbol}`)
-                                .setTitle(`${symbol} (rating = ${newValue})`)
-                                .setIcon("open")
-                                .onClick( async () =>  {
-                                    await this.setFocusRating(path, dateString, newValue);
-                                })
-                            )
-                    }
+                    menu.addItem((item) =>
+                        item
+                            // .setTitle(`Set rating ${symbolIndex}: ${symbol}`)
+                            .setTitle(`${symbol} (rating = ${newValue})`)
+                            .setIcon("open")
+                            .onClick( async () =>  {
+                                await this.setFocusRating(path, dateString, newValue);
+                            })
+                        )
                 });
                 menu.addSeparator();
                 menu.addItem((item) =>
@@ -577,21 +575,18 @@ export default class FocusTracker {
         el: HTMLElement,
         step: number = 1
     ) {
-        console.log("Step");
         const focusTrackerPath: string | null = el.getAttribute("focusTrackerPath");
         const date: string | null = el.getAttribute("date");
         const currentValue: number = this.getFocusRatingFromElement(el);
         let newValue: number = 0;
         if (currentValue === 0) {
-            console.log("Cv= 0");
             newValue = 1;
         } else {
             newValue = (currentValue < 0 ? (0 - currentValue) : currentValue) + 1;
             const maxScaleIndex = currentValue < 0 ? this.ratingSymbols.length : this.flagSymbols.length;
-            newValue = newValue >= maxScaleIndex ? 0 : newValue;
+            newValue = newValue >= (maxScaleIndex - 1) ? 0 : newValue;
             newValue = currentValue < 0 ? 0 - newValue : newValue;
         }
-        console.log(newValue);
         await this.setFocusRating(focusTrackerPath, date, newValue);
     }
 
