@@ -436,18 +436,16 @@ export default class FocusTracker {
                 this.configuration.flagSymbols.forEach( (symbol: string, symbolIndex: number) => {
                 // this.configuration.flagSymbols.slice().reverse().forEach( (symbol: string, rSymbolIndex: number) => {
                     // let symbolIndex = this.configuration.flagSymbols.length - rSymbolIndex - 1;
-                    let newValue = -1 * (symbolIndex);
-                    if (symbolIndex > 0) {
-                        menu.addItem((item) =>
-                                     item
-                                     // .setTitle(`Set rating ${index}: ${symbol}`)
-                                     .setTitle(`${symbol} (flag = ${newValue})`)
-                                     .setIcon("open")
-                                     .onClick( async () =>  {
-                                         await this.setFocusRating(path, dateString, newValue);
-                                     })
-                                    )
-                    }
+                    let newValue = 0 - (symbolIndex + 1);
+                    menu.addItem((item) =>
+                                    item
+                                    // .setTitle(`Set rating ${index}: ${symbol}`)
+                                    .setTitle(`${symbol} (flag = ${newValue})`)
+                                    .setIcon("open")
+                                    .onClick( async () =>  {
+                                        await this.setFocusRating(path, dateString, newValue);
+                                    })
+                                )
                 });
                 menu.showAtMouseEvent(event)
             })
