@@ -224,7 +224,6 @@ export default class FocusTracker {
     get ratingSymbols() {
         if (!this._ratingSymbols) {
             this._ratingSymbols = [
-                "", // clear symbol
                 ... this.configuration.ratingSymbols,
             ];
         }
@@ -234,7 +233,6 @@ export default class FocusTracker {
     get flagSymbols() {
         if (!this._flagSymbols) {
             this._flagSymbols = [
-                "", // clear symbol
                 ... this.configuration.flagSymbols,
             ];
         }
@@ -541,7 +539,7 @@ export default class FocusTracker {
             hasValue: false,
             symbol: " ",
             tooltip: "",
-            entryScalarValue: null,
+            entryScalarValue: 0,
         }
         if (typeof input === 'string') {
             if (input === "") {
@@ -552,12 +550,12 @@ export default class FocusTracker {
                 result.tooltip = input;
             }
         } else if (typeof input === 'number') {
-            let inputNumber: number = input;
-            if (inputNumber === 0) {
+            result.entryScalarValue = input
+            if (result.entryScalarValue === 0) {
                 result.hasValue = false;
             } else {
                 result.hasValue = true;
-                result.tooltip = `Rating: ${inputNumber}`;
+                result.tooltip = `Rating: ${result.entryScalarValue}`;
                 let getSymbol = (symbolArray: string[], symbolIndex: number): string => {
                     if (symbolIndex >= symbolArray.length) {
                         return OUT_OF_BOUNDS;
@@ -565,10 +563,10 @@ export default class FocusTracker {
                         return symbolArray[symbolIndex];
                     }
                 };
-                if (inputNumber >= 1) {
-                    result.symbol = getSymbol(this.configuration.ratingSymbols, inputNumber - 1);
+                if (result.entryScalarValue >= 1) {
+                    result.symbol = getSymbol(this.configuration.ratingSymbols, result.entryScalarValue - 1);
                 } else {
-                    result.symbol = getSymbol(this.configuration.flagSymbols, (-1 * inputNumber) - 1);
+                    result.symbol = getSymbol(this.configuration.flagSymbols, (-1 * result.entryScalarValue) - 1);
                 }
             }
         }
@@ -579,11 +577,13 @@ export default class FocusTracker {
         el: HTMLElement,
         step: number = 1
     ) {
+        console.log("Step");
         const focusTrackerPath: string | null = el.getAttribute("focusTrackerPath");
         const date: string | null = el.getAttribute("date");
         const currentValue: number = this.getFocusRatingFromElement(el);
         let newValue: number = 0;
         if (currentValue === 0) {
+            console.log("Cv= 0");
             newValue = 1;
         } else {
             newValue = (currentValue < 0 ? (0 - currentValue) : currentValue) + 1;
@@ -591,6 +591,7 @@ export default class FocusTracker {
             newValue = newValue >= maxScaleIndex ? 0 : newValue;
             newValue = currentValue < 0 ? 0 - newValue : newValue;
         }
+        console.log(newValue);
         await this.setFocusRating(focusTrackerPath, date, newValue);
     }
 
