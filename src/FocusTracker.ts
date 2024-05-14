@@ -10,54 +10,18 @@ import {
 const PLUGIN_NAME = "Focus Tracker";
 const DAYS_TO_SHOW = 21;
 const DAYS_TO_LOAD = DAYS_TO_SHOW + 1;
-const SCALE1 = [
-    "",
-    "🔴",
-    "🟠",
-    "🟡",
-    "🟢",
-    "🔵",
-    // "⚪",
-    // "⚫",
-];
-
-// const SCALE2 = [
-//     "🏻",
-//     "🏼",
-//     "🏽",
-//     "🏾",
-//     "🏿",
-// ];
-
 const symbolArrays = {
     "colors1": ["🔴", "🟠", "🟡", "🟢", "🔵",], // "⚪", "⚫",
     "digitsOpen": ["➀", "➁", "➂", "➃", "➄", "➅", "➆", "➇", "➈", "➉",],
     "digitsFilled": ["➊","➋","➌","➍","➎","➏","➐","➑","➒","➓",],
 }
 
-const SCALE2 = [
-    // "🔜",
-    // "🔝",
-    // "🏁",
-    // "🚩",
-    // "⭐",
-    // "🔥",
-    // "🟣".
-    // "💚",
-    // "💙",
-    // "💜",
-    // "✅",
-    "",
-    "🔥",
-    "🚩",
-    "⚠️",
-    "🚧",
-    "🏁",
-    "🎯",
-    "🚀",
-    "🐂",
-];
+const flagArrays = {
+    "default": ["🔥", "🚩", "⚠️", "🚧", "🏁", "🎯", "🚀", "🐂", ],
+}
 
+const SCALE1 = symbolArrays["colors1"];
+const SCALE2 = flagArrays["default"];
 
 const OUT_OF_BOUNDS_INDEX_POSITIVE = "❗";
 const OUT_OF_BOUNDS_INDEX_NEGATIVE = "⭕";
@@ -72,8 +36,8 @@ interface FocusTrackerConfiguration {
     lastDisplayedDate: string;
     daysToShow: number;
     logPropertyName: string;
-    ratingScale: string[];
-    ratingScaleAlternate: string[];
+    ratingSymbols: string[];
+    flagSymbols: string[];
     titlePropertyNames: string[];
     daysToLoad: number;
     rootElement: HTMLElement | undefined;
@@ -85,8 +49,8 @@ const DEFAULT_CONFIGURATION = (): FocusTrackerConfiguration => ({
     lastDisplayedDate: getTodayDate(),
     daysToShow: DAYS_TO_SHOW,
     logPropertyName: "focus-logs",
-    ratingScale: SCALE1,
-    ratingScaleAlternate: SCALE2,
+    ratingSymbols: SCALE1,
+    flagSymbols: SCALE2,
     titlePropertyNames: ["focus-tracker-title", "title"],
     daysToLoad: DAYS_TO_LOAD,
     rootElement: undefined,
@@ -159,6 +123,9 @@ export default class FocusTracker {
     configuration: FocusTrackerConfiguration;
     app: App;
     id: string;
+
+    private _ratingSymbols: string[];
+    private _flagSymbols: string[];
 
     constructor(src: string, el: HTMLElement, ctx: any, app: App) {
         this.app = app;
@@ -233,16 +200,6 @@ export default class FocusTracker {
         }
     }
 
-    // removePrivateConfiguration(userConfiguration: {[key: string]: any}): {[key: string]: any} {
-    //     const result: {[key: string]: any} = {};
-    //     ALLOWED_USER_CONFIGURATION.forEach((key) => {
-    //         if (userConfiguration[key]) {
-    //             result[key] = userConfiguration[key];
-    //         }
-    //     });
-
-    //     return result;
-    // }
 
     renderNoFocussFoundMessage(): void {
         this.rootElement?.empty();
@@ -264,6 +221,27 @@ export default class FocusTracker {
         lastDate.setDate(lastDate.getDate() + 7);
         return lastDate;
     }
+
+    get ratingSymbols() {
+        if (!this._ratingSymbols) {
+            this._ratingSymbols = [
+                "", // clear symbol
+                ... this.configuration.ratingSymbols,
+            ];
+        }
+        return this._ratingSymbols;
+    }
+
+    get flagSymbols() {
+        if (!this._flagSymbols) {
+            this._flagSymbols = [
+                "", // clear symbol
+                ... this.configuration.flagSymbols,
+            ];
+        }
+        return this._flagSymbols;
+    }
+
 
     renderHeader(parent: HTMLElement): void {
         const header = parent.createEl("div", {
@@ -437,9 +415,8 @@ export default class FocusTracker {
             focusCell.addEventListener('contextmenu', (event) => {
                 event.preventDefault();
                 const menu = new Menu()
-                this.configuration.ratingScale.slice().reverse().forEach( (symbol: string, rSymbolIndex: number) => {
-                // this.configuration.ratingScale.forEach( (symbol: string, synbolIndex: number) => {
-                    let symbolIndex = this.configuration.ratingScale.length - rSymbolIndex - 1;
+                this.ratingSymbols.slice().reverse().forEach( (symbol: string, rSymbolIndex: number) => {
+                    let symbolIndex = this.configuration.ratingSymbols.length - rSymbolIndex - 1;
                     let newValue = symbolIndex;
                     if (symbolIndex > 0) {
                         menu.addItem((item) =>
@@ -463,9 +440,9 @@ export default class FocusTracker {
                                 })
                             )
                 menu.addSeparator();
-                this.configuration.ratingScaleAlternate.forEach( (symbol: string, symbolIndex: number) => {
-                // this.configuration.ratingScaleAlternate.slice().reverse().forEach( (symbol: string, rSymbolIndex: number) => {
-                    // let symbolIndex = this.configuration.ratingScaleAlternate.length - rSymbolIndex - 1;
+                this.configuration.flagSymbols.forEach( (symbol: string, symbolIndex: number) => {
+                // this.configuration.flagSymbols.slice().reverse().forEach( (symbol: string, rSymbolIndex: number) => {
+                    // let symbolIndex = this.configuration.flagSymbols.length - rSymbolIndex - 1;
                     let newValue = -1 * (symbolIndex);
                     if (symbolIndex > 0) {
                         menu.addItem((item) =>
@@ -572,7 +549,7 @@ export default class FocusTracker {
             entryStringValue: "",
         }
         let index: number = 0;
-        let ratingScale: string[] = this.configuration.ratingScale;
+        let ratingScale: string[] = this.ratingSymbols;
         let oobSymbol = OUT_OF_BOUNDS_INDEX_POSITIVE;
         if (typeof input === 'string') {
             if (input === "") {
@@ -599,7 +576,7 @@ export default class FocusTracker {
         }
         if (index < 0) {
             index = -1 * index;
-            ratingScale = this.configuration.ratingScaleAlternate;
+            ratingScale = this.configuration.flagSymbols;
             oobSymbol = OUT_OF_BOUNDS_INDEX_NEGATIVE;
         }
         if (index >= ratingScale.length) {
@@ -618,7 +595,7 @@ export default class FocusTracker {
         const date: string | null = el.getAttribute("date");
 
         const currentValue: number = this.getFocusRatingFromElement(el);
-        const maxScaleIndex: number = this.configuration.ratingScale.length;
+        const maxScaleIndex: number = this.ratingSymbols.length;
         let newValue: number = currentValue + step;
         if (newValue >= maxScaleIndex) {
             newValue = 0;
