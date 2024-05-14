@@ -581,7 +581,6 @@ export default class FocusTracker {
     ) {
         const focusTrackerPath: string | null = el.getAttribute("focusTrackerPath");
         const date: string | null = el.getAttribute("date");
-
         const currentValue: number = this.getFocusRatingFromElement(el);
         let newValue: number = 0;
         if (currentValue === 0) {
