@@ -601,7 +601,9 @@ export default class FocusTracker {
         this.app.fileManager.processFrontMatter(file as TFile, (frontmatter: { [key: string]: any }) => {
             let entries: { [key: string]: number } = frontmatter[this.configuration.logPropertyName] || {};
             entries[date as string] = newValue;
-            frontmatter[this.configuration.logPropertyName] = entries;
+            const sortedEntriesArray = Object.entries(entries).sort(([date1], [date2]) => new Date(date1).getTime() - new Date(date2).getTime());
+            const sortedEntriesObject = Object.fromEntries(sortedEntriesArray);
+            frontmatter[this.configuration.logPropertyName] = sortedEntriesObject;
             new Notice(`Setting rating: ${newValue}`, 600);
         });
         let fpath = file?.path || "";
