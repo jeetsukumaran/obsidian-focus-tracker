@@ -18,23 +18,43 @@ const symbolArrays = {
 }
 
 const flagArrays = {
-    "default": ["🔥", "🚩", "⚠️", "🚧", "🏁", "🎯", "🚀", "🐂", ],
+    // "default": [
+    //     "🔥",
+    //     "🚩",
+    //     "⚠️",
+    //     "🚧",
+    //     "🏁",
+    //     "🎯",
+    //     "🚀",
+    //     "🐂"
+    // ],
+    "default": [
+        "🏹",
+        "🎯",
+        "📅",
+        "⏳",
+        "🏁",
+        "🚩",
+        "⚠️",
+        "🚧",
+        "🐂",
+        "🚀",
+    ],
 }
 
 const flagKeys = {
     "default": [
+        "goal, aspirational",
+        "goal, committed",
         "scheduled",
         "due",
+        "start",
         "flagged",
         "attention",
         "blocked",
-        "start",
-        "goal, commited",
-        "goal, aspirational",
         "yak-shaving",
     ],
 }
-
 
 
 const SCALE1 = symbolArrays["colors1"];
