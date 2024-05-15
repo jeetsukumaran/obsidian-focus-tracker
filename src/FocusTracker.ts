@@ -14,11 +14,24 @@ const symbolArrays = {
     "colors1": ["🔴", "🟠", "🟡", "🟢", "🔵",], // "⚪", "⚫",
     "digitsOpen": ["➀", "➁", "➂", "➃", "➄", "➅", "➆", "➇", "➈", "➉",],
     "digitsFilled": ["➊","➋","➌","➍","➎","➏","➐","➑","➒","➓",],
+    "moonPhases": ["🌑", "🌒", "🌓", "🌔", "🌕"],
 }
 
 const flagArrays = {
     "default": ["🔥", "🚩", "⚠️", "🚧", "🏁", "🎯", "🚀", "🐂", ],
 }
+
+// "default": {
+//     "📅": "scheduled",
+//     "⏳": "due",
+//     "🚩": "flagged,
+//     "⚠️",: "attention",
+//     "🚧": "blocked",
+//     "🏁": "start",
+//     "🎯": "goal, commited",
+//     "🚀": "goal, aspirational",
+//     "🐂": "yak-shaving",
+// }
 
 const SCALE1 = symbolArrays["colors1"];
 const SCALE2 = flagArrays["default"];
