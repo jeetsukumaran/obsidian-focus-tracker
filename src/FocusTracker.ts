@@ -156,6 +156,10 @@ function getDaysDifference(startDateId: string, endDateId: string): number {
     return diffInDays;
 }
 
+
+function composeFlagDescription(value, labelMap) {
+}
+
 export default class FocusTracker {
     rootElement: HTMLElement;
     configuration: FocusTrackerConfiguration;
@@ -455,7 +459,7 @@ export default class FocusTracker {
                     menu.addItem((item) =>
                         item
                             // .setTitle(`Set rating ${symbolIndex}: ${symbol}`)
-                            .setTitle(`${symbol} (rating = ${newValue})`)
+                            .setTitle(`${symbol} (Rating = ${newValue})`)
                             .setIcon("open")
                             .onClick( async () =>  {
                                 await this.setFocusRating(path, dateString, newValue);
@@ -478,7 +482,7 @@ export default class FocusTracker {
                     let newValue = 0 - (symbolIndex + 1);
                     let flagKey = this.configuration.flagKeys?.[symbolIndex];
                     let flagDesc = flagKey ? `: ${flagKey}` : "";
-                    let title = `${symbol} (flag = ${-1 * newValue}${flagDesc})`
+                    let title = `${symbol} (Flag ${-1 * newValue}${flagDesc})`
                     menu.addItem((item) =>
                                     item
                                     // .setTitle(`Set rating ${index}: ${symbol}`)
@@ -593,7 +597,6 @@ export default class FocusTracker {
                 result.hasValue = false;
             } else {
                 result.hasValue = true;
-                result.tooltip = `Rating: ${result.entryScalarValue}`;
                 let getSymbol = (symbolArray: string[], symbolIndex: number): string => {
                     if (symbolIndex >= symbolArray.length) {
                         return OUT_OF_BOUNDS;
@@ -603,8 +606,13 @@ export default class FocusTracker {
                 };
                 if (result.entryScalarValue >= 1) {
                     result.symbol = getSymbol(this.configuration.ratingSymbols, result.entryScalarValue - 1);
+                    result.tooltip = `Rating: ${result.entryScalarValue}`;
                 } else {
-                    result.symbol = getSymbol(this.configuration.flagSymbols, (-1 * result.entryScalarValue) - 1);
+                    let arrayIndex = (-1 * result.entryScalarValue) - 1;
+                    result.symbol = getSymbol(this.configuration.flagSymbols, arrayIndex);
+                    let flagKey = this.configuration.flagKeys?.[arrayIndex];
+                    let flagDesc = flagKey ? `: ${flagKey}` : "";
+                    result.tooltip = `Flag ${-1 * result.entryScalarValue}${flagDesc}`
                 }
             }
         }
