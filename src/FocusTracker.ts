@@ -58,7 +58,7 @@ const flagKeys = {
 
 const SCALE1 = ratingSymbols["colors1"];
 const SCALE2 = flagSymbols["default"];
-const FLAG_KEYS = flagKeys;
+const FLAG_KEYS = flagKeys["default"];
 
 const OUT_OF_BOUNDS = "❗";
 const UNKNOWN_RATING = "❓";
@@ -476,10 +476,13 @@ export default class FocusTracker {
                 // this.configuration.flagSymbols.slice().reverse().forEach( (symbol: string, rSymbolIndex: number) => {
                     // let symbolIndex = this.configuration.flagSymbols.length - rSymbolIndex - 1;
                     let newValue = 0 - (symbolIndex + 1);
+                    let flagKey = this.configuration.flagKeys?.[symbolIndex];
+                    let flagDesc = flagKey ? `: ${flagKey}` : "";
+                    let title = `${symbol} (flag = ${-1 * newValue}${flagDesc})`
                     menu.addItem((item) =>
                                     item
                                     // .setTitle(`Set rating ${index}: ${symbol}`)
-                                    .setTitle(`${symbol} (flag = ${newValue})`)
+                                    .setTitle(title)
                                     .setIcon("open")
                                     .onClick( async () =>  {
                                         await this.setFocusRating(path, dateString, newValue);
