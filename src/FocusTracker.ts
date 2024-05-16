@@ -10,14 +10,14 @@ import {
 const PLUGIN_NAME = "Focus Tracker";
 const DAYS_TO_SHOW = 21;
 const DAYS_TO_LOAD = DAYS_TO_SHOW + 1;
-const symbolArrays = {
+const ratingSymbols = {
     "colors1": ["🔴", "🟠", "🟡", "🟢", "🔵",], // "⚪", "⚫",
     "digitsOpen": ["➀", "➁", "➂", "➃", "➄", "➅", "➆", "➇", "➈", "➉",],
     "digitsFilled": ["➊","➋","➌","➍","➎","➏","➐","➑","➒","➓",],
     "moonPhases": ["🌑", "🌒", "🌓", "🌔", "🌕"],
 }
 
-const flagArrays = {
+const flagSymbols = {
     // "default": [
     //     "🔥",
     //     "🚩",
@@ -29,7 +29,7 @@ const flagArrays = {
     //     "🐂"
     // ],
     "default": [
-        "🏹",
+        "🚀",
         "🎯",
         "📅",
         "⏳",
@@ -38,7 +38,6 @@ const flagArrays = {
         "⚠️",
         "🚧",
         "🐂",
-        "🚀",
     ],
 }
 
@@ -57,8 +56,9 @@ const flagKeys = {
 }
 
 
-const SCALE1 = symbolArrays["colors1"];
-const SCALE2 = flagArrays["default"];
+const SCALE1 = ratingSymbols["colors1"];
+const SCALE2 = flagSymbols["default"];
+const FLAG_KEYS = flagKeys;
 
 const OUT_OF_BOUNDS = "❗";
 const UNKNOWN_RATING = "❓";
@@ -74,6 +74,7 @@ interface FocusTrackerConfiguration {
     logPropertyName: string;
     ratingSymbols: string[];
     flagSymbols: string[];
+    flagKeys: string[];
     titlePropertyNames: string[];
     daysToLoad: number;
     rootElement: HTMLElement | undefined;
@@ -87,6 +88,7 @@ const DEFAULT_CONFIGURATION = (): FocusTrackerConfiguration => ({
     logPropertyName: "focus-logs",
     ratingSymbols: SCALE1,
     flagSymbols: SCALE2,
+    flagKeys: FLAG_KEYS,
     titlePropertyNames: ["focus-tracker-title", "title"],
     daysToLoad: DAYS_TO_LOAD,
     rootElement: undefined,
