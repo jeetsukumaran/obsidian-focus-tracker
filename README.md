@@ -149,3 +149,21 @@ title: "The winter of discontent".
 
 Forked from [@holroy](https://github.com/holroy)'s [fork](https://github.com/holroy/habit-tracker) of [Habit Tracker 21](https://github.com/zoreet/habit-tracker).
 
+
+## License
+
+This work uses work released under the GNU GPL 3 by the following:
+
+- [zoreet](https://github.com/zoreet/habit-tracker)
+- [holroy](https://github.com/holroy/habit-tracker)
+
+and, as given by those terms, is itself also made available under the same license.
+
+See LICENSE.md for details.
+
+
+
+
+
+
+
