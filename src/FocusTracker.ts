@@ -645,23 +645,24 @@ export default class FocusTracker {
         const file: TAbstractFile | null = this.app.vault.getAbstractFileByPath(focusTrackerPath as string);
         if (!file || !(file instanceof TFile)) {
             new Notice(`${PLUGIN_NAME}: File missing while trying to change focus rating.`);
-        }
-        this.app.fileManager.processFrontMatter(file as TFile, (frontmatter: { [key: string]: any }) => {
-            let entries: { [key: string]: number } = frontmatter[this.configuration.logPropertyName] || {};
-            entries[date as string] = newValue;
-            const sortedEntriesArray = Object.entries(entries).sort(([date1], [date2]) => new Date(date1).getTime() - new Date(date2).getTime());
-            const sortedEntriesObject = Object.fromEntries(sortedEntriesArray);
-            frontmatter[this.configuration.logPropertyName] = sortedEntriesObject;
-            new Notice(`Setting rating: ${newValue}`, 600);
-        });
-        let fpath = file?.path || "";
-        if (fpath) {
-            await this.renderFocusLogs(
-                fpath,
-                await this.getFocusTargetLabel(fpath),
-                await this.readFocusLogs(fpath),
+        } else {
+            this.app.fileManager.processFrontMatter(file, (frontmatter: { [key: string]: any }) => {
+                let entries: { [key: string]: number } = frontmatter[this.configuration.logPropertyName] || {};
+                entries[date as string] = newValue;
+                const sortedEntriesArray = Object.entries(entries).sort(([date1], [date2]) => new Date(date1).getTime() - new Date(date2).getTime());
+                const sortedEntriesObject = Object.fromEntries(sortedEntriesArray);
+                frontmatter[this.configuration.logPropertyName] = sortedEntriesObject;
+                new Notice(`Setting rating: ${newValue}`, 600);
+            });
+            let fpath = file?.path || "";
+            if (fpath) {
+                await this.renderFocusLogs(
+                    fpath,
+                    await this.getFocusTargetLabel(fpath),
+                    await this.readFocusLogs(fpath),
 
-            );
+                );
+            }
         }
     }
 
