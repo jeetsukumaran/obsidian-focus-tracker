@@ -319,18 +319,23 @@ export default class FocusTracker {
             new Notice(`${PLUGIN_NAME}: No file found for path: ${path}`);
             return {};
         }
-        return await this.app.metadataCache?.getFileCache(file)?.frontmatter || {};
-        // try {
-        //     return await this.app.vault.read(file).then((result) => {
-        //         const frontmatter = result.split("---")[1];
-        //         if (!frontmatter) {
-        //             return {};
-        //         }
-        //         return parseYaml(frontmatter);
-        //     });
-        // } catch (error) {
-        //     return {};
-        // }
+
+        // This method does not reflect changes made immediately
+        // return await this.app.metadataCache.getFileCache(file)?.frontmatter || {};
+
+        // this method does reflects changes made in `stepFocusLogEntry` immediately
+        try {
+            return await this.app.vault.read(file).then((result) => {
+                const frontmatter = result.split("---")[1];
+                if (!frontmatter) {
+                    return {};
+                }
+                return parseYaml(frontmatter);
+            });
+        } catch (error) {
+            return {};
+        }
+
     }
 
     normalizeLogs(source: { [date: string]: any }): FocusLogsType {
@@ -645,7 +650,7 @@ export default class FocusTracker {
         if (!file || !(file instanceof TFile)) {
             new Notice(`${PLUGIN_NAME}: File missing while trying to change focus rating.`);
         } else {
-            this.app.fileManager.processFrontMatter(file, (frontmatter: { [key: string]: any }) => {
+            await this.app.fileManager.processFrontMatter(file, (frontmatter: { [key: string]: any }) => {
                 let entries: { [key: string]: number } = frontmatter[this.configuration.logPropertyName] || {};
                 entries[date as string] = newValue;
                 const sortedEntriesArray = Object.entries(entries).sort(([date1], [date2]) => new Date(date1).getTime() - new Date(date2).getTime());
@@ -653,7 +658,7 @@ export default class FocusTracker {
                 frontmatter[this.configuration.logPropertyName] = sortedEntriesObject;
                 new Notice(`Setting rating: ${newValue}`, 600);
             });
-            // this.refresh();
+            // await this.refresh();
             let fpath = file?.path || "";
             await this.renderFocusLogs(
                 fpath,
