@@ -45,8 +45,8 @@ const flagKeys = {
     "default": [
         "goal, aspirational",
         "goal, committed",
-        "scheduled",
         "due",
+        "scheduled",
         "start",
         "flagged",
         "attention",
