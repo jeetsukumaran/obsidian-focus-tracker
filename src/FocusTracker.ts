@@ -319,18 +319,18 @@ export default class FocusTracker {
             new Notice(`${PLUGIN_NAME}: No file found for path: ${path}`);
             return {};
         }
-        // return await this.app.metadataCache?.getFileCache(file)?.frontmatter || {};
-        try {
-            return await this.app.vault.read(file).then((result) => {
-                const frontmatter = result.split("---")[1];
-                if (!frontmatter) {
-                    return {};
-                }
-                return parseYaml(frontmatter);
-            });
-        } catch (error) {
-            return {};
-        }
+        return await this.app.metadataCache?.getFileCache(file)?.frontmatter || {};
+        // try {
+        //     return await this.app.vault.read(file).then((result) => {
+        //         const frontmatter = result.split("---")[1];
+        //         if (!frontmatter) {
+        //             return {};
+        //         }
+        //         return parseYaml(frontmatter);
+        //     });
+        // } catch (error) {
+        //     return {};
+        // }
     }
 
     normalizeLogs(source: { [date: string]: any }): FocusLogsType {
