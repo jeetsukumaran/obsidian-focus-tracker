@@ -2,7 +2,9 @@
 
 Track and align your focus!
 
-## Synoposis
+![image](https://github.com/jeetsukumaran/obsidian-focus-tracker/assets/26183/4e7343d0-c1ad-49e1-a077-1e0ec48dc135)
+
+## Synopsis
 
 ### What
 
