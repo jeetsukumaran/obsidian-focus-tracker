@@ -69,6 +69,7 @@ export type FocusLogsType = {
 
 interface FocusTrackerConfiguration {
     pathPattern: string;
+    pathPatterns: string[];
     lastDisplayedDate: string;
     daysToShow: number;
     logPropertyName: string;
@@ -83,6 +84,7 @@ interface FocusTrackerConfiguration {
 
 const DEFAULT_CONFIGURATION = (): FocusTrackerConfiguration => ({
     pathPattern: "",
+    pathPatterns: [],
     lastDisplayedDate: getTodayDate(),
     daysToShow: DAYS_TO_SHOW,
     logPropertyName: "focus-logs",
@@ -210,11 +212,16 @@ export default class FocusTracker {
     }
 
     loadFiles(): TFile[] {
-        let pathPattern = new RegExp(".*" + this.configuration.pathPattern + ".*");
+        let pathPatterns: RegExp[] = this.configuration.pathPatterns.map( (pattern: string) => {
+            return new RegExp(".*" + pattern  + ".*");
+        });
+        // let pathPattern: RegExp = new RegExp(".*" + this.configuration.pathPattern  + ".*");
         return this.app.vault
             .getMarkdownFiles()
             .filter((file: TFile) => {
-                return pathPattern.test(file.path);
+                // return pathPattern.test(file.path);
+                // return file.path.includes("log");
+                return pathPatterns.some( (rx: RegExp) => rx.test(file.path) );
             })
             .sort((a: TFile, b: TFile) => a.name.localeCompare(b.name));
     }
@@ -233,6 +240,14 @@ export default class FocusTracker {
                 }),
             );
             configuration.daysToLoad = configuration.daysToShow + 1;
+            // configuration.pathPatterns = Array.from(configuration.pathPattern);
+            if (configuration.pathPattern && configuration.pathPatterns.length === 0) {
+                if (Array.isArray(configuration.pathPattern)) {
+                    configuration.pathPatterns = [ ... configuration.pathPattern]
+                } else {
+                    configuration.pathPatterns = [String(configuration.pathPattern)];
+                }
+            }
             return configuration;
         } catch (error) {
             new Notice(
