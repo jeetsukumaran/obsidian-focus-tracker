@@ -106,7 +106,7 @@ Any file in the vault with the substring "`focus-log`" in its path will show up 
 path-pattern: "focus-log"
 ```
 
-while can also create more specialized focus-trackers, e.g.
+Any pattern can be used, e.g.:
 
 ```focustracker
 path-pattern: "focus-log.*area"
@@ -124,6 +124,15 @@ path-pattern: "habit-logs/"
 path-pattern: "practice-logs/"
 ```
 
+And lists are also supported:
+
+~~~
+```focustracker
+path-pattern:
+  - "learning.*log.focus"
+  - "personal.*log.focus"
+```
+~~~
 
 
 #### Customizations
