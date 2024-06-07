@@ -75,6 +75,7 @@ interface FocusTrackerConfiguration {
     pathPattern: string;
     pathPatterns: string[];
     metadataKeyValues: { [key:string]: string };
+    tags: string[];
     lastDisplayedDate: string;
     daysToShow: number;
     logPropertyName: string;
@@ -91,6 +92,7 @@ const DEFAULT_CONFIGURATION = (): FocusTrackerConfiguration => ({
     pathPattern: "",
     pathPatterns: [],
     metadataKeyValues: {},
+    tags: [],
     lastDisplayedDate: getTodayDate(),
     daysToShow: DAYS_TO_SHOW,
     logPropertyName: "focus-logs",
@@ -115,6 +117,12 @@ function filterDictionary<T>(
     return Object.fromEntries(
         Object.entries(dictionary).filter(([key, value]) => predicate(key, value))
     );
+}
+
+function patternsToRegex(patterns: string[]): RegExp[] {
+    return patterns.map((pattern: string) => {
+        return new RegExp(".*" + pattern + ".*");
+    });
 }
 
 // Function to filter a configuration dictionary based on a set of private keys.
@@ -295,27 +303,34 @@ export default class FocusTracker {
     }
 
     loadFiles(): TFile[] {
-        let pathPatterns: RegExp[] = this.configuration.pathPatterns.map( (pattern: string) => {
-            return new RegExp(".*" + pattern  + ".*");
-        });
+        let pathPatterns = patternsToRegex(this.configuration.pathPatterns);
+        let tagPatterns = patternsToRegex(this.configuration.tags.map( (s: string) => s.replace(/^#/,"")));
         let metadataKeyValues = this.configuration.metadataKeyValues;
         return this.app.vault
             .getMarkdownFiles()
             .filter((file: TFile) => {
+                let fileMetadata = getMetadata(this.app, file);
+                let frontmatter = fileMetadata?.frontmatter || {};
+                let fileTags = extractTags(fileMetadata);
                 if (pathPatterns && pathPatterns.length > 0) {
                     let passCriteria = pathPatterns.some( (rx: RegExp) => rx.test(file.path) );
                     if (!passCriteria) {
                         return false;
                     }
                 }
-                let fileMetadata = getMetadata(this.app, file);
-                let frontMatter = fileMetadata?.frontmatter || {};
-                let tags = extractTags(fileMetadata);
-                console.log(tags);
+                // if (tagPatterns) {
+                //     let passCriteria = tagPatterns.some((rx: RegExp) => fileTags.some((tag: string) => rx.test(tag)));
+                //     if (!passCriteria) {
+                //         return false;
+                //     }
+                // }
                 if (metadataKeyValues && Object.keys(metadataKeyValues).length > 0) {
+                    if (!frontmatter) {
+                        return false;
+                    }
                     let passCriteria = Object.keys(metadataKeyValues).some(key => {
                         let value = metadataKeyValues[key];
-                        return fileMetadata && fileMetadata[key] === value;
+                        return frontmatter[key] === value;
                     });
                     if (!passCriteria) {
                         return false;
