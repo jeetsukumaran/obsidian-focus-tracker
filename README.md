@@ -24,7 +24,7 @@ I also find this useful as a component of my ADHD self-management system to help
 
 #### Create a focus tracker
 
-A focus tracker can be embedded or added to any note with a ``focustracker``  YAML-format codeblock:
+A focus tracker can be embedded or added to any note with a ``focustracker``  YAML-format codeblock that provides a variety of ways of selecting files that serve as tracking logs:
 
 ~~~
 ```focustracker
@@ -37,6 +37,13 @@ A focus tracker can be embedded or added to any note with a ``focustracker``  YA
 tags:
 - "project"
 - "reading/april"
+```
+~~~
+
+~~~
+```focustracker
+properties:
+    "track-focus": true
 ```
 ~~~
 
@@ -89,7 +96,6 @@ tags:
       "development-status": "pilot"
     ```
     ~~~
-
 
 
 
