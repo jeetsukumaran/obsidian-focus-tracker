@@ -4,7 +4,10 @@ import {
     Notice,
     Menu,
     TAbstractFile,
-    TFile
+    FrontMatterCache,
+    TFile,
+    Vault,
+    normalizePath,
 } from "obsidian";
 
 const PLUGIN_NAME = "Focus Tracker";
@@ -70,6 +73,7 @@ export type FocusLogsType = {
 interface FocusTrackerConfiguration {
     pathPattern: string;
     pathPatterns: string[];
+    metadataKeyValues: { [key:string]: string };
     lastDisplayedDate: string;
     daysToShow: number;
     logPropertyName: string;
@@ -85,6 +89,7 @@ interface FocusTrackerConfiguration {
 const DEFAULT_CONFIGURATION = (): FocusTrackerConfiguration => ({
     pathPattern: "",
     pathPatterns: [],
+    metadataKeyValues: {},
     lastDisplayedDate: getTodayDate(),
     daysToShow: DAYS_TO_SHOW,
     logPropertyName: "focus-logs",
@@ -162,6 +167,26 @@ function getDaysDifference(startDateId: string, endDateId: string): number {
 function composeFlagDescription(value, labelMap) {
 }
 
+export function getFrontMatter(
+    app: App,
+    filePathOrFile?: string | TFile,
+): FrontMatterCache {
+    let file: TFile | undefined;
+
+    if (typeof filePathOrFile === 'string') {
+        file = app.vault.getAbstractFileByPath(normalizePath(filePathOrFile)) as TFile;
+    } else if (filePathOrFile instanceof TFile) {
+        file = filePathOrFile;
+    }
+
+    if (!file) {
+        return {};
+    }
+
+    return app.metadataCache.getFileCache(file)?.frontmatter || {};
+}
+
+
 export default class FocusTracker {
     rootElement: HTMLElement;
     configuration: FocusTrackerConfiguration;
@@ -215,13 +240,27 @@ export default class FocusTracker {
         let pathPatterns: RegExp[] = this.configuration.pathPatterns.map( (pattern: string) => {
             return new RegExp(".*" + pattern  + ".*");
         });
-        // let pathPattern: RegExp = new RegExp(".*" + this.configuration.pathPattern  + ".*");
+        let metadataKeyValues = this.configuration.metadataKeyValues;
         return this.app.vault
             .getMarkdownFiles()
             .filter((file: TFile) => {
-                // return pathPattern.test(file.path);
-                // return file.path.includes("log");
-                return pathPatterns.some( (rx: RegExp) => rx.test(file.path) );
+                if (pathPatterns && pathPatterns.length > 0) {
+                    let passCriteria = pathPatterns.some( (rx: RegExp) => rx.test(file.path) );
+                    if (!passCriteria) {
+                        return false;
+                    }
+                }
+                if (metadataKeyValues && Object.keys(metadataKeyValues).length > 0) {
+                    let passCriteria = Object.keys(metadataKeyValues).some(key => {
+                        let value = metadataKeyValues[key];
+                        let fileMetadata = getFrontMatter(this.app, file);
+                        return fileMetadata && fileMetadata[key] === value;
+                    });
+                    if (!passCriteria) {
+                        return false;
+                    }
+                }
+                return true;
             })
             .sort((a: TFile, b: TFile) => a.name.localeCompare(b.name));
     }
@@ -261,7 +300,7 @@ export default class FocusTracker {
     renderNoFocussFoundMessage(): void {
         this.rootElement?.empty();
         this.rootElement?.createEl("div", {
-            text: `No focus tracks found with path pattern: ${this.configuration.pathPattern}`,
+            text: `No files found matching criteria`,
         });
     }
 
