@@ -20,6 +20,12 @@ I also find this useful as a component of my ADHD self-management system to help
 ## Usage
 
 
+### Basic concepts
+
+Assume you have at least one distinct (unique) reference every project, activity, effort, area, habit, or aspect of your life that you wish to track.
+The YAML frontmatter metadata of this note will be used to log every day that you "push", "work on", touch, visit, or dedicate any attention or focus on this project.
+There are many different ways to designate a note as the a "focus log", and any note can serve this purpose, either an existing one or a new one, or one serving some other (compatible) purpose.
+
 ### Basic mechanisms
 
 #### Create a focus tracker
