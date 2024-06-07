@@ -44,9 +44,11 @@ body {
 
 .focus-tracker__row + .focus-tracker__row {
 	/* border-top: var(--focustracker-border-width) solid var(--focustracker-border-color); */
+	height: 20px;
 }
 
 .focus-tracker__row.focus-tracker__header {
+	height: 18px;
 }
 
 .focus-tracker__row:not(.focus-tracker__header):hover {
