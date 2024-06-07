@@ -414,7 +414,7 @@ export default class FocusTracker {
 
         const focusTitleLink = focusTitle.createEl("a", {
             text: focusTargetLabel,
-            cls: "internal-link",
+            cls: "internal-link focus-title-link",
         });
 
         focusTitleLink.setAttribute("href", path);

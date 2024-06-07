@@ -208,3 +208,11 @@ body {
 	}
 }
 
+.focus-title-link {
+    max-width: 10rem !important;
+    white-space: normal;
+    word-wrap: break-word;
+    overflow-wrap: break-word !important;
+    display: block !important;
+}
+
