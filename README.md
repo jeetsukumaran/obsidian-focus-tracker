@@ -28,13 +28,71 @@ A focus tracker can be embedded or added to any note with a ``focustracker``  YA
 
 ~~~
 ```focustracker
-"path-pattern": "coordination/tracks/"
+"paths": "coordination/tracks/"
+```
+~~~
+
+~~~
+```focustracker
+tags:
+- "project"
+- "reading/april"
 ```
 ~~~
 
 ##### Parameters
 
-- **path-pattern** _[mandatory]_: a (string) pattern found in the full path to a tracking log to be included in this view.
+- **paths**: a (string) or list of string patterns found in the full path to a tracking log to be included in this view. Any note can be used for this -- in the above example they are dedicated log files, but they can also be: project summaries, novel manuscript journals, etc.
+
+
+    ~~~
+    ```focustracker
+    paths:
+      - "hobby.*log"
+      - "project.*log"
+      - "training.*log"
+    ```
+    ~~~
+
+- **tags**: a list of string patterns that will be matched to tags (note: omit the leading '#'):
+
+    ~~~
+    ```focustracker
+    tags:
+      - "role/effort"
+    ```
+    ~~~
+
+    ~~~
+    ```focustracker
+    tags:
+      - "project/priority"
+      - "training/priority"
+      - "learning/january"
+    ```
+    ~~~
+
+- **properties**: a dictionary mapping YAML frontmatter field names to matching values:
+
+
+    ~~~
+    ```focustracker
+    properties:
+      "project-status": "active"
+    ```
+    ~~~
+
+    ~~~
+    ```focustracker
+    properties:
+      "project-status": "active"
+      "development-status": "pilot"
+    ```
+    ~~~
+
+
+
+
 
 
 #### Create files or folders to track your focus, efforts, habits, etc

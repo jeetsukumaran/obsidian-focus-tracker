@@ -72,9 +72,9 @@ export type FocusLogsType = {
 };
 
 interface FocusTrackerConfiguration {
-    pathPattern: string;
-    pathPatterns: string[];
-    metadataKeyValues: { [key:string]: string };
+    path: string;
+    paths: string[];
+    properties: { [key:string]: string };
     tags: string[];
     lastDisplayedDate: string;
     daysToShow: number;
@@ -89,9 +89,9 @@ interface FocusTrackerConfiguration {
 };
 
 const DEFAULT_CONFIGURATION = (): FocusTrackerConfiguration => ({
-    pathPattern: "",
-    pathPatterns: [],
-    metadataKeyValues: {},
+    path: "",
+    paths: [],
+    properties: {},
     tags: [],
     lastDisplayedDate: getTodayDate(),
     daysToShow: DAYS_TO_SHOW,
@@ -303,9 +303,9 @@ export default class FocusTracker {
     }
 
     loadFiles(): TFile[] {
-        let pathPatterns = patternsToRegex(this.configuration.pathPatterns);
+        let pathPatterns = patternsToRegex(this.configuration.paths);
         let tagPatterns = patternsToRegex(this.configuration.tags.map( (s: string) => s.replace(/^#/,"")));
-        let metadataKeyValues = this.configuration.metadataKeyValues;
+        let properties = this.configuration.properties;
         return this.app.vault
             .getMarkdownFiles()
             .filter((file: TFile) => {
@@ -324,12 +324,12 @@ export default class FocusTracker {
                 //         return false;
                 //     }
                 // }
-                if (metadataKeyValues && Object.keys(metadataKeyValues).length > 0) {
+                if (properties && Object.keys(properties).length > 0) {
                     if (!frontmatter) {
                         return false;
                     }
-                    let passCriteria = Object.keys(metadataKeyValues).some(key => {
-                        let value = metadataKeyValues[key];
+                    let passCriteria = Object.keys(properties).some(key => {
+                        let value = properties[key];
                         return frontmatter[key] === value;
                     });
                     if (!passCriteria) {
@@ -355,12 +355,11 @@ export default class FocusTracker {
                 }),
             );
             configuration.daysToLoad = configuration.daysToShow + 1;
-            // configuration.pathPatterns = Array.from(configuration.pathPattern);
-            if (configuration.pathPattern && configuration.pathPatterns.length === 0) {
-                if (Array.isArray(configuration.pathPattern)) {
-                    configuration.pathPatterns = [ ... configuration.pathPattern]
+            if (configuration.path && configuration.paths.length === 0) {
+                if (Array.isArray(configuration.path)) {
+                    configuration.paths = [ ... configuration.path]
                 } else {
-                    configuration.pathPatterns = [String(configuration.pathPattern)];
+                    configuration.paths = [String(configuration.paths)];
                 }
             }
             return configuration;
