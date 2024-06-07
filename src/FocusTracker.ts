@@ -215,13 +215,35 @@ export function getMetadata(
     return app.metadataCache.getFileCache(file) || null;
 }
 
-export function getFrontMatter(
-    app: App,
-    filePathOrFile?: string | TFile,
-): FrontMatterCache {
-    return getMetadata(app, filePathOrFile)?.frontmatter || {} ;
-}
+// export function getFrontMatter(
+//     app: App,
+//     filePathOrFile?: string | TFile,
+// ): FrontMatterCache {
+//     return getMetadata(app, filePathOrFile)?.frontmatter || {} ;
+// }
 
+export function extractTags(metadata: CachedMetadata | null): string[] {
+    if (metadata === null) {
+        return [];
+    }
+    const tagSet = new Set<string>();
+
+    // Collect tags from metadata.tags
+    if (metadata.tags) {
+        metadata.tags.forEach((tag) => {
+            tagSet.add(tag.tag.replace(/^#/,""));
+        });
+    }
+
+    // Collect tags from metadata.frontmatter.tags
+    if (metadata.frontmatter && Array.isArray(metadata.frontmatter.tags)) {
+        metadata.frontmatter.tags.forEach((tag: string) => {
+            tagSet.add(tag);
+        });
+    }
+
+    return Array.from(tagSet);
+}
 
 export default class FocusTracker {
     rootElement: HTMLElement;
@@ -286,10 +308,13 @@ export default class FocusTracker {
                         return false;
                     }
                 }
+                let fileMetadata = getMetadata(this.app, file);
+                let frontMatter = fileMetadata?.frontmatter || {};
+                let tags = extractTags(fileMetadata);
+                console.log(tags);
                 if (metadataKeyValues && Object.keys(metadataKeyValues).length > 0) {
                     let passCriteria = Object.keys(metadataKeyValues).some(key => {
                         let value = metadataKeyValues[key];
-                        let fileMetadata = getFrontMatter(this.app, file);
                         return fileMetadata && fileMetadata[key] === value;
                     });
                     if (!passCriteria) {
