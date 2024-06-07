@@ -3,6 +3,7 @@ import {
     parseYaml,
     Notice,
     Menu,
+    CachedMetadata,
     TAbstractFile,
     FrontMatterCache,
     TFile,
@@ -167,10 +168,38 @@ function getDaysDifference(startDateId: string, endDateId: string): number {
 function composeFlagDescription(value, labelMap) {
 }
 
-export function getFrontMatter(
+// From: <https://forum.obsidian.md/t/getting-backlinks-tags-and-frontmatter-entries-for-a-note/34082/2>
+//
+// ```
+// file = app.vault.getAbstractFileByPath("your/file.md")
+// ```
+// - `metadata` contains all values except backlinks: <https://github.com/obsidianmd/obsidian-api/blob/c01fc3074deeb3dfc6ee02546d113b448735b294/obsidian.d.ts#L388-L425>
+//
+// links?: LinkCache[];
+// embeds?: EmbedCache[];
+// tags?: TagCache[];
+// headings?: HeadingCache[];
+// sections?: SectionCache[];
+// listItems?: ListItemCache[];
+// frontmatter?: FrontMatterCache;
+// blocks?: Record<string, BlockCache
+//
+// - If a file has no frontmatter, `metadata.frontmatter` will not exist
+// - Tags need to be collected in two places:
+//  -   `metadata.frontmatter.tags`
+//  -   `metadata.tags`
+// ```
+// metadata = app.metadataCache.getFileCache(file)
+// ```
+
+// ```
+// backlinks = app.vault.metadataCache.getBacklinksForFile(file)
+// ```
+
+export function getMetadata(
     app: App,
     filePathOrFile?: string | TFile,
-): FrontMatterCache {
+): CachedMetadata | null {
     let file: TFile | undefined;
 
     if (typeof filePathOrFile === 'string') {
@@ -180,10 +209,17 @@ export function getFrontMatter(
     }
 
     if (!file) {
-        return {};
+        return null;
     }
 
-    return app.metadataCache.getFileCache(file)?.frontmatter || {};
+    return app.metadataCache.getFileCache(file) || null;
+}
+
+export function getFrontMatter(
+    app: App,
+    filePathOrFile?: string | TFile,
+): FrontMatterCache {
+    return getMetadata(app, filePathOrFile)?.frontmatter || {} ;
 }
 
 
