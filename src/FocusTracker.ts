@@ -318,12 +318,12 @@ export default class FocusTracker {
                         return false;
                     }
                 }
-                // if (tagPatterns) {
-                //     let passCriteria = tagPatterns.some((rx: RegExp) => fileTags.some((tag: string) => rx.test(tag)));
-                //     if (!passCriteria) {
-                //         return false;
-                //     }
-                // }
+                if (tagPatterns) {
+                    let passCriteria = tagPatterns.some((rx: RegExp) => fileTags.some((tag: string) => rx.test(tag)));
+                    if (!passCriteria) {
+                        return false;
+                    }
+                }
                 if (properties && Object.keys(properties).length > 0) {
                     if (!frontmatter) {
                         return false;
