@@ -99,7 +99,7 @@ const DEFAULT_CONFIGURATION = (): FocusTrackerConfiguration => ({
     ratingSymbols: SCALE1,
     flagSymbols: SCALE2,
     flagKeys: FLAG_KEYS,
-    titlePropertyNames: ["focus-tracker-title", "title"],
+    titlePropertyNames: ["track-label", "focus-tracker-title", "title"],
     daysToLoad: DAYS_TO_LOAD,
     rootElement: undefined,
     focusTracksGoHere: undefined,
