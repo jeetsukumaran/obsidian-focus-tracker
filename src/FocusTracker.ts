@@ -318,7 +318,7 @@ export default class FocusTracker {
                         return false;
                     }
                 }
-                if (tagPatterns) {
+                if (tagPatterns && tagPatterns.length > 0) {
                     let passCriteria = tagPatterns.some((rx: RegExp) => fileTags.some((tag: string) => rx.test(tag)));
                     if (!passCriteria) {
                         return false;
