@@ -306,7 +306,7 @@ export default class FocusTracker {
         let pathPatterns = patternsToRegex(this.configuration.paths);
         let tagPatterns = patternsToRegex(this.configuration.tags.map( (s: string) => s.replace(/^#/,"")));
         let properties = this.configuration.properties;
-        return this.app.vault
+        let rval = this.app.vault
             .getMarkdownFiles()
             .filter((file: TFile) => {
                 let fileMetadata = getMetadata(this.app, file);
@@ -336,9 +336,10 @@ export default class FocusTracker {
                         return false;
                     }
                 }
-                return true;
+                return file;
             })
             .sort((a: TFile, b: TFile) => a.name.localeCompare(b.name));
+        return rval;
     }
 
     loadConfiguration(configurationString: string): FocusTrackerConfiguration {
