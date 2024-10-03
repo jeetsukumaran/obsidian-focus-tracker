@@ -76,12 +76,28 @@ body {
 	padding: 0 4px;
 }
 .focus-tracker__cell--focus-target-label a {
-	max-width: 100%;
-	overflow: hidden;
-	text-overflow: ellipsis;
-	white-space: nowrap;
-	width: fit-content;
+
 	display: inline-block;
+    font-weight: 500;
+    font-size: 0.8rem;
+	max-width: 100%;
+
+	/* padding-top: 0.5rem; */
+	/* padding-bottom: 0.5rem; */
+	/* height: 2rem; */
+	/* text-overflow: ellipsis; */
+    /* overflow-wrap: break-word !important; */
+    /* white-space: normal; */
+
+    display: block !important;
+    font-weight: 500;
+    font-size: 0.8rem;
+    max-width: 20rem !important;
+	width: fit-content;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+    overflow-wrap: break-word !important;
 }
 
 .focus-tracker__cell--today {
@@ -211,10 +227,5 @@ body {
 }
 
 .focus-title-link {
-    max-width: 10rem !important;
-    white-space: normal;
-    word-wrap: break-word;
-    overflow-wrap: break-word !important;
-    display: block !important;
 }
 
