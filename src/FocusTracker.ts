@@ -76,6 +76,7 @@ interface FocusTrackerConfiguration {
     paths: string[];
     properties: { [key:string]: string };
     tags: string[];
+    tagSet: string[];
     lastDisplayedDate: string;
     daysToShow: number;
     logPropertyName: string;
@@ -93,6 +94,7 @@ const DEFAULT_CONFIGURATION = (): FocusTrackerConfiguration => ({
     paths: [],
     properties: {},
     tags: [],
+    tagSet: [],
     lastDisplayedDate: getTodayDate(),
     daysToShow: DAYS_TO_SHOW,
     logPropertyName: "focus-logs",
@@ -304,7 +306,8 @@ export default class FocusTracker {
 
     loadFiles(): TFile[] {
         let pathPatterns = patternsToRegex(this.configuration.paths);
-        let tagPatterns = patternsToRegex(this.configuration.tags.map( (s: string) => s.replace(/^#/,"")));
+        let tagAnyPatterns = patternsToRegex(this.configuration.tags.map( (s: string) => s.replace(/^#/,"")));
+        let tagSetPatterns = patternsToRegex(this.configuration.tagSet.map( (s: string) => s.replace(/^#/,"")));
         let properties = this.configuration.properties;
         let rval = this.app.vault
             .getMarkdownFiles()
@@ -318,8 +321,14 @@ export default class FocusTracker {
                         return false;
                     }
                 }
-                if (tagPatterns && tagPatterns.length > 0) {
-                    let passCriteria = tagPatterns.some((rx: RegExp) => fileTags.some((tag: string) => rx.test(tag)));
+                if (tagAnyPatterns && tagAnyPatterns.length > 0) {
+                    let passCriteria = tagAnyPatterns.some((rx: RegExp) => fileTags.some((tag: string) => rx.test(tag)));
+                    if (!passCriteria) {
+                        return false;
+                    }
+                }
+                if (tagSetPatterns && tagSetPatterns.length > 0) {
+                    let passCriteria = tagSetPatterns.every((rx: RegExp) => fileTags.some((tag: string) => rx.test(tag)));
                     if (!passCriteria) {
                         return false;
                     }
