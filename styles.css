@@ -201,7 +201,7 @@ body {
 .focus-tracker__controls {
     display: grid;
     grid-template-columns: minmax(auto, max-content) 1fr minmax(auto, max-content);
-    gap: 0.5rem;
+    gap: 1rem;
     align-items: center;
     width: 10rem !important;
 }

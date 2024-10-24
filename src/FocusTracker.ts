@@ -410,11 +410,11 @@ export default class FocusTracker {
             cls: "focus-tracker__btn-increment",
         });
 
-        const resetBtn = section.createEl("button", {
-            // text: "Reset",
-            text: "↺",
-            cls: "focus-tracker__btn-reset",
-        });
+        // const resetBtn = section.createEl("button", {
+        //     // text: "Reset",
+        //     text: "↺",
+        //     cls: "focus-tracker__btn-reset",
+        // });
 
         input.onchange = () => {
             const newValue = Math.max(minValue, parseInt(input.value));
@@ -434,10 +434,10 @@ export default class FocusTracker {
             onChange(parseInt(input.value));
         };
 
-        resetBtn.onclick = () => {
-            input.value = defaultValue.toString();
-            onChange(defaultValue);
-        };
+        // resetBtn.onclick = () => {
+        //     input.value = defaultValue.toString();
+        //     onChange(defaultValue);
+        // };
 
         return section;
     }
