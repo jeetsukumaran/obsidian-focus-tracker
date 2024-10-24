@@ -207,19 +207,40 @@ export default class FocusTracker {
         this.refresh();
     }
 
-    async refresh() {
+async refresh() {
         const files = this.loadFiles();
         if (files.length === 0) {
             this.renderNoFocussFoundMessage();
             return;
         }
+
+        // Clear the root element
         this.rootElement.empty();
+
+        // Create the main container
         const focusTrackerContainer = this.rootElement.createEl("div", {
             cls: "focus-tracker-container",
         });
-        this.configuration.focusTracksGoHere = this.renderRoot(focusTrackerContainer);
-        this.renderHeader(this.configuration.focusTracksGoHere);
 
+        // Add controls section
+        this.renderControls(focusTrackerContainer);
+
+        // Create table container
+        const tableContainer = focusTrackerContainer.createEl("div", {
+            cls: "focus-tracker-table-container",
+        });
+
+        // Create and store reference to the table element
+        const tableElement = tableContainer.createEl("div", {
+            cls: "focus-tracker",
+        });
+        tableElement.setAttribute("id", this.id);
+        this.configuration.focusTracksGoHere = tableElement;
+
+        // Render the table header
+        this.renderTableHeader(this.configuration.focusTracksGoHere);
+
+        // Process and render focus logs
         let focalTargetLabels: [string, TFile][] = await Promise.all(files.map(async (f) => {
             return [await this.getFocusTargetLabel(f.path), f];
         }));
@@ -235,6 +256,21 @@ export default class FocusTracker {
             );
         }
     }
+
+    private renderTableHeader(parent: HTMLElement): void {
+        const header = parent.createEl("div", {
+            cls: "focus-tracker__header focus-tracker__row",
+        });
+
+        // Label cell for alignment with focus target labels
+        header.createEl("div", {
+            cls: "focus-tracker__cell focus-tracker__cell--focus-target-label",
+        });
+
+        // Render date cells
+        this.renderDateCells(header);
+    }
+
 
     loadFiles(): TFile[] {
         let pathPatterns = patternsToRegex(this.configuration.paths);
@@ -315,109 +351,119 @@ export default class FocusTracker {
         });
     }
 
-    renderRoot(parent: HTMLElement): HTMLElement {
-        const rootElement = parent.createEl("div", {
-            cls: "focus-tracker",
-        });
-        rootElement.setAttribute("id", this.id);
-        return rootElement;
-    }
+    // renderRoot(parent: HTMLElement): HTMLElement {
+    //     const rootElement = parent.createEl("div", {
+    //         cls: "focus-tracker",
+    //     });
+    //     rootElement.setAttribute("id", this.id);
+    //     return rootElement;
+    // }
 
-    renderHeader(parent: HTMLElement): void {
-        const header = parent.createEl("div", {
-            cls: "focus-tracker__header focus-tracker__row",
-        });
+    // renderHeader(parent: HTMLElement): void {
+    //     const header = parent.createEl("div", {
+    //         cls: "focus-tracker__header focus-tracker__row",
+    //     });
 
-        // Create the controls container
-        const controlsContainer = header.createEl("div", {
-            cls: "focus-tracker__controls",
-        });
+    //     // Label cell for alignment with focus target labels
+    //     header.createEl("div", {
+    //         cls: "focus-tracker__cell focus-tracker__cell--focus-target-label",
+    //     });
 
-        // Past Days Section
-        const pastSection = this.createControlSection(
-            controlsContainer,
-            "Days Past:",
-            this.configuration.daysInPast,
-            1,
-            14,
-            (value) => {
-                this.configuration.daysInPast = value;
-                this.refresh();
-            }
-        );
+    //     // Render date cells
+    //     this.renderDateCells(header);
+    // }
 
-        // Focal Date Section
-        const focalDateSection = controlsContainer.createEl("div", {
-            cls: "focus-tracker__control-section",
-        });
+renderControls(parent: HTMLElement): void {
+    const controlsContainer = parent.createEl("div", {
+        cls: "focus-tracker__controls",
+    });
 
-        focalDateSection.createEl("span", {
-            text: "Focal Date:",
-            cls: "focus-tracker__control-label",
-        });
-
-        const focalDateInput = focalDateSection.createEl("input", {
-            type: "date",
-            value: this.configuration.focalDate.toISOString().split("T")[0],
-            cls: "focus-tracker__focal-date",
-        });
-
-        const decrementDateBtn = focalDateSection.createEl("button", {
-            text: "◀",
-            cls: "focus-tracker__btn-date",
-        });
-
-        const incrementDateBtn = focalDateSection.createEl("button", {
-            text: "▶",
-            cls: "focus-tracker__btn-date",
-        });
-
-        const todayBtn = focalDateSection.createEl("button", {
-            text: "Today",
-            cls: "focus-tracker__btn-today",
-        });
-
-        decrementDateBtn.onclick = () => {
-            this.configuration.focalDate.setDate(this.configuration.focalDate.getDate() - 1);
-            focalDateInput.value = this.configuration.focalDate.toISOString().split("T")[0];
+    // Past Days Section
+    this.createControlSection(
+        controlsContainer,
+        "Days Past:",
+        this.configuration.daysInPast,
+        1,
+        14,
+        (value) => {
+            this.configuration.daysInPast = value;
             this.refresh();
-        };
+        }
+    );
 
-        incrementDateBtn.onclick = () => {
-            this.configuration.focalDate.setDate(this.configuration.focalDate.getDate() + 1);
-            focalDateInput.value = this.configuration.focalDate.toISOString().split("T")[0];
+    // Focal Date Section
+    const focalDateSection = controlsContainer.createEl("div", {
+        cls: "focus-tracker__control-section",
+    });
+
+    focalDateSection.createEl("span", {
+        text: "Focal Date:",
+        cls: "focus-tracker__control-label",
+    });
+
+    const focalDateInput = focalDateSection.createEl("input", {
+        type: "date",
+        value: this.configuration.focalDate.toISOString().split("T")[0],
+        cls: "focus-tracker__focal-date",
+    });
+
+    const dateControls = focalDateSection.createEl("div", {
+        cls: "focus-tracker__date-controls",
+    });
+
+    const decrementDateBtn = dateControls.createEl("button", {
+        text: "◀",
+        cls: "focus-tracker__btn-date",
+    });
+
+    const todayBtn = dateControls.createEl("button", {
+        text: "Today",
+        cls: "focus-tracker__btn-today",
+    });
+
+    const incrementDateBtn = dateControls.createEl("button", {
+        text: "▶",
+        cls: "focus-tracker__btn-date",
+    });
+
+    decrementDateBtn.onclick = () => {
+        this.configuration.focalDate.setDate(this.configuration.focalDate.getDate() - 1);
+        focalDateInput.value = this.configuration.focalDate.toISOString().split("T")[0];
+        this.refresh();
+    };
+
+    incrementDateBtn.onclick = () => {
+        this.configuration.focalDate.setDate(this.configuration.focalDate.getDate() + 1);
+        focalDateInput.value = this.configuration.focalDate.toISOString().split("T")[0];
+        this.refresh();
+    };
+
+    todayBtn.onclick = () => {
+        this.configuration.focalDate = new Date();
+        focalDateInput.value = this.configuration.focalDate.toISOString().split("T")[0];
+        this.refresh();
+    };
+
+    focalDateInput.onchange = (event) => {
+        this.configuration.focalDate = new Date(focalDateInput.value);
+        this.refresh();
+    };
+
+    // Future Days Section
+    this.createControlSection(
+        controlsContainer,
+        "Days Future:",
+        this.configuration.daysInFuture,
+        1,
+        14,
+        (value) => {
+            this.configuration.daysInFuture = value;
             this.refresh();
-        };
+        }
+    );
+}
 
-        todayBtn.onclick = () => {
-            this.configuration.focalDate = new Date();
-            focalDateInput.value = this.configuration.focalDate.toISOString().split("T")[0];
-            this.refresh();
-        };
-
-        focalDateInput.onchange = (event) => {
-            this.configuration.focalDate = new Date(focalDateInput.value);
-            this.refresh();
-        };
-
-        // Future Days Section
-        const futureSection = this.createControlSection(
-            controlsContainer,
-            "Days Future:",
-            this.configuration.daysInFuture,
-            1,
-            14,
-            (value) => {
-                this.configuration.daysInFuture = value;
-                this.refresh();
-            }
-        );
-
-        // Render date cells
-        this.renderDateCells(header);
-    }
-
-    private createControlSection(
+private createControlSection(
         parent: HTMLElement,
         label: string,
         initialValue: number,
