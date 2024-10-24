@@ -296,7 +296,7 @@ export default class FocusTracker {
             parent,
             "Days Past:",
             this.configuration.daysInPast,
-            1,
+            10,
             14,
             (value) => {
                 this.configuration.daysInPast = value;
@@ -367,7 +367,7 @@ export default class FocusTracker {
             parent,
             "Days Future:",
             this.configuration.daysInFuture,
-            1,
+            5,
             14,
             (value) => {
                 this.configuration.daysInFuture = value;
