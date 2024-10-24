@@ -118,7 +118,7 @@ body {
 }
 
 .focus-tracker__cell--focus-target-label + .focus-tracker__cell {
-    display: none;
+    /* display: none; */
 }
 
 .focus-tracker__header .focus-tracker__cell {

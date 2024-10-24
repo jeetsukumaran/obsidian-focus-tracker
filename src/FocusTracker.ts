@@ -70,6 +70,10 @@ interface FocusTrackerConfiguration {
     focusTracksGoHere: HTMLElement | undefined;
 }
 
+const MIN_DAYS_PAST = 7
+const MIN_DAYS_FUTURE = 7
+const DEFAULT_DAYS_PAST = 7
+const DEFAULT_DAYS_FUTURE = 7
 const DEFAULT_CONFIGURATION = (): FocusTrackerConfiguration => ({
     path: "",
     paths: [],
@@ -82,8 +86,8 @@ const DEFAULT_CONFIGURATION = (): FocusTrackerConfiguration => ({
     flagSymbols: SCALE2,
     flagKeys: FLAG_KEYS,
     titlePropertyNames: ["track-label", "focus-tracker-title", "title"],
-    daysInPast: 10,
-    daysInFuture: 10,
+    daysInPast: DEFAULT_DAYS_PAST,
+    daysInFuture: DEFAULT_DAYS_FUTURE,
     focalDate: new Date(),
     rootElement: undefined,
     focusTracksGoHere: undefined,
@@ -296,8 +300,8 @@ export default class FocusTracker {
             parent,
             "Days Past:",
             this.configuration.daysInPast,
-            10,
-            14,
+            MIN_DAYS_PAST,
+            DEFAULT_DAYS_PAST,
             (value) => {
                 this.configuration.daysInPast = value;
                 this.refresh();
@@ -367,8 +371,8 @@ export default class FocusTracker {
             parent,
             "Days Future:",
             this.configuration.daysInFuture,
-            5,
-            14,
+            MIN_DAYS_FUTURE,
+            DEFAULT_DAYS_FUTURE,
             (value) => {
                 this.configuration.daysInFuture = value;
                 this.refresh();
