@@ -93,7 +93,7 @@ body {
     display: block !important;
     font-weight: 500;
     font-size: 0.8rem;
-    max-width: 10rem !important;
+    max-width: 16rem !important;
     width: fit-content;
     overflow: hidden;
     white-space: nowrap;
