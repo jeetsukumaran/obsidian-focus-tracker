@@ -16,6 +16,8 @@ body {
 .theme-light {
     --focustracker-background-color: #00000010;
     --focustracker-weekend-color: #00000020;
+    --today-column-bg-color: var(--background-primary-alt);
+    --today-column-text-color: var(--text-muted) ;
 }
 
 .theme-dark {
@@ -247,4 +249,10 @@ body {
     outline: none;
     border-color: var(--interactive-accent);
     box-shadow: 0 0 0 2px var(--interactive-accent-hover);
+}
+
+
+.focus-tracker__cell--today {
+  background-color: var(--today-column-bg-color);
+  color: var(--today-column-text-color);
 }
