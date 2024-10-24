@@ -411,7 +411,8 @@ export default class FocusTracker {
         });
 
         const resetBtn = section.createEl("button", {
-            text: "Reset",
+            // text: "Reset",
+            text: "↺",
             cls: "focus-tracker__btn-reset",
         });
 

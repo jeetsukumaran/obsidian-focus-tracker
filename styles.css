@@ -207,10 +207,9 @@ body {
 }
 
 .focus-tracker__control-section {
-    border: solid 1px red;
     display: flex;
     align-items: center;
-    gap: 0.1rem;
+    gap: 0.2rem;
     white-space: nowrap;
 }
 
@@ -248,4 +247,10 @@ body {
 .focus-tracker__days-input {
     text-align: center;
     width: 3rem;
+}
+
+.focus-tracker__btn-decrement,
+.focus-tracker__btn-increment,
+.focus-tracker__btn-reset {
+    width: 24px;
 }
