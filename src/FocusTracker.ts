@@ -15,23 +15,13 @@ const PLUGIN_NAME = "Focus Tracker";
 const DAYS_TO_SHOW = 21;
 const DAYS_TO_LOAD = DAYS_TO_SHOW + 1;
 const ratingSymbols = {
-    "colors1": ["🔴", "🟠", "🟡", "🟢", "🔵",], // "⚪", "⚫",
+    "colors1": ["🔴", "🟠", "🟡", "🟢", "🔵",],
     "digitsOpen": ["➀", "➁", "➂", "➃", "➄", "➅", "➆", "➇", "➈", "➉",],
     "digitsFilled": ["➊","➋","➌","➍","➎","➏","➐","➑","➒","➓",],
     "moonPhases": ["🌑", "🌒", "🌓", "🌔", "🌕"],
 }
 
 const flagSymbols = {
-    // "default": [
-    //     "🔥",
-    //     "🚩",
-    //     "⚠️",
-    //     "🚧",
-    //     "🏁",
-    //     "🎯",
-    //     "🚀",
-    //     "🐂"
-    // ],
     "default": [
         "🚀",
         "🎯",
@@ -59,7 +49,6 @@ const flagKeys = {
     ],
 }
 
-
 const SCALE1 = ratingSymbols["colors1"];
 const SCALE2 = flagSymbols["default"];
 const FLAG_KEYS = flagKeys["default"];
@@ -78,16 +67,17 @@ interface FocusTrackerConfiguration {
     tags: string[];
     tagSet: string[];
     lastDisplayedDate: string;
-    daysToShow: number;
     logPropertyName: string;
     ratingSymbols: string[];
     flagSymbols: string[];
     flagKeys: string[];
     titlePropertyNames: string[];
-    daysToLoad: number;
+    daysInPast: number;
+    daysInFuture: number;
+    focalDate: Date;
     rootElement: HTMLElement | undefined;
     focusTracksGoHere: HTMLElement | undefined;
-};
+}
 
 const DEFAULT_CONFIGURATION = (): FocusTrackerConfiguration => ({
     path: "",
@@ -96,13 +86,14 @@ const DEFAULT_CONFIGURATION = (): FocusTrackerConfiguration => ({
     tags: [],
     tagSet: [],
     lastDisplayedDate: getTodayDate(),
-    daysToShow: DAYS_TO_SHOW,
     logPropertyName: "focus-logs",
     ratingSymbols: SCALE1,
     flagSymbols: SCALE2,
     flagKeys: FLAG_KEYS,
     titlePropertyNames: ["track-label", "focus-tracker-title", "title"],
-    daysToLoad: DAYS_TO_LOAD,
+    daysInPast: 14,
+    daysInFuture: 14,
+    focalDate: new Date(),
     rootElement: undefined,
     focusTracksGoHere: undefined,
 });
@@ -126,21 +117,6 @@ function patternsToRegex(patterns: string[]): RegExp[] {
         return new RegExp(".*" + pattern + ".*");
     });
 }
-
-// Function to filter a configuration dictionary based on a set of private keys.
-// function filterConfiguration<T>(
-//     yamlString: string,
-//     privateKeys: Set<string>,
-//     parseFunction: (yaml: string) => { [key: string]: T }
-// ): { [key: string]: T } {
-//     const rawConfiguration: { [key: string]: T } = parseFunction(yamlString);
-//     const filteredConfiguration: { [key: string]: T } = Object.fromEntries(
-//         Object.entries(rawConfiguration).filter(([key, _]) => {
-//             return privateKeys.has(key);
-//         })
-//     );
-//     return filteredConfiguration;
-// }
 
 function kebabToCamel(s: string): string {
     return s.replace(/(-\w)/g, m => m[1].toUpperCase());
@@ -166,45 +142,13 @@ function getTodayDate(): string {
 function getDaysDifference(startDateId: string, endDateId: string): number {
     const start = new Date(startDateId);
     const end = new Date(endDateId);
-    const oneDay = 24 * 60 * 60 * 1000; // hours * minutes * seconds * milliseconds
+    const oneDay = 24 * 60 * 60 * 1000;
 
     const diffInTime = Math.abs(end.getTime() - start.getTime());
     const diffInDays = Math.round(diffInTime / oneDay);
 
     return diffInDays;
 }
-
-
-function composeFlagDescription(value, labelMap) {
-}
-
-// From: <https://forum.obsidian.md/t/getting-backlinks-tags-and-frontmatter-entries-for-a-note/34082/2>
-//
-// ```
-// file = app.vault.getAbstractFileByPath("your/file.md")
-// ```
-// - `metadata` contains all values except backlinks: <https://github.com/obsidianmd/obsidian-api/blob/c01fc3074deeb3dfc6ee02546d113b448735b294/obsidian.d.ts#L388-L425>
-//
-// links?: LinkCache[];
-// embeds?: EmbedCache[];
-// tags?: TagCache[];
-// headings?: HeadingCache[];
-// sections?: SectionCache[];
-// listItems?: ListItemCache[];
-// frontmatter?: FrontMatterCache;
-// blocks?: Record<string, BlockCache
-//
-// - If a file has no frontmatter, `metadata.frontmatter` will not exist
-// - Tags need to be collected in two places:
-//  -   `metadata.frontmatter.tags`
-//  -   `metadata.tags`
-// ```
-// metadata = app.metadataCache.getFileCache(file)
-// ```
-
-// ```
-// backlinks = app.vault.metadataCache.getBacklinksForFile(file)
-// ```
 
 export function getMetadata(
     app: App,
@@ -225,27 +169,18 @@ export function getMetadata(
     return app.metadataCache.getFileCache(file) || null;
 }
 
-// export function getFrontMatter(
-//     app: App,
-//     filePathOrFile?: string | TFile,
-// ): FrontMatterCache {
-//     return getMetadata(app, filePathOrFile)?.frontmatter || {} ;
-// }
-
 export function extractTags(metadata: CachedMetadata | null): string[] {
     if (metadata === null) {
         return [];
     }
     const tagSet = new Set<string>();
 
-    // Collect tags from metadata.tags
     if (metadata.tags) {
         metadata.tags.forEach((tag) => {
             tagSet.add(tag.tag.replace(/^#/,""));
         });
     }
 
-    // Collect tags from metadata.frontmatter.tags
     if (metadata.frontmatter && Array.isArray(metadata.frontmatter.tags)) {
         metadata.frontmatter.tags.forEach((tag: string) => {
             tagSet.add(tag);
@@ -273,7 +208,6 @@ export default class FocusTracker {
     }
 
     async refresh() {
-        // 1. get all the focus tracks
         const files = this.loadFiles();
         if (files.length === 0) {
             this.renderNoFocussFoundMessage();
@@ -290,10 +224,8 @@ export default class FocusTracker {
             return [await this.getFocusTargetLabel(f.path), f];
         }));
 
-        // Sort the array based on the labels (first element of the tuple)
         focalTargetLabels.sort((a, b) => a[0].localeCompare(b[0]));
 
-        // Iterate through the sorted array to render logs
         for (const [focusTargetLabel, f] of focalTargetLabels) {
             const focusLogs = await this.readFocusLogs(f.path);
             await this.renderFocusLogs(
@@ -356,15 +288,10 @@ export default class FocusTracker {
             let configuration = Object.assign(
                 {},
                 DEFAULT_CONFIGURATION(),
-                // this.removePrivateConfiguration(JSON.parse(configurationString)),
-                // parseYaml(configurationString).filter( [key: string, value: any] => {
-                //     return PRIVATE_CONFIGURATION.has(key);
-                // });
                 filterDictionary(normalizeKeys(parseYaml(configurationString)), (key, value) => {
                     return !PRIVATE_CONFIGURATION.has(key);
                 }),
             );
-            configuration.daysToLoad = configuration.daysToShow + 1;
             if (configuration.path && configuration.paths.length === 0) {
                 if (Array.isArray(configuration.path)) {
                     configuration.paths = [ ... configuration.path]
@@ -381,7 +308,6 @@ export default class FocusTracker {
         }
     }
 
-
     renderNoFocussFoundMessage(): void {
         this.rootElement?.empty();
         this.rootElement?.createEl("div", {
@@ -397,10 +323,186 @@ export default class FocusTracker {
         return rootElement;
     }
 
-    getLastDate() {
-        let lastDate = new Date();
-        lastDate.setDate(lastDate.getDate() + 7);
-        return lastDate;
+    renderHeader(parent: HTMLElement): void {
+        const header = parent.createEl("div", {
+            cls: "focus-tracker__header focus-tracker__row",
+        });
+
+        // Create the controls container
+        const controlsContainer = header.createEl("div", {
+            cls: "focus-tracker__controls",
+        });
+
+        // Past Days Section
+        const pastSection = this.createControlSection(
+            controlsContainer,
+            "Days Past:",
+            this.configuration.daysInPast,
+            1,
+            14,
+            (value) => {
+                this.configuration.daysInPast = value;
+                this.refresh();
+            }
+        );
+
+        // Focal Date Section
+        const focalDateSection = controlsContainer.createEl("div", {
+            cls: "focus-tracker__control-section",
+        });
+
+        focalDateSection.createEl("span", {
+            text: "Focal Date:",
+            cls: "focus-tracker__control-label",
+        });
+
+        const focalDateInput = focalDateSection.createEl("input", {
+            type: "date",
+            value: this.configuration.focalDate.toISOString().split("T")[0],
+            cls: "focus-tracker__focal-date",
+        });
+
+        const decrementDateBtn = focalDateSection.createEl("button", {
+            text: "◀",
+            cls: "focus-tracker__btn-date",
+        });
+
+        const incrementDateBtn = focalDateSection.createEl("button", {
+            text: "▶",
+            cls: "focus-tracker__btn-date",
+        });
+
+        const todayBtn = focalDateSection.createEl("button", {
+            text: "Today",
+            cls: "focus-tracker__btn-today",
+        });
+
+        decrementDateBtn.onclick = () => {
+            this.configuration.focalDate.setDate(this.configuration.focalDate.getDate() - 1);
+            focalDateInput.value = this.configuration.focalDate.toISOString().split("T")[0];
+            this.refresh();
+        };
+
+        incrementDateBtn.onclick = () => {
+            this.configuration.focalDate.setDate(this.configuration.focalDate.getDate() + 1);
+            focalDateInput.value = this.configuration.focalDate.toISOString().split("T")[0];
+            this.refresh();
+        };
+
+        todayBtn.onclick = () => {
+            this.configuration.focalDate = new Date();
+            focalDateInput.value = this.configuration.focalDate.toISOString().split("T")[0];
+            this.refresh();
+        };
+
+        focalDateInput.onchange = (event) => {
+            this.configuration.focalDate = new Date(focalDateInput.value);
+            this.refresh();
+        };
+
+        // Future Days Section
+        const futureSection = this.createControlSection(
+            controlsContainer,
+            "Days Future:",
+            this.configuration.daysInFuture,
+            1,
+            14,
+            (value) => {
+                this.configuration.daysInFuture = value;
+                this.refresh();
+            }
+        );
+
+        // Render date cells
+        this.renderDateCells(header);
+    }
+
+    private createControlSection(
+        parent: HTMLElement,
+        label: string,
+        initialValue: number,
+        minValue: number,
+        defaultValue: number,
+        onChange: (value: number) => void
+    ): HTMLElement {
+        const section = parent.createEl("div", {
+            cls: "focus-tracker__control-section",
+        });
+
+        section.createEl("span", {
+            text: label,
+            cls: "focus-tracker__control-label",
+        });
+
+        const input = section.createEl("input", {
+            type: "number",
+            value: initialValue.toString(),
+            cls: "focus-tracker__days-input",
+        });
+        input.setAttribute("min", minValue.toString());
+
+        const decrementBtn = section.createEl("button", {
+            text: "-",
+            cls: "focus-tracker__btn-decrement",
+        });
+
+        const incrementBtn = section.createEl("button", {
+            text: "+",
+            cls: "focus-tracker__btn-increment",
+        });
+
+        const resetBtn = section.createEl("button", {
+            text: "Reset",
+            cls: "focus-tracker__btn-reset",
+        });
+
+        input.onchange = () => {
+            const newValue = Math.max(minValue, parseInt(input.value));
+            input.value = newValue.toString();
+            onChange(newValue);
+        };
+
+        decrementBtn.onclick = () => {
+            if (parseInt(input.value) > minValue) {
+                input.value = (parseInt(input.value) - 1).toString();
+                onChange(parseInt(input.value));
+            }
+        };
+
+        incrementBtn.onclick = () => {
+            input.value = (parseInt(input.value) + 1).toString();
+            onChange(parseInt(input.value));
+        };
+
+        resetBtn.onclick = () => {
+            input.value = defaultValue.toString();
+            onChange(defaultValue);
+        };
+
+        return section;
+    }
+
+    private renderDateCells(header: HTMLElement): void {
+        const totalDays = this.configuration.daysInPast + this.configuration.daysInFuture + 1;
+
+        let currentDate = new Date(this.configuration.focalDate);
+        currentDate.setDate(currentDate.getDate() - this.configuration.daysInPast);
+
+        for (let i = 0; i < totalDays; i++) {
+            const day = currentDate.getDate().toString();
+            const cellEl = header.createEl("div", {
+                cls: `focus-tracker__cell focus-tracker__cell--${this.getDayOfWeek(currentDate)}`,
+                text: day,
+            });
+
+            if (this.isSameDate(currentDate, this.configuration.focalDate)) {
+                cellEl.addClass("focus-tracker__cell--today");
+            } else if (currentDate > this.configuration.focalDate) {
+                cellEl.addClass("focus-tracker__cell--future");
+            }
+
+            currentDate.setDate(currentDate.getDate() + 1);
+        }
     }
 
     get ratingSymbols() {
@@ -421,37 +523,6 @@ export default class FocusTracker {
         return this._flagSymbols;
     }
 
-
-    renderHeader(parent: HTMLElement): void {
-        const header = parent.createEl("div", {
-            cls: "focus-tracker__header focus-tracker__row",
-        });
-
-        header.createEl("div", {
-            text: "",
-            cls: "focus-tracker__cell--focus-target-label focus-tracker__cell",
-        });
-        const focalDate = new Date();
-        const lastDate = this.getLastDate();
-        let indexDate = lastDate;
-        indexDate.setDate(indexDate.getDate() - this.configuration.daysToLoad + 1);
-        for (let i = 0; i < this.configuration.daysToLoad; i++) {
-            const day = indexDate.getDate().toString();
-            let headerLabelEl = header.createEl("div", {
-                cls: `focus-tracker__cell focus-tracker__cell--${this.getDayOfWeek(indexDate,)}`,
-                text: day,
-            });
-            // is today
-            if (indexDate.toISOString() === focalDate.toISOString()) {
-                headerLabelEl.addClass("focus-tracker__cell--today");
-            } else if (indexDate >= focalDate) {
-                headerLabelEl.addClass("focus-tracker__cell--future");
-            }
-
-            indexDate.setDate(indexDate.getDate() + 1);
-        }
-    }
-
     async getFrontmatter(path: string): Promise<{[key: string]: any}> {
         const file: TAbstractFile|null = this.app.vault.getAbstractFileByPath(path);
         if (!file || !(file instanceof TFile)) {
@@ -459,10 +530,6 @@ export default class FocusTracker {
             return {};
         }
 
-        // This method does not reflect changes made immediately
-        // return await this.app.metadataCache.getFileCache(file)?.frontmatter || {};
-
-        // this method does reflects changes made in `stepFocusLogEntry` immediately
         try {
             return await this.app.vault.read(file).then((result) => {
                 const frontmatter = result.split("---")[1];
@@ -474,7 +541,6 @@ export default class FocusTracker {
         } catch (error) {
             return {};
         }
-
     }
 
     normalizeLogs(source: { [date: string]: any }): FocusLogsType {
@@ -501,7 +567,7 @@ export default class FocusTracker {
         let focusTargetLabel = path.split('/').pop()?.replace('.md', '') || path;
         if (this.configuration.titlePropertyNames && this.configuration.titlePropertyNames.length > 0) {
             let frontmatter = await this.getFrontmatter(path) || {};
-            this.configuration.titlePropertyNames.slice().reverse().forEach( (propertyName: string) => {
+            this.configuration.titlePropertyNames.slice().reverse().forEach((propertyName: string) => {
                 if (frontmatter[propertyName]) {
                     focusTargetLabel = frontmatter[propertyName] || focusTargetLabel;
                 }
@@ -544,30 +610,29 @@ export default class FocusTracker {
         focusTitleLink.setAttribute("href", path);
         focusTitleLink.setAttribute("aria-label", path);
 
-        const lastDate = this.getLastDate();
-        let indexDate = lastDate;
-        indexDate.setDate(indexDate.getDate() - this.configuration.daysToLoad + 1); // todo, why +1?
+        // Calculate date range based on focal date and past/future days
+        let startDate = new Date(this.configuration.focalDate);
+        startDate.setDate(startDate.getDate() - this.configuration.daysInPast);
 
-        for (let i = 0; i < this.configuration.daysToLoad; i++) {
-            const dateString: string = this.getDateId(indexDate);
-            // const entryValue: number = entries[dateString] || 0;
+        for (let i = 0; i < (this.configuration.daysInPast + this.configuration.daysInFuture + 1); i++) {
+            const dateString: string = this.getDateId(startDate);
             const {
                 hasValue,
                 symbol,
                 tooltip,
                 entryScalarValue,
             } = this.getDisplayValues(entries[dateString]);
+
             const focusCell = row.createEl("div", {
                 cls: `focus-tracker__cell
                 focus-tick
                 focus-tick-entry
                 focus-tick--${hasValue}
-                focus-tracker__cell--${this.getDayOfWeek(indexDate)}`,
+                focus-tracker__cell--${this.getDayOfWeek(startDate)}`,
                 title: tooltip,
             });
 
             focusCell.setAttribute("ticked", hasValue.toString());
-
             focusCell.setAttribute("date", dateString);
             focusCell.setAttribute("focusTrackerPath", path);
             focusCell.setAttribute("focusRating", entryScalarValue?.toString() || "");
@@ -575,144 +640,59 @@ export default class FocusTracker {
 
             focusCell.addEventListener("click", (e: MouseEvent) => {
                 if (e.altKey) {
-                    // Decrement rating on shift-click
                     this.stepFocusLogEntry(focusCell, -1);
                 } else {
-                    // Increment rating on plain left-click
                     this.stepFocusLogEntry(focusCell, 1);
                 }
             });
 
-            // focusCell.addEventListener("mouseover", (event) => {
-            //     this._context.app.workspace.trigger("hover-link", {
-            //         event,
-            //         source: VIEW_TYPE,
-            //         hoverParent: focusCell.parentElement,
-            //         targetEl: focusCell,
-            //         linktext: linkPath,
-            //     });
-            // });
-
             focusCell.addEventListener('contextmenu', (event) => {
                 event.preventDefault();
-                const menu = new Menu()
-                this.ratingSymbols.slice().reverse().forEach( (symbol: string, rSymbolIndex: number) => {
+                const menu = new Menu();
+                this.ratingSymbols.slice().reverse().forEach((symbol: string, rSymbolIndex: number) => {
                     let symbolIndex = this.configuration.ratingSymbols.length - rSymbolIndex;
                     let newValue = symbolIndex;
                     menu.addItem((item) =>
                         item
-                            // .setTitle(`Set rating ${symbolIndex}: ${symbol}`)
                             .setTitle(`${symbol} (Rating = ${newValue})`)
                             .setIcon("open")
-                            .onClick( async () =>  {
+                            .onClick(async () => {
                                 await this.setFocusRating(path, dateString, newValue);
                             })
-                        )
+                    );
                 });
+
                 menu.addSeparator();
                 menu.addItem((item) =>
-                                item
-                                .setTitle(`Clear`)
-                                .setIcon("open")
-                                .onClick( async () =>  {
-                                    await this.setFocusRating(path, dateString, 0);
-                                })
-                            )
+                    item
+                        .setTitle(`Clear`)
+                        .setIcon("open")
+                        .onClick(async () => {
+                            await this.setFocusRating(path, dateString, 0);
+                        })
+                );
+
                 menu.addSeparator();
-                this.configuration.flagSymbols.forEach( (symbol: string, symbolIndex: number) => {
-                // this.configuration.flagSymbols.slice().reverse().forEach( (symbol: string, rSymbolIndex: number) => {
-                    // let symbolIndex = this.configuration.flagSymbols.length - rSymbolIndex - 1;
+                this.configuration.flagSymbols.forEach((symbol: string, symbolIndex: number) => {
                     let newValue = 0 - (symbolIndex + 1);
                     let flagKey = this.configuration.flagKeys?.[symbolIndex];
                     let flagDesc = flagKey ? `: ${flagKey}` : "";
-                    let title = `${symbol} (Flag ${-1 * newValue}${flagDesc})`
+                    let title = `${symbol} (Flag ${-1 * newValue}${flagDesc})`;
                     menu.addItem((item) =>
-                                    item
-                                    // .setTitle(`Set rating ${index}: ${symbol}`)
-                                    .setTitle(title)
-                                    .setIcon("open")
-                                    .onClick( async () =>  {
-                                        await this.setFocusRating(path, dateString, newValue);
-                                    })
-                                )
+                        item
+                            .setTitle(title)
+                            .setIcon("open")
+                            .onClick(async () => {
+                                await this.setFocusRating(path, dateString, newValue);
+                            })
+                    );
                 });
-                menu.showAtMouseEvent(event)
-            })
+                menu.showAtMouseEvent(event);
+            });
 
-
-            indexDate.setDate(indexDate.getDate() + 1);
+            startDate.setDate(startDate.getDate() + 1);
         }
     }
-
-    getColorForValue(currentValue: number, maxScale: number, baseColor: string, isLightMode: boolean): string {
-        // Base colors mapped to their hex values
-        const colorMap: { [key: string]: string } = {
-            red: '#ff0000',
-            blue: '#0000ff',
-            green: '#008000',
-            cyan: '#00ffff',
-            magenta: '#ff00ff',
-            yellow: '#ffff00',
-            black: '#000000',
-            white: '#ffffff',
-            gray: '#808080',
-            orange: '#ffa500',
-            purple: '#800080',
-            pink: '#ffc0cb'
-        };
-
-        // Get the base hex color from the map
-        let hexColor = colorMap[baseColor.toLowerCase()] || '#000000';
-
-        // Calculate the scale index
-        let scaleIndex = currentValue <= 0 ? 0 : currentValue >= maxScale ? maxScale : currentValue;
-
-        // Convert hex color to RGB
-        let r = parseInt(hexColor.substring(1, 3), 16);
-        let g = parseInt(hexColor.substring(3, 5), 16);
-        let b = parseInt(hexColor.substring(5, 7), 16);
-
-        // Calculate the percentage change for lightening or darkening
-        let percentageChange = (scaleIndex / maxScale) * 100;
-
-        // Adjust color brightness based on the mode and current value
-        let adjustBrightness = (colorComponent: number, percentage: number): number => {
-            if (isLightMode) {
-                return Math.min(255, Math.round(colorComponent + (255 - colorComponent) * percentage / 100));
-            } else {
-                return Math.max(0, Math.round(colorComponent * (1 - percentage / 100)));
-            }
-        };
-
-        // Apply brightness adjustment
-        r = adjustBrightness(r, percentageChange);
-        g = adjustBrightness(g, percentageChange);
-        b = adjustBrightness(b, percentageChange);
-
-        // Convert back to hex
-        const toHex = (colorComponent: number) => colorComponent.toString(16).padStart(2, '0');
-        return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
-    }
-
-    getFocusRatingFromElement(el: HTMLElement): number {
-        const attrValue = el.getAttribute("focusRating");
-        if (!attrValue || attrValue === null || attrValue.trim() === "") {
-            return 0;  // Returns 0 for null, undefined, or empty string attributes
-        }
-        const numValue = Number(attrValue);
-        // Returns 0 if the value is NaN or 0, otherwise returns 10
-        return isNaN(numValue) || numValue === 0 ? 0 : numValue;
-    }
-
-    // getScaleValue(input: string | number, scale: string[]): number {
-    //     if (typeof input === 'string') {
-    //         const index = scale.indexOf(input);
-    //         return index !== -1 ? index : 0;
-    //     } else if (typeof input === 'number') {
-    //         return input;
-    //     }
-    //     return 0; // Default return for unexpected input types
-    // }
 
     getDisplayValues(input: string | number): {
         hasValue: boolean,
@@ -735,7 +715,7 @@ export default class FocusTracker {
                 result.tooltip = input;
             }
         } else if (typeof input === 'number') {
-            result.entryScalarValue = input
+            result.entryScalarValue = input;
             if (result.entryScalarValue === 0) {
                 result.hasValue = false;
             } else {
@@ -755,7 +735,7 @@ export default class FocusTracker {
                     result.symbol = getSymbol(this.configuration.flagSymbols, arrayIndex);
                     let flagKey = this.configuration.flagKeys?.[arrayIndex];
                     let flagDesc = flagKey ? `: ${flagKey}` : "";
-                    result.tooltip = `Flag ${-1 * result.entryScalarValue}${flagDesc}`
+                    result.tooltip = `Flag ${-1 * result.entryScalarValue}${flagDesc}`;
                 }
             }
         }
@@ -781,53 +761,49 @@ export default class FocusTracker {
         await this.setFocusRating(focusTrackerPath, date, newValue);
     }
 
+    getFocusRatingFromElement(el: HTMLElement): number {
+        const attrValue = el.getAttribute("focusRating");
+        if (!attrValue || attrValue === null || attrValue.trim() === "") {
+            return 0;
+        }
+        const numValue = Number(attrValue);
+        return isNaN(numValue) || numValue === 0 ? 0 : numValue;
+    }
+
     async setFocusRating(focusTrackerPath: string | null, date: string | null, newValue: number) {
         if (!focusTrackerPath || !date) {
             new Notice(`${PLUGIN_NAME}: Missing data attributes for focus tracking.`);
+            return;
         }
-        const file: TAbstractFile | null = this.app.vault.getAbstractFileByPath(focusTrackerPath as string);
+
+        const file: TAbstractFile | null = this.app.vault.getAbstractFileByPath(focusTrackerPath);
         if (!file || !(file instanceof TFile)) {
             new Notice(`${PLUGIN_NAME}: File missing while trying to change focus rating.`);
-        } else {
-            await this.app.fileManager.processFrontMatter(file, (frontmatter: { [key: string]: any }) => {
-                let entries: { [key: string]: number } = frontmatter[this.configuration.logPropertyName] || {};
-                entries[date as string] = newValue;
-                const sortedEntriesArray = Object.entries(entries).sort(([date1], [date2]) => new Date(date1).getTime() - new Date(date2).getTime());
-                const sortedEntriesObject = Object.fromEntries(sortedEntriesArray);
-                frontmatter[this.configuration.logPropertyName] = sortedEntriesObject;
-                new Notice(`Setting rating: ${newValue}`, 600);
-            });
-            // await this.refresh();
-            let fpath = file?.path || "";
-            await this.renderFocusLogs(
-                fpath,
-                await this.getFocusTargetLabel(fpath),
-                await this.readFocusLogs(fpath),
-            );
+            return;
         }
+
+        await this.app.fileManager.processFrontMatter(file, (frontmatter: { [key: string]: any }) => {
+            let entries: { [key: string]: number } = frontmatter[this.configuration.logPropertyName] || {};
+            entries[date] = newValue;
+            const sortedEntriesArray = Object.entries(entries)
+                .sort(([date1], [date2]) => new Date(date1).getTime() - new Date(date2).getTime());
+            const sortedEntriesObject = Object.fromEntries(sortedEntriesArray);
+            frontmatter[this.configuration.logPropertyName] = sortedEntriesObject;
+            new Notice(`Setting rating: ${newValue}`, 600);
+        });
+
+        let fpath = file.path;
+        await this.renderFocusLogs(
+            fpath,
+            await this.getFocusTargetLabel(fpath),
+            await this.readFocusLogs(fpath),
+        );
     }
 
-    writeFile(file: TAbstractFile, content: string): Promise<void> {
-        if (!content) {
-            new Notice(
-                `${PLUGIN_NAME}: could not save changes due to missing content`,
-            );
-            return Promise.reject(new Error("Missing content"));
-        }
-
-        if (!file ||!(file instanceof TFile)) {
-            new Notice(
-                `${PLUGIN_NAME}: could not save changes due to missing file`,
-            );
-            return Promise.reject(new Error("Missing file"));
-        }
-
-        try {
-            return this.app.vault.modify(file, content);
-        } catch (error) {
-            new Notice(`${PLUGIN_NAME}: could not save changes`);
-            return Promise.reject(error);
-        }
+    private isSameDate(date1: Date, date2: Date): boolean {
+        return date1.getFullYear() === date2.getFullYear() &&
+               date1.getMonth() === date2.getMonth() &&
+               date1.getDate() === date2.getDate();
     }
 
     removeAllChildNodes(parent: HTMLElement): void {
@@ -843,25 +819,11 @@ export default class FocusTracker {
             .replace(/ /g, "___");
     }
 
-    createDateFromFormat(dateString: string): Date {
-        const [year, month, day] = dateString.split("-").map(Number);
-        const date = new Date();
-
-        date.setFullYear(year);
-        date.setMonth(month - 1);
-        date.setDate(day);
-
-        return date;
-    }
-
     getDateId(date: Date): string {
         const year = date.getFullYear();
         const month = String(date.getMonth() + 1).padStart(2, "0");
         const day = String(date.getDate()).padStart(2, "0");
-
-        let dateId = `${year}-${month}-${day}`;
-
-        return dateId;
+        return `${year}-${month}-${day}`;
     }
 
     getDayOfWeek(date: Date): string {
@@ -881,8 +843,11 @@ export default class FocusTracker {
 
     generateUniqueId(): string {
         const timestamp = Date.now();
-        const randomNum = Math.floor(Math.random() * 10000); // Adjust the range as needed
+        const randomNum = Math.floor(Math.random() * 10000);
         return `focustracker-${timestamp}-${randomNum}`;
     }
 }
+
+
+
 
