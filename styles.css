@@ -146,12 +146,27 @@ body {
     cursor: pointer;
 }
 
-.theme-light .focus-tick--false::before {
-    content: "⚪";
+.focus-tick {
 }
 
+/* .focus-tick--false::before { */
+/*     font-size: 80%; */
+/*     border-radius: 20px; */
+/* } */
+.focus-tick {
+}
+.focus-tick::before {
+    font-size: 80%;
+    border-radius: 20px;
+}
+
+.theme-light .focus-tick--false::before {
+    content: "⚪";
+    border: solid 2px #00000044;
+}
 .theme-dark .focus-tick--false::before {
     content: "⚫";
+    border: solid 2px #ffffff44;
 }
 
 .focus-tracker-container {
