@@ -1,15 +1,16 @@
+
 body {
   /* --focustracker-cell-fontfamily: "Source Code Pro", monospace; */
     --focustracker-cell-fontfamily: "Ubuntu", sans-serif;
-	--focustracker-cell-font-size: 13px;
-	--focustracker-border-width: 1px;
-	--focustracker-border-color: var(--color-base-30);
-	--focustracker-tick-height: 13px;
-	--focustracker-tick-width: 13px;
-	--focustracker-tick-color: var(--checkbox-color);
-	--focustracker-tick-radius: 10px;
-	--focustracker-tick-hover-color: var(--color-base-30);
-	--focustracker-row-hover-color: var(--color-base-10);
+    --focustracker-cell-font-size: 13px;
+    --focustracker-border-width: 1px;
+    --focustracker-border-color: var(--color-base-30);
+    --focustracker-tick-height: 13px;
+    --focustracker-tick-width: 13px;
+    --focustracker-tick-color: var(--checkbox-color);
+    --focustracker-tick-radius: 10px;
+    --focustracker-tick-hover-color: var(--color-base-30);
+    --focustracker-row-hover-color: var(--color-base-10);
 }
 
 .theme-light {
@@ -29,74 +30,74 @@ body {
 
 .cm-preview-code-block.markdown-rendered:has(.block-language-focustracker),
 .block-language-focustracker {
-	width: fit-content;
+    width: fit-content;
 }
 
 .focus-tracker {
-	display: table;
-	table-layout: fixed;
-	border-collapse: collapse;
+    display: table;
+    table-layout: fixed;
+    border-collapse: collapse;
 }
 
 .focus-tracker__row {
-	display: table-row;
+    display: table-row;
 }
 
 .focus-tracker__row + .focus-tracker__row {
-	/* border-top: var(--focustracker-border-width) solid var(--focustracker-border-color); */
-	height: 20px;
+    /* border-top: var(--focustracker-border-width) solid var(--focustracker-border-color); */
+    height: 20px;
 }
 
 .focus-tracker__row.focus-tracker__header {
-	height: 18px;
+    height: 18px;
 }
 
 .focus-tracker__row:not(.focus-tracker__header):hover {
-	/* background-color: var(--focustracker-row-hover-color); */
+    /* background-color: var(--focustracker-row-hover-color); */
 }
 
 .focus-tracker__cell {
-	box-sizing: border-box;
-	display: table-cell;
-	font-family: var(--focustracker-cell-fontfamily);
-	font-size: var(--focustracker-cell-font-size);
-	/* height: 24px; */
-	/* min-width: 24px; */
-	vertical-align: middle;
-	width: 20px;
-	font-weight: 500;
+    box-sizing: border-box;
+    display: table-cell;
+    font-family: var(--focustracker-cell-fontfamily);
+    font-size: var(--focustracker-cell-font-size);
+    /* height: 24px; */
+    /* min-width: 24px; */
+    vertical-align: middle;
+    width: 20px;
+    font-weight: 500;
 }
 
 .focus-tracker__cell:not(:last-child) {
-	/* border-right: var(--focustracker-border-width) solid var(--focustracker-border-color); */
-	border-right: solid 6px #00000000;
+    /* border-right: var(--focustracker-border-width) solid var(--focustracker-border-color); */
+    border-right: solid 6px #00000000;
 }
 
 .focus-tracker__cell--focus-target-label {
-	padding: 0 4px;
+    padding: 0 4px;
 }
 .focus-tracker__cell--focus-target-label a {
 
-	display: inline-block;
+    display: inline-block;
     font-weight: 500;
     font-size: 0.8rem;
-	max-width: 100%;
+    max-width: 100%;
 
-	/* padding-top: 0.5rem; */
-	/* padding-bottom: 0.5rem; */
-	/* height: 2rem; */
-	/* text-overflow: ellipsis; */
+    /* padding-top: 0.5rem; */
+    /* padding-bottom: 0.5rem; */
+    /* height: 2rem; */
+    /* text-overflow: ellipsis; */
     /* overflow-wrap: break-word !important; */
     /* white-space: normal; */
 
     display: block !important;
     font-weight: 500;
     font-size: 0.8rem;
-    max-width: 20rem !important;
-	width: fit-content;
-	overflow: hidden;
-	white-space: nowrap;
-	text-overflow: ellipsis;
+    max-width: 10rem !important;
+    width: fit-content;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
     overflow-wrap: break-word !important;
 }
 
@@ -104,24 +105,6 @@ body {
     border-top: solid 2px !important;
     color: var(--text-muted);
 }
-
-.focus-tracker__cell--today::before {
-    /* display: absolute; */
-    /* top: 0; */
-    /* left: 0; */
-    /* content: " "; */
-    /* width: 100%; */
-    /* height: 100%; */
-    /* border-bottom: solid 1px; */
-}
-
-.focus-tracker__cell--today::after {
-    /* display: absolute; */
-    /* top: 0; */
-    /* right: 0; */
-    /* content: "|"; */
-}
-
 
 .focus-tracker__cell--future {
     font-weight: 100;
@@ -131,38 +114,31 @@ body {
 
 .focus-tracker__cell--saturday,
 .focus-tracker__cell--sunday {
-	background-color: var(--focustracker-weekend-color);
+    background-color: var(--focustracker-weekend-color);
 }
 
 .focus-tracker__cell--focus-target-label + .focus-tracker__cell {
-	display: none;
+    display: none;
 }
 
 .focus-tracker__header .focus-tracker__cell {
     font-size: 80%;
     border-top: solid 2px #00000000;
     padding-bottom: 0.3rem;
-	text-align: center;
+    text-align: center;
 }
 
 /* FOCUS TICK */
 
 .focus-tick {
-	line-height: 0;
-	text-align: center;
-	/* border-radius: 40rem; */
+    line-height: 0;
+    text-align: center;
 }
 .focus-tick-entry {
-    /* background-color: blue; */
-    /* content: attr(bg-color); */
-    /* content: " "; */
-    /* background-color: attr(bg-color, "#ffffff00"); */
-    /* --bg-color: attr(bg-color-x, "#ffff00"); */
-    /* background-color: var(--focus-cell-bg-color) !important; */
 }
+
 .focus-tick:hover {
-	cursor: pointer;
-	/* background-color: var(--focustracker-tick-hover-color); */
+    cursor: pointer;
 }
 
 .theme-light .focus-tick--false::before {
@@ -183,47 +159,15 @@ body {
     display: flex;
 }
 
-/* .focus-tick--true:before { */
-/* 	background: var(--focustracker-tick-color); */
-/* 	/1* background: attr(bg-color) !important; *1/ */
-/* 	border-radius: var(--focustracker-tick-radius); */
-/* 	content: ''; */
-/* 	display: inline-block; */
-/* 	height: var(--focustracker-tick-height); */
-/* 	width: calc(var(--focustracker-tick-width) * 0.8); */
-/* 	transition: all 0.3s ease; */
-/* } */
-
-/* .focus-tick--true + .focus-tick--true { */
-/* 	text-align: left; */
-/* } */
-/* .focus-tick--true + .focus-tick--true:before { */
-/* 	border-top-left-radius: 0; */
-/* 	border-bottom-left-radius: 0; */
-/* 	margin-left: 0; */
-/* 	width: var(--focustracker-tick-width); */
-/* } */
-
-/* .focus-tick--true:has(+ .focus-tick--true):before { */
-/* 	border-top-right-radius: 0; */
-/* 	border-bottom-right-radius: 0; */
-/* 	width: 100%; */
-/* } */
-
-/* .focus-tick--false + .focus-tick--true:has(+ .focus-tick--true):before { */
-/* 	width: var(--focustracker-tick-width); */
-/* 	margin-left: 4px; */
-/* } */
-
 @media (max-width: 399px) {
-	/* iPhone 14pro and lower, portrait */
-	.focus-tracker__cell {
-		display: none;
-	}
-	.focus-tracker__cell--focus-target-label,
-	.focus-tracker__cell:nth-last-child(-n + 7) {
-		display: table-cell;
-	}
+    /* iPhone 14pro and lower, portrait */
+    .focus-tracker__cell {
+        display: none;
+    }
+    .focus-tracker__cell--focus-target-label,
+    .focus-tracker__cell:nth-last-child(-n + 7) {
+        display: table-cell;
+    }
 }
 
 .focus-title-link {
@@ -245,36 +189,32 @@ body {
     background-color: var(--background-primary);
     border-radius: 0.5rem;
     overflow-x: auto;
-}
-.focus-tracker-table-container {
     margin-top: 1rem;
-    overflow-x: auto;
 }
 
 .focus-tracker {
-    width: 100%;
-    min-width: max-content;
-}
-
-.focus-tracker {
-    min-width: max-content;  /* Prevent table from squishing */
+    /* width: 100%; */
+    /* min-width: max-content; */
+    /* table-layout: fixed; */
 }
 
 .focus-tracker__controls {
     display: grid;
     grid-template-columns: minmax(auto, max-content) 1fr minmax(auto, max-content);
-    gap: 1rem;
+    gap: 0.5rem;
     align-items: center;
+    width: 10rem !important;
 }
 
 .focus-tracker__control-section {
+    border: solid 1px red;
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 0.1rem;
     white-space: nowrap;
 }
 
-/* Make the focal date section centered */
+/* Center the focal date section */
 .focus-tracker__control-section:nth-child(2) {
     justify-content: center;
 }
@@ -285,7 +225,6 @@ body {
     background-color: var(--background-primary);
     z-index: 1;
     padding-right: 1rem;
-    min-width: 150px; /* Adjust based on your needs */
 }
 
 /* Ensure proper cell spacing */
@@ -304,4 +243,9 @@ body {
     width: 4px;
     background: linear-gradient(to right, rgba(0,0,0,0.1), transparent);
     pointer-events: none;
+}
+
+.focus-tracker__days-input {
+    text-align: center;
+    width: 3rem;
 }
