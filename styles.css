@@ -30,7 +30,6 @@ body {
     margin-bottom: 1rem;
     padding: 1rem;
     border-radius: 0.8rem;
-    min-width: 0;
     width: fit-content;
     display: flex;
     flex-direction: column;
@@ -38,7 +37,21 @@ body {
     background-color: var(--focustracker-background-color);
 }
 
-/* New control panel styles */
+.focus-tracker-table-container {
+    overflow-x: auto;
+    border-radius: 0.5rem;
+    background-color: var(--background-primary);
+}
+
+/* Update existing focus-tracker class to work within the new container */
+.focus-tracker {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 1rem;
+}
+
+/* Ensure controls stay separate from table */
 .focus-tracker__controls {
     display: flex;
     align-items: center;
