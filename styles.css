@@ -229,47 +229,65 @@ body {
 .focus-title-link {
 }
 
-/* Add these new classes to your existing styles.css file */
-
-/* Container for the entire focus tracker */
-.focus-tracker-container {
-    margin-top: 1rem;
-    margin-bottom: 1rem;
+/* Control panel layout fixes */
+.focus-tracker__controls-container {
+    background-color: var(--background-secondary);
+    border-radius: 0.5rem;
     padding: 1rem;
-    border-radius: 0.8rem;
-    width: fit-content;
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    background-color: var(--focustracker-background-color);
 }
 
-/* Container specifically for the table */
+.focus-tracker__controls {
+    display: grid;
+    grid-template-columns: minmax(auto, max-content) 1fr minmax(auto, max-content);
+    gap: 1rem;
+    align-items: center;
+}
+
+.focus-tracker__control-section {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    white-space: nowrap;
+}
+
+/* Make the focal date section centered */
+.focus-tracker__control-section:nth-child(2) {
+    justify-content: center;
+}
+
+/* Table layout fixes */
 .focus-tracker-table-container {
-    border-radius: 0.5rem;
+    margin-top: 1rem;
     overflow-x: auto;
 }
 
-/* Controls container to ensure separation from table */
-.focus-tracker__controls-container {
-    /* Reusing your existing control panel styling */
-    background-color: var(--background-secondary);
-    border-radius: 0.5rem;
-    padding: 0.5rem 1rem;
-}
-
-/* Update existing .focus-tracker class to work within new container */
 .focus-tracker {
-    display: table;
-    width: 100%;
-    border-collapse: collapse;
+    min-width: max-content;  /* Prevent table from squishing */
 }
 
-.focus-tracker__row {
-    display: table-row;
+.focus-tracker__cell--focus-target-label {
+    position: sticky;
+    left: 0;
+    background-color: var(--background-primary);
+    z-index: 1;
+    padding-right: 1rem;
+    min-width: 150px; /* Adjust based on your needs */
 }
 
+/* Ensure proper cell spacing */
 .focus-tracker__cell {
-    display: table-cell;
-    vertical-align: middle;
+    padding: 0.25rem 0.5rem;
+    text-align: center;
+}
+
+/* Optional: Add a subtle shadow to the sticky label column */
+.focus-tracker__cell--focus-target-label::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    background: linear-gradient(to right, rgba(0,0,0,0.1), transparent);
+    pointer-events: none;
 }
