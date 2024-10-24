@@ -207,7 +207,7 @@ export default class FocusTracker {
         this.refresh();
     }
 
-async refresh() {
+    async refresh() {
         const files = this.loadFiles();
         if (files.length === 0) {
             this.renderNoFocussFoundMessage();
@@ -222,23 +222,19 @@ async refresh() {
             cls: "focus-tracker-container",
         });
 
-        // Add controls section
-        this.renderControls(focusTrackerContainer);
+        // Add controls section as a separate container
+        const controlsContainer = focusTrackerContainer.createEl("div", {
+            cls: "focus-tracker__controls-container",
+        });
+        this.renderControls(controlsContainer);
 
         // Create table container
         const tableContainer = focusTrackerContainer.createEl("div", {
             cls: "focus-tracker-table-container",
         });
 
-        // Create and store reference to the table element
-        const tableElement = tableContainer.createEl("div", {
-            cls: "focus-tracker",
-        });
-        tableElement.setAttribute("id", this.id);
-        this.configuration.focusTracksGoHere = tableElement;
-
-        // Render the table header
-        this.renderTableHeader(this.configuration.focusTracksGoHere);
+        // Initialize the table and store reference
+        this.configuration.focusTracksGoHere = this.initializeTable(tableContainer);
 
         // Process and render focus logs
         let focalTargetLabels: [string, TFile][] = await Promise.all(files.map(async (f) => {
@@ -257,19 +253,35 @@ async refresh() {
         }
     }
 
+    private initializeTable(container: HTMLElement): HTMLElement {
+        // Create the table element with a unique id
+        const tableElement = container.createEl("div", {
+            cls: "focus-tracker",
+        });
+        tableElement.setAttribute("id", this.id);
+
+        // Add table header
+        this.renderTableHeader(tableElement);
+
+        return tableElement;
+    }
+
     private renderTableHeader(parent: HTMLElement): void {
-        const header = parent.createEl("div", {
+        // Create header row
+        const headerRow = parent.createEl("div", {
             cls: "focus-tracker__header focus-tracker__row",
         });
 
-        // Label cell for alignment with focus target labels
-        header.createEl("div", {
+        // Add label column header
+        headerRow.createEl("div", {
             cls: "focus-tracker__cell focus-tracker__cell--focus-target-label",
+            text: "", // Empty cell for alignment with focus target labels
         });
 
-        // Render date cells
-        this.renderDateCells(header);
+        // Render date cells in header
+        this.renderDateCells(headerRow);
     }
+
 
 
     loadFiles(): TFile[] {
