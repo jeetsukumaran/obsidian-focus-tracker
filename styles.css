@@ -23,8 +23,215 @@ body {
 }
 
 
-/* Existing styles remain the same until .focus-tracker-container */
+.focus-tracker-container {
+    background-color: var(--focustracker-background-color);
+}
 
+.cm-preview-code-block.markdown-rendered:has(.block-language-focustracker),
+.block-language-focustracker {
+	width: fit-content;
+}
+
+.focus-tracker {
+	display: table;
+	table-layout: fixed;
+	border-collapse: collapse;
+}
+
+.focus-tracker__row {
+	display: table-row;
+}
+
+.focus-tracker__row + .focus-tracker__row {
+	/* border-top: var(--focustracker-border-width) solid var(--focustracker-border-color); */
+	height: 20px;
+}
+
+.focus-tracker__row.focus-tracker__header {
+	height: 18px;
+}
+
+.focus-tracker__row:not(.focus-tracker__header):hover {
+	/* background-color: var(--focustracker-row-hover-color); */
+}
+
+.focus-tracker__cell {
+	box-sizing: border-box;
+	display: table-cell;
+	font-family: var(--focustracker-cell-fontfamily);
+	font-size: var(--focustracker-cell-font-size);
+	/* height: 24px; */
+	/* min-width: 24px; */
+	vertical-align: middle;
+	width: 20px;
+	font-weight: 500;
+}
+
+.focus-tracker__cell:not(:last-child) {
+	/* border-right: var(--focustracker-border-width) solid var(--focustracker-border-color); */
+	border-right: solid 6px #00000000;
+}
+
+.focus-tracker__cell--focus-target-label {
+	padding: 0 4px;
+}
+.focus-tracker__cell--focus-target-label a {
+
+	display: inline-block;
+    font-weight: 500;
+    font-size: 0.8rem;
+	max-width: 100%;
+
+	/* padding-top: 0.5rem; */
+	/* padding-bottom: 0.5rem; */
+	/* height: 2rem; */
+	/* text-overflow: ellipsis; */
+    /* overflow-wrap: break-word !important; */
+    /* white-space: normal; */
+
+    display: block !important;
+    font-weight: 500;
+    font-size: 0.8rem;
+    max-width: 20rem !important;
+	width: fit-content;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+    overflow-wrap: break-word !important;
+}
+
+.focus-tracker__cell--today {
+    border-top: solid 2px !important;
+    color: var(--text-muted);
+}
+
+.focus-tracker__cell--today::before {
+    /* display: absolute; */
+    /* top: 0; */
+    /* left: 0; */
+    /* content: " "; */
+    /* width: 100%; */
+    /* height: 100%; */
+    /* border-bottom: solid 1px; */
+}
+
+.focus-tracker__cell--today::after {
+    /* display: absolute; */
+    /* top: 0; */
+    /* right: 0; */
+    /* content: "|"; */
+}
+
+
+.focus-tracker__cell--future {
+    font-weight: 100;
+    font-style: italic;
+    background-color: #00000000;
+}
+
+.focus-tracker__cell--saturday,
+.focus-tracker__cell--sunday {
+	background-color: var(--focustracker-weekend-color);
+}
+
+.focus-tracker__cell--focus-target-label + .focus-tracker__cell {
+	display: none;
+}
+
+.focus-tracker__header .focus-tracker__cell {
+    font-size: 80%;
+    border-top: solid 2px #00000000;
+    padding-bottom: 0.3rem;
+	text-align: center;
+}
+
+/* FOCUS TICK */
+
+.focus-tick {
+	line-height: 0;
+	text-align: center;
+	/* border-radius: 40rem; */
+}
+.focus-tick-entry {
+    /* background-color: blue; */
+    /* content: attr(bg-color); */
+    /* content: " "; */
+    /* background-color: attr(bg-color, "#ffffff00"); */
+    /* --bg-color: attr(bg-color-x, "#ffff00"); */
+    /* background-color: var(--focus-cell-bg-color) !important; */
+}
+.focus-tick:hover {
+	cursor: pointer;
+	/* background-color: var(--focustracker-tick-hover-color); */
+}
+
+.theme-light .focus-tick--false::before {
+    content: "⚪";
+}
+
+.theme-dark .focus-tick--false::before {
+    content: "⚫";
+}
+
+.focus-tracker-container {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+    padding: 1rem;
+    border-radius: 0.8rem;
+    min-width: 0;
+    width: fit-content;
+    display: flex;
+}
+
+/* .focus-tick--true:before { */
+/* 	background: var(--focustracker-tick-color); */
+/* 	/1* background: attr(bg-color) !important; *1/ */
+/* 	border-radius: var(--focustracker-tick-radius); */
+/* 	content: ''; */
+/* 	display: inline-block; */
+/* 	height: var(--focustracker-tick-height); */
+/* 	width: calc(var(--focustracker-tick-width) * 0.8); */
+/* 	transition: all 0.3s ease; */
+/* } */
+
+/* .focus-tick--true + .focus-tick--true { */
+/* 	text-align: left; */
+/* } */
+/* .focus-tick--true + .focus-tick--true:before { */
+/* 	border-top-left-radius: 0; */
+/* 	border-bottom-left-radius: 0; */
+/* 	margin-left: 0; */
+/* 	width: var(--focustracker-tick-width); */
+/* } */
+
+/* .focus-tick--true:has(+ .focus-tick--true):before { */
+/* 	border-top-right-radius: 0; */
+/* 	border-bottom-right-radius: 0; */
+/* 	width: 100%; */
+/* } */
+
+/* .focus-tick--false + .focus-tick--true:has(+ .focus-tick--true):before { */
+/* 	width: var(--focustracker-tick-width); */
+/* 	margin-left: 4px; */
+/* } */
+
+@media (max-width: 399px) {
+	/* iPhone 14pro and lower, portrait */
+	.focus-tracker__cell {
+		display: none;
+	}
+	.focus-tracker__cell--focus-target-label,
+	.focus-tracker__cell:nth-last-child(-n + 7) {
+		display: table-cell;
+	}
+}
+
+.focus-title-link {
+}
+
+/* Add these new classes to your existing styles.css file */
+
+/* Container for the entire focus tracker */
 .focus-tracker-container {
     margin-top: 1rem;
     margin-bottom: 1rem;
@@ -37,148 +244,32 @@ body {
     background-color: var(--focustracker-background-color);
 }
 
+/* Container specifically for the table */
 .focus-tracker-table-container {
-    overflow-x: auto;
     border-radius: 0.5rem;
-    background-color: var(--background-primary);
+    overflow-x: auto;
 }
 
-/* Update existing focus-tracker class to work within the new container */
-.focus-tracker {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-    padding: 1rem;
-}
-
-/* Ensure controls stay separate from table */
-.focus-tracker__controls {
-    display: flex;
-    align-items: center;
-    gap: 1.5rem;
-    padding: 0.5rem 1rem;
+/* Controls container to ensure separation from table */
+.focus-tracker__controls-container {
+    /* Reusing your existing control panel styling */
     background-color: var(--background-secondary);
     border-radius: 0.5rem;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    padding: 0.5rem 1rem;
 }
 
-.focus-tracker__control-section {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
+/* Update existing .focus-tracker class to work within new container */
+.focus-tracker {
+    display: table;
+    width: 100%;
+    border-collapse: collapse;
 }
 
-.focus-tracker__control-label {
-    font-size: 0.8rem;
-    font-weight: 500;
-    color: var(--text-muted);
-    white-space: nowrap;
+.focus-tracker__row {
+    display: table-row;
 }
 
-.focus-tracker__days-input {
-    width: 3rem;
-    padding: 0.25rem;
-    border: 1px solid var(--background-modifier-border);
-    border-radius: 0.25rem;
-    font-size: 0.8rem;
-    background-color: var(--background-primary);
-    color: var(--text-normal);
+.focus-tracker__cell {
+    display: table-cell;
+    vertical-align: middle;
 }
-
-.focus-tracker__focal-date {
-    padding: 0.25rem;
-    border: 1px solid var(--background-modifier-border);
-    border-radius: 0.25rem;
-    font-size: 0.8rem;
-    background-color: var(--background-primary);
-    color: var(--text-normal);
-}
-
-/* Common button styles */
-.focus-tracker__btn-decrement,
-.focus-tracker__btn-increment,
-.focus-tracker__btn-reset,
-.focus-tracker__btn-date,
-.focus-tracker__btn-today {
-    padding: 0.25rem 0.5rem;
-    border: 1px solid var(--background-modifier-border);
-    border-radius: 0.25rem;
-    font-size: 0.8rem;
-    background-color: var(--background-primary);
-    color: var(--text-normal);
-    cursor: pointer;
-    transition: all 0.2s ease;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 1.5rem;
-}
-
-.focus-tracker__btn-reset,
-.focus-tracker__btn-today {
-    background-color: var(--interactive-accent);
-    color: var(--text-on-accent);
-    border: none;
-}
-
-.focus-tracker__btn-date {
-    padding: 0.25rem 0.35rem;
-}
-
-/* Button hover states */
-.focus-tracker__btn-decrement:hover,
-.focus-tracker__btn-increment:hover,
-.focus-tracker__btn-date:hover {
-    background-color: var(--background-modifier-hover);
-}
-
-.focus-tracker__btn-reset:hover,
-.focus-tracker__btn-today:hover {
-    background-color: var(--interactive-accent-hover);
-}
-
-/* Button active states */
-.focus-tracker__btn-decrement:active,
-.focus-tracker__btn-increment:active,
-.focus-tracker__btn-date:active,
-.focus-tracker__btn-reset:active,
-.focus-tracker__btn-today:active {
-    transform: translateY(1px);
-}
-
-/* Separator between control sections */
-.focus-tracker__control-section:not(:last-child) {
-    padding-right: 1rem;
-    border-right: 1px solid var(--background-modifier-border);
-}
-
-/* Input focus states */
-.focus-tracker__days-input:focus,
-.focus-tracker__focal-date:focus {
-    outline: none;
-    border-color: var(--interactive-accent);
-    box-shadow: 0 0 0 2px var(--interactive-accent-hover);
-}
-
-/* Responsive adjustments */
-@media (max-width: 768px) {
-    .focus-tracker__controls {
-        flex-direction: column;
-        gap: 0.75rem;
-        padding: 0.75rem;
-    }
-
-    .focus-tracker__control-section {
-        width: 100%;
-        justify-content: space-between;
-        padding-right: 0;
-        border-right: none;
-    }
-
-    .focus-tracker__control-section:not(:last-child) {
-        padding-bottom: 0.75rem;
-        border-bottom: 1px solid var(--background-modifier-border);
-    }
-}
-
-/* Rest of existing styles remain the same */
