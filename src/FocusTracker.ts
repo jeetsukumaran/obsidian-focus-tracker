@@ -334,7 +334,7 @@ export default class FocusTracker {
         });
 
         const todayBtn = dateControls.createEl("button", {
-            text: "Today",
+            text: "●",
             cls: "focus-tracker__btn-today",
         });
 
