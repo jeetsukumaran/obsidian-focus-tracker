@@ -21,17 +21,37 @@ export const DEFAULT_MAPS = {
     } as Record<string, RatingMap>,
     flags: {
         default: {
-            symbols: ["🚀", "🎯", "📅", "⏳", "🏁", "🚩", "⚠️", "🚧", "🐂"],
+            symbols: [
+                "🚀",
+                "🎯",
+                "📅",
+                "⏳",
+                "🏁",
+                "🚩",
+                "📈",
+                "⚠️",
+                "🚧",
+                "🐂",
+                "⏩",
+                "❎",
+                "↩️",
+                "⛔"
+            ],
             keys: [
-                "goal, aspirational",
-                "goal, committed",
+                "goal: aspirational",
+                "goal: committed",
                 "due",
                 "scheduled",
                 "start",
                 "flagged",
+                "progress",
                 "attention",
+                "incomplete",
+                "yak-shaving",
+                "forwarded",
+                "canceled",
+                "rescheduled",
                 "blocked",
-                "yak-shaving"
             ]
         },
         academic: {
@@ -96,7 +116,7 @@ export const DEFAULT_MAPS = {
 export const DEFAULT_CONFIG = {
     daysPast: 7,
     daysFuture: 7,
-    ratingMap: 'digitsFilled' as keyof typeof DEFAULT_MAPS.ratings,
+    ratingMap: 'colors1' as keyof typeof DEFAULT_MAPS.ratings,
     flagMap: 'default' as keyof typeof DEFAULT_MAPS.flags
 } as const;
 
