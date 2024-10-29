@@ -582,12 +582,69 @@ private renderDateCells(header: HTMLElement): void {
             }
         }
 
+        // Enhanced tooltip formatting
         if (result.remarks) {
-            result.tooltip += `\nRemarks: ${result.remarks}`;
+            result.tooltip = result.hasValue ?
+                `${result.tooltip}\n───────────\n${result.remarks}` :
+                result.remarks;
         }
 
         return result;
     }
+
+    // private getDisplayValues(entry: number | string | FocusLogEntry): {
+    //     hasValue: boolean,
+    //     symbol: string,
+    //     tooltip: string,
+    //     entryScalarValue: number,
+    //     remarks?: string
+    // } {
+    //     let result = {
+    //         hasValue: false,
+    //         symbol: " ",
+    //         tooltip: "",
+    //         entryScalarValue: 0,
+    //         remarks: undefined as string | undefined
+    //     };
+
+    //     if (typeof entry === 'object' && entry !== null) {
+    //         result.entryScalarValue = entry.rating;
+    //         result.remarks = entry.remarks;
+    //     } else if (typeof entry === 'number') {
+    //         result.entryScalarValue = entry;
+    //     } else if (typeof entry === 'string') {
+    //         if (entry === "") {
+    //             result.hasValue = false;
+    //         } else {
+    //             result.hasValue = true;
+    //             result.symbol = entry;
+    //             result.tooltip = entry;
+    //         }
+    //         return result;
+    //     }
+
+    //     if (result.entryScalarValue === 0) {
+    //         result.hasValue = false;
+    //     } else {
+    //         result.hasValue = true;
+    //         if (result.entryScalarValue >= 1) {
+    //             result.symbol = this.getSymbol(this.configuration.ratingSymbols, result.entryScalarValue - 1);
+    //             result.tooltip = `Rating: ${result.entryScalarValue}`;
+    //         } else {
+    //             let arrayIndex = (-1 * result.entryScalarValue) - 1;
+    //             result.symbol = this.getSymbol(this.configuration.flagSymbols, arrayIndex);
+    //             let flagKey = this.configuration.flagKeys?.[arrayIndex];
+    //             let flagDesc = flagKey ? `: ${flagKey}` : "";
+    //             result.tooltip = `Flag ${-1 * result.entryScalarValue}${flagDesc}`;
+    //         }
+    //     }
+
+    //     if (result.remarks) {
+    //         result.tooltip += `\nRemarks: ${result.remarks}`;
+    //     }
+
+    //     return result;
+    // }
 
     private getSymbol(symbolArray: string[], symbolIndex: number): string {
         return symbolIndex >= symbolArray.length ? OUT_OF_BOUNDS : symbolArray[symbolIndex];
