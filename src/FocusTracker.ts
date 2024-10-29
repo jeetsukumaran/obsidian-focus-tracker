@@ -140,11 +140,11 @@ export default class FocusTracker {
 
     private loadFiles(): TFile[] {
         let pathPatterns = patternsToRegex(this.configuration.paths);
-        // Get exact strings to match instead of using regex for tags
-        let requiredTags = (this.configuration.tagSet || []).map(s => s.replace(/^#/,"").replace(/['"]/g, ""));
+        let tagAnyPatterns = patternsToRegex(this.configuration.tags.map(s => s.replace(/^#/,"")));
+        let tagSetPatterns = patternsToRegex(this.configuration.tagSet.map(s => s.replace(/^#/,"")));
+        let excludeTagPatterns = patternsToRegex((this.configuration.excludeTags || []).map(s => s.replace(/^#/,"")));
+        let excludeTagSetPatterns = patternsToRegex((this.configuration.excludeTagSet || []).map(s => s.replace(/^#/,"")));
         let properties = this.configuration.properties;
-
-        console.log("Required tags:", requiredTags); // Debug
 
         return this.app.vault
             .getMarkdownFiles()
@@ -153,20 +153,29 @@ export default class FocusTracker {
                 let frontmatter = fileMetadata?.frontmatter || {};
                 let fileTags = this.extractTags(fileMetadata);
 
-                console.log(`File ${file.path} tags:`, fileTags); // Debug
-
                 // Path filtering
                 if (pathPatterns.length > 0 && !pathPatterns.some(rx => rx.test(file.path))) {
                     return false;
                 }
 
-                // Tag-set (AND) filtering - exact match instead of regex
-                if (requiredTags.length > 0) {
-                    const hasAllTags = requiredTags.every(requiredTag =>
-                        fileTags.some(fileTag => fileTag.toLowerCase() === requiredTag.toLowerCase())
-                    );
-                    console.log(`File ${file.path} has all required tags? ${hasAllTags}`); // Debug
-                    if (!hasAllTags) return false;
+                // Tag-any (OR) filtering
+                if (tagAnyPatterns.length > 0 && !tagAnyPatterns.some(rx => fileTags.some(tag => rx.test(tag)))) {
+                    return false;
+                }
+
+                // Tag-set (AND) filtering
+                if (tagSetPatterns.length > 0 && !tagSetPatterns.every(rx => fileTags.some(tag => rx.test(tag)))) {
+                    return false;
+                }
+
+                // Exclude tags (OR) - exclude if ANY match
+                if (excludeTagPatterns.length > 0 && excludeTagPatterns.some(rx => fileTags.some(tag => rx.test(tag)))) {
+                    return false;
+                }
+
+                // Exclude tag-set (AND) - exclude if ALL match
+                if (excludeTagSetPatterns.length > 0 && excludeTagSetPatterns.every(rx => fileTags.some(tag => rx.test(tag)))) {
+                    return false;
                 }
 
                 // Property filtering
@@ -220,12 +229,8 @@ export default class FocusTracker {
     private loadConfiguration(configurationString: string): FocusTrackerConfiguration {
         try {
             const parsedConfig = parseYaml(configurationString) || {};
-            console.log("Raw parsed config:", parsedConfig);
-            console.log("tag-set value:", parsedConfig['tag-set']);
 
             const normalizedConfig = normalizeKeys(parsedConfig);
-            console.log("Normalized config:", normalizedConfig);
-            console.log("tagSet value:", normalizedConfig.tagSet);
 
             // Get rating map from config or use default
             const ratingMapKey = parsedConfig['rating-map'] || DEFAULT_CONFIG.ratingMap;
