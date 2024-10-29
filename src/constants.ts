@@ -33,6 +33,62 @@ export const DEFAULT_MAPS = {
                 "blocked",
                 "yak-shaving"
             ]
+        },
+        academic: {
+            symbols: ["📚", "✍️", "📝", "🔬", "📖", "❓", "📌", "⭐", "🎓"],
+            keys: [
+                "read",
+                "write",
+                "take notes",
+                "research",
+                "review",
+                "question",
+                "important",
+                "insight",
+                "milestone"
+            ]
+        },
+        project: {
+            symbols: ["💡", "📋", "👥", "📊", "🔄", "⚡", "🎨", "🔍", "💪"],
+            keys: [
+                "idea",
+                "planning",
+                "collaboration",
+                "review metrics",
+                "in progress",
+                "high priority",
+                "design needed",
+                "needs research",
+                "effort required"
+            ]
+        },
+        health: {
+            symbols: ["🏃", "🥗", "💪", "😴", "💊", "🧘", "🎯", "❤️", "🩺"],
+            keys: [
+                "exercise",
+                "nutrition",
+                "strength",
+                "sleep",
+                "medication",
+                "mindfulness",
+                "goal",
+                "wellbeing",
+                "checkup"
+            ]
+        },
+        writing: {
+            symbols: ["✍️", "📝", "🔍", "📚", "✂️", "🎭", "🎨", "👥", "📖"],
+            keys: [
+                "draft",
+                "edit",
+                "research",
+                "reference",
+                "cut/revise",
+                "character work",
+                "creative",
+                "feedback",
+                "review"
+            ]
         }
     } as Record<string, FlagMap>
 } as const;
