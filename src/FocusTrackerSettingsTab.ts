@@ -1,4 +1,4 @@
-import { App, PluginSettingTab, Setting } from 'obsidian';
+import { App, PluginSettingTab, Setting, SliderComponent } from 'obsidian';
 import FocusTrackerPlugin from './main';
 import { DEFAULT_MAPS, DEFAULT_CONFIG } from './constants';
 
@@ -20,6 +20,10 @@ export const DEFAULT_SETTINGS: FocusTrackerSettings = {
     defaultDaysFuture: DEFAULT_CONFIG.daysFuture,
 };
 
+type NumberSettingKey = {
+    [K in keyof FocusTrackerSettings]: FocusTrackerSettings[K] extends number ? K : never
+}[keyof FocusTrackerSettings];
+
 export class FocusTrackerSettingsTab extends PluginSettingTab {
     plugin: FocusTrackerPlugin;
 
@@ -34,7 +38,6 @@ export class FocusTrackerSettingsTab extends PluginSettingTab {
 
         containerEl.createEl('h2', { text: 'Focus Tracker Settings' });
 
-        // Default Rating Map
         new Setting(containerEl)
             .setName('Default Rating Map')
             .setDesc('Choose the default rating map for new focus trackers')
@@ -48,7 +51,6 @@ export class FocusTrackerSettingsTab extends PluginSettingTab {
                     await this.plugin.saveSettings();
                 }));
 
-        // Default Flag Map
         new Setting(containerEl)
             .setName('Default Flag Map')
             .setDesc('Choose the default flag map for new focus trackers')
@@ -62,64 +64,104 @@ export class FocusTrackerSettingsTab extends PluginSettingTab {
                     await this.plugin.saveSettings();
                 }));
 
-        // Minimum Days Past
-        new Setting(containerEl)
-            .setName('Minimum Days Past')
-            .setDesc('Minimum number of past days that can be displayed')
-            .addSlider(slider => slider
-                .setLimits(1, 30, 1)
-                .setValue(this.plugin.settings.minDaysPast)
-                .setDynamicTooltip()
-                .onChange(async (value) => {
-                    this.plugin.settings.minDaysPast = value;
-                    await this.plugin.saveSettings();
-                }));
+        this.createDualInputSetting(
+            containerEl,
+            'Minimum Days Past',
+            'Minimum number of past days that can be displayed',
+            'minDaysPast',
+            1,
+            30
+        );
 
-        // Default Days Past
-        new Setting(containerEl)
-            .setName('Default Days Past')
-            .setDesc('Default number of past days to display in new focus trackers')
-            .addSlider(slider => slider
-                .setLimits(
-                    this.plugin.settings.minDaysPast,
-                    30,
-                    1
-                )
-                .setValue(this.plugin.settings.defaultDaysPast)
-                .setDynamicTooltip()
-                .onChange(async (value) => {
-                    this.plugin.settings.defaultDaysPast = value;
-                    await this.plugin.saveSettings();
-                }));
+        this.createDualInputSetting(
+            containerEl,
+            'Default Days Past',
+            'Default number of past days to display',
+            'defaultDaysPast',
+            this.plugin.settings.minDaysPast,
+            30
+        );
 
-        // Minimum Days Future
-        new Setting(containerEl)
-            .setName('Minimum Days Future')
-            .setDesc('Minimum number of future days that can be displayed')
-            .addSlider(slider => slider
-                .setLimits(1, 30, 1)
-                .setValue(this.plugin.settings.minDaysFuture)
-                .setDynamicTooltip()
-                .onChange(async (value) => {
-                    this.plugin.settings.minDaysFuture = value;
-                    await this.plugin.saveSettings();
-                }));
+        this.createDualInputSetting(
+            containerEl,
+            'Minimum Days Future',
+            'Minimum number of future days that can be displayed',
+            'minDaysFuture',
+            1,
+            30
+        );
 
-        // Default Days Future
-        new Setting(containerEl)
-            .setName('Default Days Future')
-            .setDesc('Default number of future days to display in new focus trackers')
-            .addSlider(slider => slider
-                .setLimits(
-                    this.plugin.settings.minDaysFuture,
-                    30,
-                    1
-                )
-                .setValue(this.plugin.settings.defaultDaysFuture)
+        this.createDualInputSetting(
+            containerEl,
+            'Default Days Future',
+            'Default number of future days to display',
+            'defaultDaysFuture',
+            this.plugin.settings.minDaysFuture,
+            30
+        );
+    }
+
+    private createDualInputSetting(
+        containerEl: HTMLElement,
+        name: string,
+        desc: string,
+        settingKey: NumberSettingKey,
+        min: number,
+        max: number
+    ): void {
+        const setting = new Setting(containerEl)
+            .setName(name)
+            .setDesc(desc);
+
+        let sliderComponent: SliderComponent;
+
+        // Add text input
+        setting.addText(text => {
+            const textComponent = text
+                .setPlaceholder(min.toString())
+                .setValue(this.plugin.settings[settingKey].toString())
+                .onChange(async (value) => {
+                    const numValue = parseInt(value);
+                    if (!isNaN(numValue) && numValue >= min && numValue <= max) {
+                        this.plugin.settings[settingKey] = numValue;
+                        await this.plugin.saveSettings();
+                        // Update slider
+                        if (sliderComponent) {
+                            sliderComponent.setValue(numValue);
+                        }
+                    }
+                });
+
+            // Add number input validation
+            textComponent.inputEl.type = 'number';
+            textComponent.inputEl.setAttr('min', min.toString());
+            textComponent.inputEl.setAttr('max', max.toString());
+
+            return textComponent;
+        });
+
+        // Add slider with proper component capture
+        setting.addSlider(slider => {
+            sliderComponent = slider;
+            return slider
+                .setLimits(min, max, 1)
+                .setValue(this.plugin.settings[settingKey])
                 .setDynamicTooltip()
                 .onChange(async (value) => {
-                    this.plugin.settings.defaultDaysFuture = value;
+                    this.plugin.settings[settingKey] = value;
                     await this.plugin.saveSettings();
-                }));
+                    // Update text input
+                    const textInputs = setting.controlEl.querySelectorAll('input[type="number"]');
+                    if (textInputs.length > 0) {
+                        (textInputs[0] as HTMLInputElement).value = value.toString();
+                    }
+                });
+        });
+
+        // Add value display
+        setting.controlEl.createSpan({
+            text: `Current: ${this.plugin.settings[settingKey]}`,
+            cls: 'setting-item-value'
+        });
     }
 }
