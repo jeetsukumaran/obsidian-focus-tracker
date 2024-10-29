@@ -140,11 +140,11 @@ export default class FocusTracker {
 
     private loadFiles(): TFile[] {
         let pathPatterns = patternsToRegex(this.configuration.paths);
-        let tagAnyPatterns = patternsToRegex(this.configuration.tags.map(s => s.replace(/^#/,"")));
-        let tagSetPatterns = patternsToRegex(this.configuration.tagSet.map(s => s.replace(/^#/,"")));
-        let excludeTagPatterns = patternsToRegex((this.configuration.excludeTags || []).map(s => s.replace(/^#/,"")));
-        let excludeTagSetPatterns = patternsToRegex((this.configuration.excludeTagSet || []).map(s => s.replace(/^#/,"")));
+        // Get exact strings to match instead of using regex for tags
+        let requiredTags = (this.configuration.tagSet || []).map(s => s.replace(/^#/,"").replace(/['"]/g, ""));
         let properties = this.configuration.properties;
+
+        console.log("Required tags:", requiredTags); // Debug
 
         return this.app.vault
             .getMarkdownFiles()
@@ -153,26 +153,23 @@ export default class FocusTracker {
                 let frontmatter = fileMetadata?.frontmatter || {};
                 let fileTags = this.extractTags(fileMetadata);
 
+                console.log(`File ${file.path} tags:`, fileTags); // Debug
+
+                // Path filtering
                 if (pathPatterns.length > 0 && !pathPatterns.some(rx => rx.test(file.path))) {
                     return false;
                 }
 
-                if (tagAnyPatterns.length > 0 && !tagAnyPatterns.some(rx => fileTags.some(tag => rx.test(tag)))) {
-                    return false;
+                // Tag-set (AND) filtering - exact match instead of regex
+                if (requiredTags.length > 0) {
+                    const hasAllTags = requiredTags.every(requiredTag =>
+                        fileTags.some(fileTag => fileTag.toLowerCase() === requiredTag.toLowerCase())
+                    );
+                    console.log(`File ${file.path} has all required tags? ${hasAllTags}`); // Debug
+                    if (!hasAllTags) return false;
                 }
 
-                if (tagSetPatterns.length > 0 && !tagSetPatterns.every(rx => fileTags.some(tag => rx.test(tag)))) {
-                    return false;
-                }
-
-                // Exclude tag filtering (after the tagSetPatterns check)
-                if (excludeTagPatterns.length > 0 && excludeTagPatterns.some(rx => fileTags.some(tag => rx.test(tag)))) {
-                    return false;
-                }
-                if (excludeTagSetPatterns.length > 0 && excludeTagSetPatterns.every(rx => fileTags.some(tag => rx.test(tag)))) {
-                    return false;
-                }
-
+                // Property filtering
                 if (Object.keys(properties).length > 0) {
                     if (!frontmatter) return false;
                     if (!Object.keys(properties).some(key => frontmatter[key] === properties[key])) {
@@ -185,33 +182,50 @@ export default class FocusTracker {
             .sort((a, b) => a.name.localeCompare(b.name));
     }
 
-    private getMetadata(file: TFile): CachedMetadata | null {
-        return this.app.metadataCache.getFileCache(file) || null;
-    }
 
     private extractTags(metadata: CachedMetadata | null): string[] {
         if (!metadata) return [];
 
         const tagSet = new Set<string>();
 
+        // Extract tags from frontmatter
+        if (metadata.frontmatter?.tags) {
+            const fmTags = metadata.frontmatter.tags;
+            if (Array.isArray(fmTags)) {
+                fmTags.forEach(tag => {
+                    tagSet.add(typeof tag === 'string' ? tag.replace(/^#/, '') : '');
+                });
+            } else if (typeof fmTags === 'string') {
+                fmTags.split(/[,\s]+/).forEach(tag => {
+                    tagSet.add(tag.replace(/^#/, ''));
+                });
+            }
+        }
+
+        // Extract inline tags
         if (metadata.tags) {
             metadata.tags.forEach(tag => {
-                tagSet.add(tag.tag.replace(/^#/,""));
+                tagSet.add(tag.tag.replace(/^#/, ''));
             });
         }
 
-        if (metadata.frontmatter?.tags && Array.isArray(metadata.frontmatter.tags)) {
-            metadata.frontmatter.tags.forEach(tag => {
-                tagSet.add(tag);
-            });
-        }
-
-        return Array.from(tagSet);
+        return Array.from(tagSet).filter(tag => tag !== '');
     }
+
+    private getMetadata(file: TFile): CachedMetadata | null {
+        return this.app.metadataCache.getFileCache(file) || null;
+    }
+
 
     private loadConfiguration(configurationString: string): FocusTrackerConfiguration {
         try {
             const parsedConfig = parseYaml(configurationString) || {};
+            console.log("Raw parsed config:", parsedConfig);
+            console.log("tag-set value:", parsedConfig['tag-set']);
+
+            const normalizedConfig = normalizeKeys(parsedConfig);
+            console.log("Normalized config:", normalizedConfig);
+            console.log("tagSet value:", normalizedConfig.tagSet);
 
             // Get rating map from config or use default
             const ratingMapKey = parsedConfig['rating-map'] || DEFAULT_CONFIG.ratingMap;
@@ -247,7 +261,7 @@ export default class FocusTracker {
             // Build configuration
             const configuration = {
                 ...DEFAULT_CONFIGURATION(),
-                ...parsedConfig,
+                ...normalizedConfig,
                 ratingSymbols: ratingMap.symbols,
                 flagSymbols: flagMap.symbols,
                 flagKeys: flagMap.keys,
