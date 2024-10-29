@@ -7,6 +7,7 @@ import {
     TAbstractFile,
     TFile,
 } from "obsidian";
+import { RemarksModal } from './RemarksModal';
 
 const PLUGIN_NAME = "Focus Tracker";
 const DAYS_TO_SHOW = 21;
@@ -622,6 +623,7 @@ private renderDateCells(header: HTMLElement): void {
         return isNaN(numValue) || numValue === 0 ? 0 : numValue;
     }
 
+
     private showFocusMenu(event: MouseEvent, path: string, dateString: string, currentRemarks?: string): void {
         const menu = new Menu();
 
@@ -630,29 +632,14 @@ private renderDateCells(header: HTMLElement): void {
             item
                 .setTitle(currentRemarks ? `Edit Remarks: ${currentRemarks}` : "Add Remarks")
                 .setIcon("edit")
-                .onClick(async () => {
-                    const remarkInput = document.createElement('input');
-                    remarkInput.type = 'text';
-                    remarkInput.value = currentRemarks || '';
-                    remarkInput.placeholder = 'Enter remarks...';
-
-                    const modalDiv = document.createElement('div');
-                    modalDiv.addClass('focus-tracker-remarks-modal');
-                    modalDiv.appendChild(remarkInput);
-
-                    const saveRemarks = async () => {
-                        await this.setFocusEntry(path, dateString, undefined, remarkInput.value);
-                        modalDiv.remove();
-                    };
-
-                    remarkInput.addEventListener('keypress', async (e) => {
-                        if (e.key === 'Enter') {
-                            await saveRemarks();
+                .onClick(() => {
+                    new RemarksModal(
+                        this.app,
+                        currentRemarks || "",
+                        async (result) => {
+                            await this.setFocusEntry(path, dateString, undefined, result);
                         }
-                    });
-
-                    document.body.appendChild(modalDiv);
-                    remarkInput.focus();
+                    ).open();
                 })
         );
 
@@ -664,23 +651,25 @@ private renderDateCells(header: HTMLElement): void {
             menu.addItem((item) =>
                 item
                     .setTitle(`${symbol} (Rating = ${symbolIndex})`)
-                    .setIcon("open")
+                    .setIcon("check-circle")
                     .onClick(async () => {
                         await this.setFocusEntry(path, dateString, symbolIndex);
                     })
             );
         });
 
+        // Clear option
         menu.addSeparator();
         menu.addItem((item) =>
             item
-                .setTitle(`Clear`)
-                .setIcon("open")
+                .setTitle("Clear Rating")
+                .setIcon("x-circle")
                 .onClick(async () => {
                     await this.setFocusEntry(path, dateString, 0);
                 })
         );
 
+        // Flag options
         menu.addSeparator();
         this.configuration.flagSymbols.forEach((symbol: string, symbolIndex: number) => {
             let newValue = 0 - (symbolIndex + 1);
@@ -689,15 +678,93 @@ private renderDateCells(header: HTMLElement): void {
             menu.addItem((item) =>
                 item
                     .setTitle(`${symbol} (Flag ${-1 * newValue}${flagDesc})`)
-                    .setIcon("open")
+                    .setIcon("flag")
                     .onClick(async () => {
                         await this.setFocusEntry(path, dateString, newValue);
                     })
             );
         });
 
+        // Position and show the menu
         menu.showAtMouseEvent(event);
     }
+
+    // private showFocusMenu(event: MouseEvent, path: string, dateString: string, currentRemarks?: string): void {
+    //     const menu = new Menu();
+
+    //     // Remarks section
+    //     menu.addItem((item) =>
+    //         item
+    //             .setTitle(currentRemarks ? `Edit Remarks: ${currentRemarks}` : "Add Remarks")
+    //             .setIcon("edit")
+    //             .onClick(async () => {
+    //                 const remarkInput = document.createElement('input');
+    //                 remarkInput.type = 'text';
+    //                 remarkInput.value = currentRemarks || '';
+    //                 remarkInput.placeholder = 'Enter remarks...';
+
+    //                 const modalDiv = document.createElement('div');
+    //                 modalDiv.addClass('focus-tracker-remarks-modal');
+    //                 modalDiv.appendChild(remarkInput);
+
+    //                 const saveRemarks = async () => {
+    //                     await this.setFocusEntry(path, dateString, undefined, remarkInput.value);
+    //                     modalDiv.remove();
+    //                 };
+
+    //                 remarkInput.addEventListener('keypress', async (e) => {
+    //                     if (e.key === 'Enter') {
+    //                         await saveRemarks();
+    //                     }
+    //                 });
+
+    //                 document.body.appendChild(modalDiv);
+    //                 remarkInput.focus();
+    //             })
+    //     );
+
+    //     menu.addSeparator();
+
+    //     // Rating options
+    //     this.ratingSymbols.slice().reverse().forEach((symbol: string, rSymbolIndex: number) => {
+    //         let symbolIndex = this.configuration.ratingSymbols.length - rSymbolIndex;
+    //         menu.addItem((item) =>
+    //             item
+    //                 .setTitle(`${symbol} (Rating = ${symbolIndex})`)
+    //                 .setIcon("open")
+    //                 .onClick(async () => {
+    //                     await this.setFocusEntry(path, dateString, symbolIndex);
+    //                 })
+    //         );
+    //     });
+
+    //     menu.addSeparator();
+    //     menu.addItem((item) =>
+    //         item
+    //             .setTitle(`Clear`)
+    //             .setIcon("open")
+    //             .onClick(async () => {
+    //                 await this.setFocusEntry(path, dateString, 0);
+    //             })
+    //     );
+
+    //     menu.addSeparator();
+    //     this.configuration.flagSymbols.forEach((symbol: string, symbolIndex: number) => {
+    //         let newValue = 0 - (symbolIndex + 1);
+    //         let flagKey = this.configuration.flagKeys?.[symbolIndex];
+    //         let flagDesc = flagKey ? `: ${flagKey}` : "";
+    //         menu.addItem((item) =>
+    //             item
+    //                 .setTitle(`${symbol} (Flag ${-1 * newValue}${flagDesc})`)
+    //                 .setIcon("open")
+    //                 .onClick(async () => {
+    //                     await this.setFocusEntry(path, dateString, newValue);
+    //                 })
+    //         );
+    //     });
+
+    //     menu.showAtMouseEvent(event);
+    // }
 
     private async setFocusEntry(
         focusTrackerPath: string | null,
