@@ -1,7 +1,12 @@
 import { App, TFile } from "obsidian";
 
+export interface FocusLogEntry {
+    rating: number;
+    remarks?: string;
+}
+
 export type FocusLogsType = {
-    [date: string]: number | string;
+    [date: string]: number | string | FocusLogEntry;
 };
 
 export interface FocusTrackerConfiguration {
@@ -59,6 +64,11 @@ export const FLAG_KEYS = flagKeys["default"];
 export const OUT_OF_BOUNDS = "❗";
 export const UNKNOWN_RATING = "❓";
 
+export const MIN_DAYS_PAST = 7;
+export const MIN_DAYS_FUTURE = 7;
+export const DEFAULT_DAYS_PAST = 14;
+export const DEFAULT_DAYS_FUTURE = 14;
+
 export const DEFAULT_CONFIGURATION = (): FocusTrackerConfiguration => ({
     path: "",
     paths: [],
@@ -71,8 +81,8 @@ export const DEFAULT_CONFIGURATION = (): FocusTrackerConfiguration => ({
     flagSymbols: SCALE2,
     flagKeys: FLAG_KEYS,
     titlePropertyNames: ["track-label", "focus-tracker-title", "title"],
-    daysInPast: 14,
-    daysInFuture: 14,
+    daysInPast: DEFAULT_DAYS_PAST,
+    daysInFuture: DEFAULT_DAYS_FUTURE,
     focalDate: new Date(),
     rootElement: undefined,
     focusTracksGoHere: undefined,
@@ -85,4 +95,31 @@ export function getTodayDate(): string {
     const month = String(today.getMonth() + 1).padStart(2, "0");
     const day = String(today.getDate()).padStart(2, "0");
     return `${year}-${month}-${day}`;
+}
+
+export function filterDictionary<T>(
+    dictionary: { [key: string]: T },
+    predicate: (key: string, value: T) => boolean
+): { [key: string]: T } {
+    return Object.fromEntries(
+        Object.entries(dictionary).filter(([key, value]) => predicate(key, value))
+    );
+}
+
+export function patternsToRegex(patterns: string[]): RegExp[] {
+    return patterns.map((pattern: string) => {
+        return new RegExp(".*" + pattern + ".*");
+    });
+}
+
+export function kebabToCamel(s: string): string {
+    return s.replace(/(-\w)/g, m => m[1].toUpperCase());
+}
+
+export function normalizeKeys<T>(dictionary: { [key: string]: T }): { [key: string]: T } {
+    const normalizedDictionary: { [key: string]: T } = {};
+    Object.keys(dictionary).forEach(key => {
+        normalizedDictionary[kebabToCamel(key)] = dictionary[key];
+    });
+    return normalizedDictionary;
 }
