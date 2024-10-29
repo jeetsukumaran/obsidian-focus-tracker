@@ -35,7 +35,8 @@ export const DEFAULT_MAPS = {
                 "⏩",
                 "❎",
                 "↩️",
-                "⛔"
+                "⛔",
+                "📦",
             ],
             keys: [
                 "goal: aspirational",
@@ -52,6 +53,7 @@ export const DEFAULT_MAPS = {
                 "canceled",
                 "rescheduled",
                 "blocked",
+                "boxed",
             ]
         },
         academic: {
@@ -114,7 +116,7 @@ export const DEFAULT_MAPS = {
 } as const;
 
 export const DEFAULT_CONFIG = {
-    daysPast: 7,
+    daysPast: 15,
     daysFuture: 7,
     ratingMap: 'colors1' as keyof typeof DEFAULT_MAPS.ratings,
     flagMap: 'default' as keyof typeof DEFAULT_MAPS.flags
