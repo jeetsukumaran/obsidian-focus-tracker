@@ -286,68 +286,6 @@ export default class FocusTracker {
         }
     }
 
-    // private loadConfiguration(configurationString: string): FocusTrackerConfiguration {
-    //     try {
-    //         const parsedConfig = parseYaml(configurationString) || {};
-
-    //         const normalizedConfig = normalizeKeys(parsedConfig);
-
-    //         // Get rating map from config or use default
-    //         const ratingMapKey = parsedConfig['rating-map'] || DEFAULT_CONFIG.ratingMap;
-    //         const ratingMap = DEFAULT_MAPS.ratings[ratingMapKey] ||
-    //                         DEFAULT_MAPS.ratings[DEFAULT_CONFIG.ratingMap];
-
-    //         // Get flag map from config or use default
-    //         const flagMapKey = parsedConfig['flag-map'] || DEFAULT_CONFIG.flagMap;
-    //         const flagMap = DEFAULT_MAPS.flags[flagMapKey] ||
-    //                     DEFAULT_MAPS.flags[DEFAULT_CONFIG.flagMap];
-
-    //         // Handle custom maps if provided
-    //         if (parsedConfig['custom-rating-map']) {
-    //             const customMap = parsedConfig['custom-rating-map'];
-    //             if (Array.isArray(customMap?.symbols)) {
-    //                 ratingMap.symbols = customMap.symbols;
-    //             }
-    //             if (Array.isArray(customMap?.descriptions)) {
-    //                 ratingMap.descriptions = customMap.descriptions;
-    //             }
-    //         }
-
-    //         if (parsedConfig['custom-flag-map']) {
-    //             const customMap = parsedConfig['custom-flag-map'];
-    //             if (Array.isArray(customMap?.symbols)) {
-    //                 flagMap.symbols = customMap.symbols;
-    //             }
-    //             if (Array.isArray(customMap?.keys)) {
-    //                 flagMap.keys = customMap.keys;
-    //             }
-    //         }
-
-    //         // Build configuration
-    //         const configuration = {
-    //             ...DEFAULT_CONFIGURATION(),
-    //             ...normalizedConfig,
-    //             ratingSymbols: ratingMap.symbols,
-    //             flagSymbols: flagMap.symbols,
-    //             flagKeys: flagMap.keys,
-    //             daysInPast: parsedConfig['days-past'] || DEFAULT_CONFIG.daysPast,
-    //             daysInFuture: parsedConfig['days-future'] || DEFAULT_CONFIG.daysFuture,
-    //         };
-
-    //         // Handle paths
-    //         if (configuration.path && configuration.paths.length === 0) {
-    //             configuration.paths = Array.isArray(configuration.path)
-    //                 ? [...configuration.path]
-    //                 : [String(configuration.path)];
-    //         }
-
-    //         return configuration;
-    //     } catch (error) {
-    //         new Notice(`${PLUGIN_NAME}: Invalid configuration. Using defaults.`);
-    //         return DEFAULT_CONFIGURATION();
-    //     }
-    // }
-
     private renderControls(parent: HTMLElement): void {
         this.createControlSection(
             parent,
