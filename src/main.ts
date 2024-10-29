@@ -1,7 +1,6 @@
-import {
-    Plugin,
-} from 'obsidian'
-import FocusTracker from './FocusTracker'
+import { Plugin } from 'obsidian';
+import FocusTracker from './FocusTracker';
+import { FocusTrackerConfiguration } from './types';
 
 const PLUGIN_NAME = 'Focus Tracker'
 

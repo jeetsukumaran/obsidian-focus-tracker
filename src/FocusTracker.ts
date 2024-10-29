@@ -8,91 +8,32 @@ import {
     TFile,
 } from "obsidian";
 import { RemarksModal } from './RemarksModal';
+import { FocusLogEntry, FocusLogsType, FocusTrackerConfiguration } from './types';
+import {
+    DEFAULT_MAPS,
+    DEFAULT_CONFIG,
+    OUT_OF_BOUNDS,
+    PLUGIN_NAME,
+    MIN_DAYS_PAST,
+    MIN_DAYS_FUTURE
+} from './constants';
 
-const PLUGIN_NAME = "Focus Tracker";
-const DAYS_TO_SHOW = 21;
-const DAYS_TO_LOAD = DAYS_TO_SHOW + 1;
-const ratingSymbols = {
-    "colors1": ["🔴", "🟠", "🟡", "🟢", "🔵",],
-    "digitsOpen": ["➀", "➁", "➂", "➃", "➄", "➅", "➆", "➇", "➈", "➉",],
-    "digitsFilled": ["➊","➋","➌","➍","➎","➏","➐","➑","➒","➓",],
-    "moonPhases": ["🌑", "🌒", "🌓", "🌔", "🌕"],
-}
-
-const flagSymbols = {
-    "default": [
-        "🚀", "🎯", "📅", "⏳", "🏁",
-        "🚩", "⚠️", "🚧", "🐂",
-    ],
-}
-
-const flagKeys = {
-    "default": [
-        "goal, aspirational",
-        "goal, committed",
-        "due",
-        "scheduled",
-        "start",
-        "flagged",
-        "attention",
-        "blocked",
-        "yak-shaving",
-    ],
-}
-
-const SCALE1 = ratingSymbols["colors1"];
-const SCALE2 = flagSymbols["default"];
-const FLAG_KEYS = flagKeys["default"];
-
-const OUT_OF_BOUNDS = "❗";
-const UNKNOWN_RATING = "❓";
-
-export interface FocusLogEntry {
-    rating: number;
-    remarks?: string;
-}
-
-export type FocusLogsType = {
-    [date: string]: number | string | FocusLogEntry;
-};
-
-interface FocusTrackerConfiguration {
-    path: string;
-    paths: string[];
-    properties: { [key:string]: string };
-    tags: string[];
-    tagSet: string[];
-    lastDisplayedDate: string;
-    logPropertyName: string;
-    ratingSymbols: string[];
-    flagSymbols: string[];
-    flagKeys: string[];
-    titlePropertyNames: string[];
-    daysInPast: number;
-    daysInFuture: number;
-    focalDate: Date;
-    rootElement: HTMLElement | undefined;
-    focusTracksGoHere: HTMLElement | undefined;
-}
-
-const MIN_DAYS_PAST = 7;
-const MIN_DAYS_FUTURE = 7;
-const DEFAULT_DAYS_PAST = 7;
-const DEFAULT_DAYS_FUTURE = 7;
 const DEFAULT_CONFIGURATION = (): FocusTrackerConfiguration => ({
     path: "",
     paths: [],
     properties: {},
     tags: [],
     tagSet: [],
+    excludeTags: [], // Added
+    excludeTagSet: [], // Added
     lastDisplayedDate: getTodayDate(),
     logPropertyName: "focus-logs",
-    ratingSymbols: SCALE1,
-    flagSymbols: SCALE2,
-    flagKeys: FLAG_KEYS,
+    ratingSymbols: DEFAULT_MAPS.ratings[DEFAULT_CONFIG.ratingMap].symbols,
+    flagSymbols: DEFAULT_MAPS.flags[DEFAULT_CONFIG.flagMap].symbols,
+    flagKeys: DEFAULT_MAPS.flags[DEFAULT_CONFIG.flagMap].keys,
     titlePropertyNames: ["track-label", "focus-tracker-title", "title"],
-    daysInPast: DEFAULT_DAYS_PAST,
-    daysInFuture: DEFAULT_DAYS_FUTURE,
+    daysInPast: DEFAULT_CONFIG.daysPast,
+    daysInFuture: DEFAULT_CONFIG.daysFuture,
     focalDate: new Date(),
     rootElement: undefined,
     focusTracksGoHere: undefined,
@@ -104,9 +45,9 @@ const PRIVATE_CONFIGURATION = new Set<string>([
 ]);
 
 function filterDictionary<T>(
-    dictionary: { [key: string]: T },
+    dictionary: Record<string, T>,
     predicate: (key: string, value: T) => boolean
-): { [key: string]: T } {
+): Record<string, T> {
     return Object.fromEntries(
         Object.entries(dictionary).filter(([key, value]) => predicate(key, value))
     );
@@ -122,8 +63,8 @@ function kebabToCamel(s: string): string {
     return s.replace(/(-\w)/g, m => m[1].toUpperCase());
 }
 
-function normalizeKeys<T>(dictionary: { [key: string]: T }): { [key: string]: T } {
-    const normalizedDictionary: { [key: string]: T } = {};
+function normalizeKeys<T>(dictionary: Record<string, T>): Record<string, T> {
+    const normalizedDictionary: Record<string, T> = {};
     Object.keys(dictionary).forEach(key => {
         normalizedDictionary[kebabToCamel(key)] = dictionary[key];
     });
@@ -201,6 +142,8 @@ export default class FocusTracker {
         let pathPatterns = patternsToRegex(this.configuration.paths);
         let tagAnyPatterns = patternsToRegex(this.configuration.tags.map(s => s.replace(/^#/,"")));
         let tagSetPatterns = patternsToRegex(this.configuration.tagSet.map(s => s.replace(/^#/,"")));
+        let excludeTagPatterns = patternsToRegex((this.configuration.excludeTags || []).map(s => s.replace(/^#/,"")));
+        let excludeTagSetPatterns = patternsToRegex((this.configuration.excludeTagSet || []).map(s => s.replace(/^#/,"")));
         let properties = this.configuration.properties;
 
         return this.app.vault
@@ -219,6 +162,14 @@ export default class FocusTracker {
                 }
 
                 if (tagSetPatterns.length > 0 && !tagSetPatterns.every(rx => fileTags.some(tag => rx.test(tag)))) {
+                    return false;
+                }
+
+                // Exclude tag filtering (after the tagSetPatterns check)
+                if (excludeTagPatterns.length > 0 && excludeTagPatterns.some(rx => fileTags.some(tag => rx.test(tag)))) {
+                    return false;
+                }
+                if (excludeTagSetPatterns.length > 0 && excludeTagSetPatterns.every(rx => fileTags.some(tag => rx.test(tag)))) {
                     return false;
                 }
 
@@ -260,15 +211,51 @@ export default class FocusTracker {
 
     private loadConfiguration(configurationString: string): FocusTrackerConfiguration {
         try {
-            let configuration = Object.assign(
-                {},
-                DEFAULT_CONFIGURATION(),
-                filterDictionary(
-                    normalizeKeys(parseYaml(configurationString)),
-                    (key, value) => !PRIVATE_CONFIGURATION.has(key)
-                )
-            );
+            const parsedConfig = parseYaml(configurationString) || {};
 
+            // Get rating map from config or use default
+            const ratingMapKey = parsedConfig['rating-map'] || DEFAULT_CONFIG.ratingMap;
+            const ratingMap = DEFAULT_MAPS.ratings[ratingMapKey] ||
+                            DEFAULT_MAPS.ratings[DEFAULT_CONFIG.ratingMap];
+
+            // Get flag map from config or use default
+            const flagMapKey = parsedConfig['flag-map'] || DEFAULT_CONFIG.flagMap;
+            const flagMap = DEFAULT_MAPS.flags[flagMapKey] ||
+                        DEFAULT_MAPS.flags[DEFAULT_CONFIG.flagMap];
+
+            // Handle custom maps if provided
+            if (parsedConfig['custom-rating-map']) {
+                const customMap = parsedConfig['custom-rating-map'];
+                if (Array.isArray(customMap?.symbols)) {
+                    ratingMap.symbols = customMap.symbols;
+                }
+                if (Array.isArray(customMap?.descriptions)) {
+                    ratingMap.descriptions = customMap.descriptions;
+                }
+            }
+
+            if (parsedConfig['custom-flag-map']) {
+                const customMap = parsedConfig['custom-flag-map'];
+                if (Array.isArray(customMap?.symbols)) {
+                    flagMap.symbols = customMap.symbols;
+                }
+                if (Array.isArray(customMap?.keys)) {
+                    flagMap.keys = customMap.keys;
+                }
+            }
+
+            // Build configuration
+            const configuration = {
+                ...DEFAULT_CONFIGURATION(),
+                ...parsedConfig,
+                ratingSymbols: ratingMap.symbols,
+                flagSymbols: flagMap.symbols,
+                flagKeys: flagMap.keys,
+                daysInPast: parsedConfig['days-past'] || DEFAULT_CONFIG.daysPast,
+                daysInFuture: parsedConfig['days-future'] || DEFAULT_CONFIG.daysFuture,
+            };
+
+            // Handle paths
             if (configuration.path && configuration.paths.length === 0) {
                 configuration.paths = Array.isArray(configuration.path)
                     ? [...configuration.path]
@@ -277,7 +264,7 @@ export default class FocusTracker {
 
             return configuration;
         } catch (error) {
-            new Notice(`${PLUGIN_NAME}: received invalid configuration. continuing with default configuration`);
+            new Notice(`${PLUGIN_NAME}: Invalid configuration. Using defaults.`);
             return DEFAULT_CONFIGURATION();
         }
     }
@@ -288,7 +275,7 @@ export default class FocusTracker {
             "Days Past:",
             this.configuration.daysInPast,
             MIN_DAYS_PAST,
-            DEFAULT_DAYS_PAST,
+            DEFAULT_CONFIG.daysPast,
             (value) => {
                 this.configuration.daysInPast = value;
                 this.refresh();
@@ -357,7 +344,7 @@ export default class FocusTracker {
             "Days Future:",
             this.configuration.daysInFuture,
             MIN_DAYS_FUTURE,
-            DEFAULT_DAYS_FUTURE,
+            DEFAULT_CONFIG.daysFuture,
             (value) => {
                 this.configuration.daysInFuture = value;
                 this.refresh();
