@@ -1,15 +1,22 @@
 # Focus Tracker
 
+## Synopsis
+
 Track and align your focus!
 
 ![image](https://github.com/jeetsukumaran/obsidian-focus-tracker/assets/26183/4e7343d0-c1ad-49e1-a077-1e0ec48dc135)
 
-## Synopsis
+Focus Tracker helps you:
+- Track effort and attention across multiple projects and activities
+- Review past focus patterns to identify gaps and successes
+- Plan and direct future attention to align with your goals
+- Maintain awareness of project engagement over time
+
+## Overview
 
 ### What
 
-Based on[Habit Tracker 21](https://github.com/zoreet/habit-tracker), but adapted for tracking past focus, attention, and effort, and help in directing focus and energy so as to better align with the directions you want to go.
-
+Track your past and plan your future focus, attention, efforts, and activities so as to better align with the directions you want to go.
 
 ### Why
 
@@ -17,234 +24,185 @@ One may find this useful as a component of their productivity/task-management sy
 
 I also find this useful as a component of my ADHD self-management system to help align my hyperfocus with my intent, setting time-block targets, etc..
 
-## Usage
+## Quick Start
 
+### Installation
 
-### Basic concepts
+1. Open Obsidian Settings
+2. Go to Community Plugins
+3. Search for "Focus Tracker"
+4. Click Install, then Enable
 
-Assume you have at least one distinct (unique) reference every project, activity, effort, area, habit, or aspect of your life that you wish to track.
-The YAML frontmatter metadata of this note will be used to log every day that you "push", "work on", touch, visit, or dedicate any attention or focus on this project.
-There are many different ways to designate a note as the a "focus log", and any note can serve this purpose, either an existing one or a new one, or one serving some other (compatible) purpose.
+### Basic Usage
 
-### Basic mechanisms
-
-#### Create a focus tracker
-
-A focus tracker can be embedded or added to any note with a ``focustracker``  YAML-format codeblock that provides a variety of ways of selecting files that serve as tracking logs:
-
-~~~
+1. Create a focus tracker view in any note:
+```yaml
 ```focustracker
-"paths": "coordination/tracks/"
+paths: "projects/"
 ```
-~~~
+```
 
-~~~
+2. Click cells to cycle through ratings, or right-click for more options
+3. Add comments to any entry for context
+4. Use flags to mark future intentions or requirements
+
+## Mechanisms: How It Works
+
+### Core Components
+
+#### 1. Tracking Files
+Any note can serve as a focus tracking log through:
+- Path-based selection: `paths: "projects/"`
+- Tag-based selection: `tags: ["research", "active"]`
+- Property-based selection: `properties: {"status": "active"}`
+
+#### 2. Rating System
+Ratings (positive numbers) show past effort/focus:
+```yaml
+rating-map: "digitsFilled"  # Choose from: digitsFilled, colors1, moonPhases
+```
+- ➊-➓: Filled digits (default)
+- 🔴🟠🟡🟢🔵: Color progression
+- 🌑🌒🌓🌔🌕: Moon phases
+
+#### 3. Flag System
+Flags (negative numbers) mark future intentions:
+```yaml
+flag-map: "academic"  # Choose from: default, academic, project, health, writing
+```
+
+Each domain has contextually appropriate flags:
+- Academic: 📚(read) ✍️(write) 📝(notes) 🔬(research)
+- Project: 💡(idea) 📋(plan) 👥(collab) 📊(review)
+- Health: 🏃(exercise) 🥗(nutrition) 😴(sleep) 🧘(mindful)
+- Writing: ✍️(draft) 📝(edit) 🔍(research) 📚(reference)
+
+#### 4. Comments
+Add context to any entry:
+- Right-click → Add Remarks
+- Stores in file's YAML frontmatter
+- Visible on hover
+
+### Configuration
+
+Global settings (Settings → Focus Tracker):
+- Default rating and flag maps
+- Minimum/default days shown
+- Custom map definitions
+
+Per-tracker settings (in codeblock):
+```yaml
 ```focustracker
-tags:
-- "project"
-- "reading/april"
+paths: "research/"
+rating-map: "moonPhases"
+flag-map: "academic"
+days-past: 14
+days-future: 7
 ```
-~~~
+```
 
-~~~
+## Policy: How to Use It Effectively
+
+### Two-Mode Operation
+
+#### 1. Review Mode (Ratings)
+Use ratings to record past focus and effort:
+- Record after work sessions
+- Rate quality of attention
+- Track time invested
+- Note effectiveness
+
+#### 2. Planning Mode (Flags)
+Use flags to mark future intentions:
+- Set activity targets
+- Mark deadlines
+- Highlight priorities
+- Note dependencies
+
+### Real-World Example: Graduate Student Workflow
+
+#### Research Project Tracker
+```yaml
 ```focustracker
-properties:
-    "track-focus": true
+paths: "research/projects"
+rating-map: "digitsFilled"
+flag-map: "academic"
 ```
-~~~
-
-##### Parameters
-
-- **paths**: a (string) or list of string patterns found in the full path to a tracking log to be included in this view. Any note can be used for this -- in the above example they are dedicated log files, but they can also be: project summaries, novel manuscript journals, etc.
-
-
-    ~~~
-    ```focustracker
-    paths:
-      - "hobby.*log"
-      - "project.*log"
-      - "training.*log"
-    ```
-    ~~~
-
-- **tags**: a list of string patterns that will be matched to tags (note: omit the leading '#'):
-
-    ~~~
-    ```focustracker
-    tags:
-      - "role/effort"
-    ```
-    ~~~
-
-    ~~~
-    ```focustracker
-    tags:
-      - "project/priority"
-      - "training/priority"
-      - "learning/january"
-    ```
-    ~~~
-
-- **properties**: a dictionary mapping YAML frontmatter field names to matching values:
-
-
-    ~~~
-    ```focustracker
-    properties:
-      "project-status": "active"
-    ```
-    ~~~
-
-    ~~~
-    ```focustracker
-    properties:
-      "project-status": "active"
-      "development-status": "pilot"
-    ```
-    ~~~
-
-
-
-
-
-#### Create files or folders to track your focus, efforts, habits, etc
-
-For example, imagine the various activities, projects, etc. in your vault are organized as follows:
-
 ```
-vault/
-  coordination/
-    areas/
-        areas1.md
-        areas2.md
-    projects/
-        project1/
-        ...
-        project2/
-        ...
-        project3/
-        ...
-        project4/
-        ...
-```
+- Rate paper-writing sessions (1-10)
+- Flag upcoming deadlines 📅
+- Mark sections needing focus 📚
+- Track experiment progress 🔬
 
-Create files to track your focus, using a naming convention such as, for e.g. a filename that ends with "`.focus-log`":
-
-```
-vault/
-  coordination/
-    areas/
-        focus-log.area1
-        focus-log.area2
-    logs/
-        focus-logs/
-            areas/
-                garage.md
-                space-lasers.md
-            personal/
-                reading1.md
-                writing2.md
-            projects/
-                project3.md
-                project4.md
-                project4.md
-                plan9-os.md
-        habit-logs/
-             log.habit1.md
-             log.habit2.md
-        practice-logs/
-             log.ex1.md
-             log.ex2.md
-    projects/
-        project1/
-            ...
-            project1.focus-log
-            ...
-        project2/
-            ...
-            project2.focus-log
-            ...
-        project3/
-        ...
-        project4/
-        ...
-```
-
-Any file in the vault with the substring "`focus-log`" in its path will show up in this focus tracker,
-
+#### Reading List
+```yaml
 ```focustracker
-path-pattern: "focus-log"
+paths: "reading/"
+rating-map: "moonPhases"
+flag-map: "academic"
 ```
+```
+- Rate comprehension of papers
+- Flag must-read papers 📚
+- Mark papers for discussion ✍️
+- Track reading group assignments
 
-Any pattern can be used, e.g.:
-
+#### Health & Wellness
+```yaml
 ```focustracker
-path-pattern: "focus-log.*area"
+paths: "personal/health"
+rating-map: "colors1"
+flag-map: "health"
 ```
+```
+- Track exercise sessions 🏃
+- Rate sleep quality 😴
+- Plan meal prep 🥗
+- Schedule workouts ⏳
 
+#### Teaching Assistant Duties
+```yaml
 ```focustracker
-path-pattern: "coordination/logs/focus-logs/personal"
+paths: "teaching/"
+rating-map: "digitsFilled"
+flag-map: "academic"
 ```
-
-```focustracker
-path-pattern: "habit-logs/"
 ```
+- Rate office hours productivity
+- Flag grading deadlines 📅
+- Track prep time for labs
+- Plan review sessions 👥
 
-```focustracker
-path-pattern: "practice-logs/"
-```
+### Best Practices
 
-And lists are also supported:
+1. **Regular Updates**
+   - Update ratings daily/weekly
+   - Plan flags during weekly review
+   - Add comments for context
 
-~~~
-```focustracker
-path-pattern:
-  - "learning.*log.focus"
-  - "personal.*log.focus"
-```
-~~~
+2. **Focus Analysis**
+   - Review patterns monthly
+   - Identify neglected areas
+   - Adjust priorities based on gaps
 
+3. **Integration**
+   - Link to detailed notes
+   - Use with daily notes
+   - Combine with task management
 
-#### Customizations
+4. **Progressive Adaptation**
+   - Start with one area
+   - Add trackers gradually
+   - Refine rating criteria
 
-You can adjust what these tracks are called or labeled in the focus tracker by providing a ``focus-tracker-title`` or ``title`` field in the frontmatter YAML metadata of the note:
+## Contributing
 
-```
----
-title: "Project 1"`.
----
-
-```
-
-or:
-
-```
----
-focus-tracker-title: "(02) Project Winter"
-title: "The winter of discontent".
----
-
-```
+Found a bug or have a feature request? Please open an issue on GitHub.
 
 ## Acknowledgements
 
-Forked from [@holroy](https://github.com/holroy)'s [fork](https://github.com/holroy/habit-tracker) of [Habit Tracker 21](https://github.com/zoreet/habit-tracker).
-
+Based on [Habit Tracker 21](https://github.com/zoreet/habit-tracker), with significant adaptations for focus tracking and planning.
 
 ## License
 
-This work uses work released under the GNU GPL 3 by the following:
-
-- [zoreet](https://github.com/zoreet/habit-tracker)
-- [holroy](https://github.com/holroy/habit-tracker)
-
-and, as given by those terms, is itself also made available under the same license.
-
-See LICENSE.md for details.
-
-
-
-
-
-
-
+GPL-3.0 License - See LICENSE.md for details.
