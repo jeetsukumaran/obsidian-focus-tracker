@@ -16,7 +16,7 @@ body {
 .theme-light {
     --focustracker-background-color: #00000010;
     --focustracker-weekend-color: #00000020;
-    --today-column-bg-color: var(--background-primary-alt);
+    --today-column-bg-color: var(--background-secondary);
     --today-column-text-color: var(--text-muted) ;
 }
 
@@ -163,7 +163,8 @@ body {
 
 /* Cell states */
 .focus-tracker__cell--today {
-    border-top: solid 2px;
+    /* border-top: solid 2px; */
+    /* box-shadow: 0 0 0 0.1px var(--interactive-accent-hover); */
     color: var(--text-muted);
 }
 
