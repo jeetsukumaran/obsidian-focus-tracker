@@ -27,15 +27,15 @@ export const DEFAULT_MAPS = {
                 "📅",
                 "⏳",
                 "🏁",
+                "✅",
                 "🚩",
                 "📈",
                 "📉",
                 "⚠️",
-                "🚧",
                 "🐂",
+                "🚧",
                 "⏩",
                 "❎",
-                "↩️",
                 "⛔",
                 "📦",
             ],
@@ -45,18 +45,36 @@ export const DEFAULT_MAPS = {
                 "due",
                 "scheduled",
                 "start",
+                "done",
                 "flagged",
                 "progress",
                 "regress",
                 "attention",
-                "incomplete",
                 "yak-shaving",
+                "incomplete",
                 "forwarded",
                 "canceled",
-                "rescheduled",
                 "blocked",
                 "boxed",
             ]
+        },
+        activity: {
+            symbols: [
+                "🏯",
+                "🔮",
+                "📜",
+                "🔱",
+                "🛠️",
+                "🛞",
+            ],
+            keys: [
+                "administration",
+                "informatics",
+                "literature",
+                "manuscripting",
+                "system",
+                "other",
+            ],
         },
         academic: {
             symbols: ["📚", "✍️", "📝", "🔬", "📖", "❓", "📌", "⭐", "🎓"],
@@ -112,6 +130,90 @@ export const DEFAULT_MAPS = {
                 "creative",
                 "feedback",
                 "review"
+            ]
+        },
+        coding: {
+            symbols: ["💡", "🧩", "💻", "🖋️", "🐛", "🔍", "🚀", "🛠️", "✅"],
+            keys: [
+                "concept",
+                "planning/problem breakdown",
+                "coding",
+                "documentation",
+                "debugging",
+                "code review",
+                "deploy",
+                "maintenance",
+                "completed"
+            ]
+        },
+        project_management: {
+            symbols: ["💡", "📅", "🤝", "📈", "⚖️", "🚩", "🔄", "📋", "✅"],
+            keys: [
+                "project initiation",
+                "scheduling",
+                "team coordination",
+                "tracking progress",
+                "resource balancing",
+                "milestone",
+                "project updates",
+                "final review",
+                "project completion"
+            ]
+        },
+        scientific_project_management: {
+            symbols: ["💡", "🔬", "🧪", "📊", "📈", "🔄", "📅", "📉", "✅"],
+            keys: [
+                "project concept",
+                "experimentation",
+                "data collection",
+                "data analysis",
+                "modeling",
+                "status updates",
+                "timeline management",
+                "reporting",
+                "completion"
+            ]
+        },
+        engineering_project_management: {
+            symbols: ["💡", "📐", "⚙️", "📊", "📏", "🚧", "🔍", "📋", "✅"],
+            keys: [
+                "idea",
+                "design phase",
+                "engineering setup",
+                "metrics definition",
+                "specifications",
+                "construction",
+                "inspection",
+                "documentation",
+                "finished"
+            ]
+        },
+        flight_planning: {
+            symbols: ["💡", "🗺️", "📏", "📆", "📍", "⏰", "🛫", "🛬", "✅"],
+            keys: [
+                "flight concept",
+                "route mapping",
+                "distance planning",
+                "scheduling",
+                "waypoints",
+                "time management",
+                "takeoff",
+                "landing",
+                "flight completed"
+            ]
+        },
+        scientific_manuscript_writing: {
+            symbols: ["💡", "📚", "🔍", "✍️", "📈", "📝", "✂️", "📖", "✅"],
+            keys: [
+                "idea formulation",
+                "literature review",
+                "research",
+                "writing",
+                "data visualization",
+                "drafting",
+                "revision",
+                "peer review",
+                "publication"
             ]
         }
     } as Record<string, FlagMap>
