@@ -34,13 +34,13 @@ body {
     --focustracker-background-color: #00000010;
     --focustracker-weekend-color: #00000020;
     --today-column-text-color: var(--text-muted);
-    --focustracker-alternate-row-color: rgba(0, 0, 0, 0.02);
+    --focustracker-alternate-row-color: rgba(0, 0, 0, 0.1);
 }
 
 .theme-dark {
     --focustracker-background-color: #ffffff10;
     --focustracker-weekend-color: #ffffff10;
-    --focustracker-alternate-row-color: rgba(255, 255, 255, 0.02);
+    --focustracker-alternate-row-color: rgba(255, 255, 255, 0.1);
 }
 
 /* Main Container */

@@ -273,7 +273,16 @@ exclude-tags:
 - Use flags for special conditions or states
 
 ### Custom Columns
-Add metadata columns from your notes:
+
+# Focus Tracker
+
+[Previous sections remain unchanged until Custom Columns section]
+
+### Custom Columns
+Add metadata columns from your notes in two ways:
+
+#### 1. Simple Format (Legacy)
+Uses property names directly as column headers:
 
 ````
 ```focustracker
@@ -286,8 +295,30 @@ postfix-columns:
   - due-date
   - assigned-to
 ```
+````
+
+#### 2. Dictionary Format (New)
+Specify custom display names for columns:
 
 ````
+```focustracker
+tag-set:
+  - type/project
+prefix-columns:
+  "Status": status
+  "Priority Level": priority
+  "Project Type": project-type
+postfix-columns:
+  "Due Date": due-date
+  "Assigned To": assigned-to
+  "Completion %": completion-percentage
+```
+````
+
+The dictionary format allows you to:
+- Use friendly display names in column headers
+- Reference property names that might not be ideal for display
+- Maintain cleaner visualization while keeping flexible property names
 
 Features:
 - Sort by clicking column headers
