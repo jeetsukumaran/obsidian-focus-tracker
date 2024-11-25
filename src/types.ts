@@ -35,4 +35,6 @@ export interface FocusTrackerConfiguration {
     focalDate: Date;
     rootElement?: HTMLElement;
     focusTracksGoHere?: HTMLElement;
+    prefixColumns: string[];
+    postfixColumns: string[];
 }

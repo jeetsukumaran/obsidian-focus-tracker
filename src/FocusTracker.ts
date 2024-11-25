@@ -38,6 +38,8 @@ const DEFAULT_CONFIGURATION = (): FocusTrackerConfiguration => ({
     focalDate: new Date(),
     rootElement: undefined,
     focusTracksGoHere: undefined,
+    prefixColumns: [],
+    postfixColumns: [],
 });
 
 const PRIVATE_CONFIGURATION = new Set<string>([
@@ -107,6 +109,36 @@ export default class FocusTracker {
         this.refresh();
     }
 
+    private formatFrontmatterValue(value: any): string {
+        if (Array.isArray(value)) {
+            return value.join(' • ');
+        }
+        if (value === null || value === undefined) {
+            return '';
+        }
+        return String(value);
+    }
+
+    private async renderCustomColumns(
+        row: HTMLElement,
+        frontmatter: {[key: string]: any},
+        columns: string[],
+        className: string
+    ): Promise<void> {
+        for (const column of columns) {
+            const cell = row.createEl("div", {
+                cls: `focus-tracker__cell focus-tracker__cell--custom ${className}`,
+            });
+
+            const value = frontmatter[column];
+            cell.setText(this.formatFrontmatterValue(value));
+
+            // Add tooltip if content is truncated
+            if (cell.scrollWidth > cell.clientWidth) {
+                cell.setAttribute('title', cell.textContent || '');
+            }
+        }
+    }
 
     private createBaseStructure() {
         this.rootElement.empty();
@@ -242,7 +274,24 @@ export default class FocusTracker {
             const parsedConfig = parseYaml(configurationString) || {};
             const normalizedConfig = normalizeKeys(parsedConfig);
 
-            // Use settings for defaults
+            // Handle prefix and postfix columns
+            let prefixColumns: string[] = [];
+            let postfixColumns: string[] = [];
+
+            if (parsedConfig['prefix-columns']) {
+                const prefix = parsedConfig['prefix-columns'];
+                prefixColumns = Array.isArray(prefix) ? prefix.map(String)
+                    : typeof prefix === 'string' ? [prefix]
+                    : [];
+            }
+
+            if (parsedConfig['postfix-columns']) {
+                const postfix = parsedConfig['postfix-columns'];
+                postfixColumns = Array.isArray(postfix) ? postfix.map(String)
+                    : typeof postfix === 'string' ? [postfix]
+                    : [];
+            }
+
             const ratingMapKey = parsedConfig['rating-map'] || this.settings.defaultRatingMap;
             const flagMapKey = parsedConfig['flag-map'] || this.settings.defaultFlagMap;
 
@@ -251,10 +300,33 @@ export default class FocusTracker {
             const flagMap = DEFAULT_MAPS.flags[flagMapKey] ||
                             DEFAULT_MAPS.flags[this.settings.defaultFlagMap];
 
-            // Rest of the method remains the same, but use settings for defaults:
-            const configuration = {
+            // const configuration = {
+            //     ...DEFAULT_CONFIGURATION(),
+            //     ...normalizedConfig,
+            //     ratingSymbols: ratingMap.symbols,
+            //     flagSymbols: flagMap.symbols,
+            //     flagKeys: flagMap.keys,
+            //     daysInPast: Math.max(
+            //         this.settings.minDaysPast,
+            //         parsedConfig['days-past'] || this.settings.defaultDaysPast
+            //     ),
+            //     daysInFuture: Math.max(
+            //         this.settings.minDaysFuture,
+            //         parsedConfig['days-future'] || this.settings.defaultDaysFuture
+            //     )
+            // };
+            // if (configuration.path && configuration.paths.length === 0) {
+            //     configuration.paths = Array.isArray(configuration.path)
+            //         ? [...configuration.path]
+            //         : [String(configuration.path)];
+            // }
+            // return configuration;
+
+            return {
                 ...DEFAULT_CONFIGURATION(),
                 ...normalizedConfig,
+                prefixColumns,
+                postfixColumns,
                 ratingSymbols: ratingMap.symbols,
                 flagSymbols: flagMap.symbols,
                 flagKeys: flagMap.keys,
@@ -268,14 +340,6 @@ export default class FocusTracker {
                 )
             };
 
-            // Rest of the method remains the same
-            if (configuration.path && configuration.paths.length === 0) {
-                configuration.paths = Array.isArray(configuration.path)
-                    ? [...configuration.path]
-                    : [String(configuration.path)];
-            }
-
-            return configuration;
         } catch (error) {
             new Notice(`${PLUGIN_NAME}: Invalid configuration. Using defaults.`);
             return {
@@ -424,15 +488,45 @@ export default class FocusTracker {
         return section;
     }
 
+    // private renderTableHeader(parent: HTMLElement): void {
+    //     const header = parent.createEl("div", {
+    //         cls: "focus-tracker__header focus-tracker__row",
+    //     });
+
+    //     header.createEl("div", {
+    //         cls: "focus-tracker__cell focus-tracker__cell--focus-target-label",
+    //     });
+
+    //     this.renderDateCells(header);
+    // }
+
     private renderTableHeader(parent: HTMLElement): void {
         const header = parent.createEl("div", {
             cls: "focus-tracker__header focus-tracker__row",
         });
 
+        // Render prefix column headers
+        this.configuration.prefixColumns.forEach(column => {
+            header.createEl("div", {
+                cls: "focus-tracker__cell focus-tracker__cell--custom focus-tracker__cell--prefix",
+                text: column
+            });
+        });
+
+        // Render main label column
         header.createEl("div", {
             cls: "focus-tracker__cell focus-tracker__cell--focus-target-label",
         });
 
+        // Render postfix column headers
+        this.configuration.postfixColumns.forEach(column => {
+            header.createEl("div", {
+                cls: "focus-tracker__cell focus-tracker__cell--custom focus-tracker__cell--postfix",
+                text: column
+            });
+        });
+
+        // Render date cells
         this.renderDateCells(header);
     }
 
@@ -884,7 +978,42 @@ private renderDateCells(header: HTMLElement): void {
         );
     }
 
-private async renderFocusLogs(
+// private async renderFocusLogs(
+//         path: string,
+//         focusTargetLabel: string,
+//         entries: FocusLogsType
+//     ): Promise<void> {
+//         if (!this.configuration.focusTracksGoHere) {
+//             new Notice(`${PLUGIN_NAME}: missing div that holds all focus tracks`);
+//             return;
+//         }
+
+//         const parent = this.configuration.focusTracksGoHere;
+
+//         let row = parent.querySelector(`*[data-id="${this.pathToId(path)}"]`);
+//         if (!row) {
+//             row = this.configuration.focusTracksGoHere.createEl("div", {
+//                 cls: "focus-tracker__row",
+//             });
+//             row.setAttribute("data-id", this.pathToId(path));
+//         } else {
+//             this.removeAllChildNodes(row as HTMLElement);
+//         }
+
+//         const frontmatter = await this.getFrontmatter(path);
+//         await this.renderCustomColumns(row, frontmatter, this.configuration.prefixColumns, 'focus-tracker__cell--prefix');
+//         const focusTitle = row.createEl("div", {
+//             cls: "focus-tracker__cell focus-tracker__cell--focus-target-label",
+//         });
+
+//         const focusTitleLink = focusTitle.createEl("a", {
+//             text: focusTargetLabel,
+//             cls: "internal-link focus-title-link",
+//         });
+//         focusTitleLink.setAttribute("href", path);
+//         focusTitleLink.setAttribute("aria-label", path);
+//         await this.renderCustomColumns(row, frontmatter, this.configuration.postfixColumns, 'focus-tracker__cell--postfix');
+    private async renderFocusLogs(
         path: string,
         focusTargetLabel: string,
         entries: FocusLogsType
@@ -896,20 +1025,27 @@ private async renderFocusLogs(
 
         const parent = this.configuration.focusTracksGoHere;
 
-        let row = parent.querySelector(`*[data-id="${this.pathToId(path)}"]`);
-        if (!row) {
-            row = this.configuration.focusTracksGoHere.createEl("div", {
+        // Fix: Cast the Element to HTMLElement
+        let rowElement = parent.querySelector(`*[data-id="${this.pathToId(path)}"]`) as HTMLElement;
+        if (!rowElement) {
+            rowElement = this.configuration.focusTracksGoHere.createEl("div", {
                 cls: "focus-tracker__row",
             });
-            row.setAttribute("data-id", this.pathToId(path));
+            rowElement.setAttribute("data-id", this.pathToId(path));
         } else {
-            this.removeAllChildNodes(row as HTMLElement);
+            this.removeAllChildNodes(rowElement);
         }
 
-        const focusTitle = row.createEl("div", {
+        // Get frontmatter for custom columns
+        const frontmatter = await this.getFrontmatter(path);
+
+        // Render prefix columns
+        await this.renderCustomColumns(rowElement, frontmatter, this.configuration.prefixColumns, 'focus-tracker__cell--prefix');
+
+        // Render focus title
+        const focusTitle = rowElement.createEl("div", {
             cls: "focus-tracker__cell focus-tracker__cell--focus-target-label",
         });
-
         const focusTitleLink = focusTitle.createEl("a", {
             text: focusTargetLabel,
             cls: "internal-link focus-title-link",
@@ -917,6 +1053,8 @@ private async renderFocusLogs(
         focusTitleLink.setAttribute("href", path);
         focusTitleLink.setAttribute("aria-label", path);
 
+        // Render postfix columns
+        await this.renderCustomColumns(rowElement, frontmatter, this.configuration.postfixColumns, 'focus-tracker__cell--postfix');
         let startDate = new Date(this.configuration.focalDate);
         startDate.setDate(startDate.getDate() - this.configuration.daysInPast);
 
@@ -931,7 +1069,7 @@ private async renderFocusLogs(
                 remarks
             } = this.getDisplayValues(entry);
 
-            const focusCell = row.createEl("div", {
+            const focusCell = rowElement.createEl("div", {
                 cls: `focus-tracker__cell focus-tick focus-tick-entry focus-tick--${hasValue} focus-tracker__cell--${this.getDayOfWeek(startDate)}`,
                 title: tooltip,
             });

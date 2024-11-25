@@ -257,3 +257,39 @@ body {
   background-color: var(--today-column-bg-color);
   color: var(--today-column-text-color);
 }
+
+
+.focus-tracker__cell--custom {
+    padding: 0 8px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 120px;
+    min-width: 80px;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+.focus-tracker__header .focus-tracker__cell--custom {
+    font-weight: 600;
+    color: var(--text-normal);
+    text-transform: capitalize;
+}
+
+.focus-tracker__cell--prefix {
+    border-right: 1px solid var(--background-modifier-border);
+}
+
+.focus-tracker__cell--postfix {
+    border-left: 1px solid var(--background-modifier-border);
+}
+
+/* Update existing styles */
+.focus-tracker-container {
+    overflow-x: auto;
+    max-width: 100%;
+}
+
+.focus-tracker {
+    min-width: max-content;
+}
