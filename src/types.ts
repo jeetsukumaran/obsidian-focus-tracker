@@ -37,4 +37,6 @@ export interface FocusTrackerConfiguration {
     focusTracksGoHere?: HTMLElement;
     prefixColumns: string[];
     postfixColumns: string[];
+    sortColumn: string;  // Column name being sorted
+    sortDescending: boolean;  // Sort direction
 }

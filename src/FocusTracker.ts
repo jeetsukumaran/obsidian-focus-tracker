@@ -40,6 +40,8 @@ const DEFAULT_CONFIGURATION = (): FocusTrackerConfiguration => ({
     focusTracksGoHere: undefined,
     prefixColumns: [],
     postfixColumns: [],
+    sortColumn: '',  // Will be set to first column on initialization
+    sortDescending: false,
 });
 
 const PRIVATE_CONFIGURATION = new Set<string>([
@@ -158,6 +160,29 @@ export default class FocusTracker {
         return { controlsContainer, tableElement };
     }
 
+    // public async refresh() {
+    //     const files = this.loadFiles();
+    //     if (files.length === 0) {
+    //         this.renderNoFocussFoundMessage();
+    //         return;
+    //     }
+
+    //     const { controlsContainer, tableElement } = this.createBaseStructure();
+    //     this.configuration.focusTracksGoHere = tableElement;
+    //     this.renderControls(controlsContainer);
+    //     this.renderTableHeader(tableElement);
+
+    //     let focalTargetLabels: [string, TFile][] = await Promise.all(
+    //         files.map(async (f) => [await this.getFocusTargetLabel(f.path), f])
+    //     );
+
+    //     focalTargetLabels.sort((a, b) => a[0].localeCompare(b[0]));
+
+    //     for (const [focusTargetLabel, f] of focalTargetLabels) {
+    //         const focusLogs = await this.readFocusLogs(f.path);
+    //         await this.renderFocusLogs(f.path, focusTargetLabel, focusLogs);
+    //     }
+    // }
     public async refresh() {
         const files = this.loadFiles();
         if (files.length === 0) {
@@ -170,13 +195,9 @@ export default class FocusTracker {
         this.renderControls(controlsContainer);
         this.renderTableHeader(tableElement);
 
-        let focalTargetLabels: [string, TFile][] = await Promise.all(
-            files.map(async (f) => [await this.getFocusTargetLabel(f.path), f])
-        );
+        let sortedFiles = await this.sortFiles(files);
 
-        focalTargetLabels.sort((a, b) => a[0].localeCompare(b[0]));
-
-        for (const [focusTargetLabel, f] of focalTargetLabels) {
+        for (const [focusTargetLabel, f] of sortedFiles) {
             const focusLogs = await this.readFocusLogs(f.path);
             await this.renderFocusLogs(f.path, focusTargetLabel, focusLogs);
         }
@@ -495,34 +516,34 @@ export default class FocusTracker {
 
         // Render prefix column headers
         this.configuration.prefixColumns.forEach(column => {
-            header.createEl("div", {
+            const headerCell = header.createEl("div", {
                 cls: "focus-tracker__cell focus-tracker__cell--custom focus-tracker__cell--prefix",
                 text: column
             });
+            this.addSortingToHeader(headerCell, column);
         });
 
         // Render main label column
-        // header.createEl("div", {
-        //     cls: "focus-tracker__cell focus-tracker__cell--focus-target-label",
-        // });
-        header.createEl("div", {
+        const trackHeader = header.createEl("div", {
             cls: "focus-tracker__cell focus-tracker__cell--focus-target-label",
             text: "Track"
         });
+        this.addSortingToHeader(trackHeader, 'track');
 
         // Render postfix column headers
         this.configuration.postfixColumns.forEach(column => {
-            header.createEl("div", {
+            const headerCell = header.createEl("div", {
                 cls: "focus-tracker__cell focus-tracker__cell--custom focus-tracker__cell--postfix",
                 text: column
             });
+            this.addSortingToHeader(headerCell, column);
         });
 
         // Render date cells
         this.renderDateCells(header);
     }
 
-private renderDateCells(header: HTMLElement): void {
+    private renderDateCells(header: HTMLElement): void {
         const totalDays = this.configuration.daysInPast + this.configuration.daysInFuture + 1;
         let currentDate = new Date(this.configuration.focalDate);
         currentDate.setDate(currentDate.getDate() - this.configuration.daysInPast);
@@ -682,60 +703,6 @@ private renderDateCells(header: HTMLElement): void {
         return result;
     }
 
-    // private getDisplayValues(entry: number | string | FocusLogEntry): {
-    //     hasValue: boolean,
-    //     symbol: string,
-    //     tooltip: string,
-    //     entryScalarValue: number,
-    //     remarks?: string
-    // } {
-    //     let result = {
-    //         hasValue: false,
-    //         symbol: " ",
-    //         tooltip: "",
-    //         entryScalarValue: 0,
-    //         remarks: undefined as string | undefined
-    //     };
-
-    //     if (typeof entry === 'object' && entry !== null) {
-    //         result.entryScalarValue = entry.rating;
-    //         result.remarks = entry.remarks;
-    //     } else if (typeof entry === 'number') {
-    //         result.entryScalarValue = entry;
-    //     } else if (typeof entry === 'string') {
-    //         if (entry === "") {
-    //             result.hasValue = false;
-    //         } else {
-    //             result.hasValue = true;
-    //             result.symbol = entry;
-    //             result.tooltip = entry;
-    //         }
-    //         return result;
-    //     }
-
-    //     if (result.entryScalarValue === 0) {
-    //         result.hasValue = false;
-    //     } else {
-    //         result.hasValue = true;
-    //         if (result.entryScalarValue >= 1) {
-    //             result.symbol = this.getSymbol(this.configuration.ratingSymbols, result.entryScalarValue - 1);
-    //             result.tooltip = `Rating: ${result.entryScalarValue}`;
-    //         } else {
-    //             let arrayIndex = (-1 * result.entryScalarValue) - 1;
-    //             result.symbol = this.getSymbol(this.configuration.flagSymbols, arrayIndex);
-    //             let flagKey = this.configuration.flagKeys?.[arrayIndex];
-    //             let flagDesc = flagKey ? `: ${flagKey}` : "";
-    //             result.tooltip = `Flag ${-1 * result.entryScalarValue}${flagDesc}`;
-    //         }
-    //     }
-
-    //     if (result.remarks) {
-    //         result.tooltip += `\nRemarks: ${result.remarks}`;
-    //     }
-
-    //     return result;
-    // }
-
     private getSymbol(symbolArray: string[], symbolIndex: number): string {
         return symbolIndex >= symbolArray.length ? OUT_OF_BOUNDS : symbolArray[symbolIndex];
     }
@@ -836,83 +803,6 @@ private renderDateCells(header: HTMLElement): void {
         menu.showAtMouseEvent(event);
     }
 
-    // private showFocusMenu(event: MouseEvent, path: string, dateString: string, currentRemarks?: string): void {
-    //     const menu = new Menu();
-
-    //     // Remarks section
-    //     menu.addItem((item) =>
-    //         item
-    //             .setTitle(currentRemarks ? `Edit Remarks: ${currentRemarks}` : "Add Remarks")
-    //             .setIcon("edit")
-    //             .onClick(async () => {
-    //                 const remarkInput = document.createElement('input');
-    //                 remarkInput.type = 'text';
-    //                 remarkInput.value = currentRemarks || '';
-    //                 remarkInput.placeholder = 'Enter remarks...';
-
-    //                 const modalDiv = document.createElement('div');
-    //                 modalDiv.addClass('focus-tracker-remarks-modal');
-    //                 modalDiv.appendChild(remarkInput);
-
-    //                 const saveRemarks = async () => {
-    //                     await this.setFocusEntry(path, dateString, undefined, remarkInput.value);
-    //                     modalDiv.remove();
-    //                 };
-
-    //                 remarkInput.addEventListener('keypress', async (e) => {
-    //                     if (e.key === 'Enter') {
-    //                         await saveRemarks();
-    //                     }
-    //                 });
-
-    //                 document.body.appendChild(modalDiv);
-    //                 remarkInput.focus();
-    //             })
-    //     );
-
-    //     menu.addSeparator();
-
-    //     // Rating options
-    //     this.ratingSymbols.slice().reverse().forEach((symbol: string, rSymbolIndex: number) => {
-    //         let symbolIndex = this.configuration.ratingSymbols.length - rSymbolIndex;
-    //         menu.addItem((item) =>
-    //             item
-    //                 .setTitle(`${symbol} (Rating = ${symbolIndex})`)
-    //                 .setIcon("open")
-    //                 .onClick(async () => {
-    //                     await this.setFocusEntry(path, dateString, symbolIndex);
-    //                 })
-    //         );
-    //     });
-
-    //     menu.addSeparator();
-    //     menu.addItem((item) =>
-    //         item
-    //             .setTitle(`Clear`)
-    //             .setIcon("open")
-    //             .onClick(async () => {
-    //                 await this.setFocusEntry(path, dateString, 0);
-    //             })
-    //     );
-
-    //     menu.addSeparator();
-    //     this.configuration.flagSymbols.forEach((symbol: string, symbolIndex: number) => {
-    //         let newValue = 0 - (symbolIndex + 1);
-    //         let flagKey = this.configuration.flagKeys?.[symbolIndex];
-    //         let flagDesc = flagKey ? `: ${flagKey}` : "";
-    //         menu.addItem((item) =>
-    //             item
-    //                 .setTitle(`${symbol} (Flag ${-1 * newValue}${flagDesc})`)
-    //                 .setIcon("open")
-    //                 .onClick(async () => {
-    //                     await this.setFocusEntry(path, dateString, newValue);
-    //                 })
-    //         );
-    //     });
-
-    //     menu.showAtMouseEvent(event);
-    // }
-
     private async setFocusEntry(
         focusTrackerPath: string | null,
         date: string | null,
@@ -970,41 +860,6 @@ private renderDateCells(header: HTMLElement): void {
         );
     }
 
-// private async renderFocusLogs(
-//         path: string,
-//         focusTargetLabel: string,
-//         entries: FocusLogsType
-//     ): Promise<void> {
-//         if (!this.configuration.focusTracksGoHere) {
-//             new Notice(`${PLUGIN_NAME}: missing div that holds all focus tracks`);
-//             return;
-//         }
-
-//         const parent = this.configuration.focusTracksGoHere;
-
-//         let row = parent.querySelector(`*[data-id="${this.pathToId(path)}"]`);
-//         if (!row) {
-//             row = this.configuration.focusTracksGoHere.createEl("div", {
-//                 cls: "focus-tracker__row",
-//             });
-//             row.setAttribute("data-id", this.pathToId(path));
-//         } else {
-//             this.removeAllChildNodes(row as HTMLElement);
-//         }
-
-//         const frontmatter = await this.getFrontmatter(path);
-//         await this.renderCustomColumns(row, frontmatter, this.configuration.prefixColumns, 'focus-tracker__cell--prefix');
-//         const focusTitle = row.createEl("div", {
-//             cls: "focus-tracker__cell focus-tracker__cell--focus-target-label",
-//         });
-
-//         const focusTitleLink = focusTitle.createEl("a", {
-//             text: focusTargetLabel,
-//             cls: "internal-link focus-title-link",
-//         });
-//         focusTitleLink.setAttribute("href", path);
-//         focusTitleLink.setAttribute("aria-label", path);
-//         await this.renderCustomColumns(row, frontmatter, this.configuration.postfixColumns, 'focus-tracker__cell--postfix');
     private async renderFocusLogs(
         path: string,
         focusTargetLabel: string,
@@ -1098,6 +953,68 @@ private renderDateCells(header: HTMLElement): void {
             startDate.setDate(startDate.getDate() + 1);
         }
     }
+
+    private async getSortableValue(frontmatter: {[key: string]: any}, column: string): Promise<string> {
+        if (column === 'track') {
+            const label = await this.getFocusTargetLabel(frontmatter.path || '');
+            return label || '';
+        }
+        const value = frontmatter[column];
+        return this.formatFrontmatterValue(value).toLowerCase();
+    }
+
+    private async sortFiles(files: TFile[]): Promise<[string, TFile][]> {
+        let sortColumn = this.configuration.sortColumn;
+
+        // If no sort column is set, use first prefix column or 'track'
+        if (!sortColumn) {
+            sortColumn = this.configuration.prefixColumns.length > 0
+                ? this.configuration.prefixColumns[0]
+                : 'track';
+            this.configuration.sortColumn = sortColumn;
+        }
+
+        const fileLabels = await Promise.all(
+            files.map(async (f) => {
+                const frontmatter = await this.getFrontmatter(f.path);
+                const label = await this.getFocusTargetLabel(f.path);
+                const sortValue = await this.getSortableValue(frontmatter, sortColumn);
+                return [label, f, sortValue] as [string, TFile, string];
+            })
+        );
+
+        return fileLabels
+            .sort(([labelA, fileA, valueA], [labelB, fileB, valueB]) => {
+                const comparison = valueA.localeCompare(valueB);
+                return this.configuration.sortDescending ? -comparison : comparison;
+            })
+            .map(([label, file]) => [label, file]);
+    }
+
+    private addSortingToHeader(headerCell: HTMLElement, columnName: string): void {
+        headerCell.addClass('focus-tracker__cell--sortable');
+
+        if (this.configuration.sortColumn === columnName) {
+            headerCell.addClass('focus-tracker__cell--sorted');
+            headerCell.addClass(
+                this.configuration.sortDescending
+                    ? 'focus-tracker__cell--sort-desc'
+                    : 'focus-tracker__cell--sort-asc'
+            );
+        }
+
+        headerCell.addEventListener('click', async () => {
+            if (this.configuration.sortColumn === columnName) {
+                this.configuration.sortDescending = !this.configuration.sortDescending;
+            } else {
+                this.configuration.sortColumn = columnName;
+                this.configuration.sortDescending = false;
+            }
+            await this.refresh();
+        });
+    }
+
+
 
     private isSameDate(date1: Date, date2: Date): boolean {
         return date1.getFullYear() === date2.getFullYear() &&
