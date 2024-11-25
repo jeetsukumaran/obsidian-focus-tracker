@@ -968,6 +968,7 @@ export default class FocusTracker {
         // Render postfix columns
         await this.renderCustomColumns(rowElement, frontmatter, this.configuration.postfixColumns, 'focus-tracker__cell--postfix');
 
+        let todayDate = new Date();
         let startDate = new Date(this.configuration.focalDate);
         // console.log(startDate);
         startDate.setDate(startDate.getDate() - this.configuration.daysInPast);
@@ -1011,9 +1012,14 @@ export default class FocusTracker {
             });
 
             if (this.isSameDate(startDate, this.configuration.focalDate)) {
+                focusCell.addClass("focus-tracker__cell--focal-date");
+            }
+            if (this.isSameDate(startDate, todayDate)) {
                 focusCell.addClass("focus-tracker__cell--today");
-            } else if (startDate > this.configuration.focalDate) {
+            } else if (startDate > todayDate) {
                 focusCell.addClass("focus-tracker__cell--future");
+            } else if (startDate < todayDate) {
+                focusCell.addClass("focus-tracker__cell--past");
             }
 
             startDate.setDate(startDate.getDate() + 1);
