@@ -292,3 +292,44 @@ body {
 .focus-tracker {
     min-width: max-content;
 }
+
+/* Resize handle styles */
+.focus-tracker__cell {
+    position: relative;
+}
+
+.focus-tracker__resize-handle {
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    cursor: col-resize;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.focus-tracker__cell:hover .focus-tracker__resize-handle {
+    opacity: 1;
+    background: var(--interactive-accent);
+    opacity: 0.2;
+}
+
+.focus-tracker__resize-handle:hover,
+.focus-tracker__resize-handle:active {
+    opacity: 0.4;
+}
+
+/* Ensure cells maintain their new widths */
+.focus-tracker__cell--custom,
+.focus-tracker__cell--focus-target-label {
+    min-width: 80px;  /* Starting minimum width */
+    max-width: none;  /* Remove max-width constraint */
+}
+
+/* Prevent text wrapping in resized cells */
+.focus-tracker__cell {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}

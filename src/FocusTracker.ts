@@ -84,6 +84,7 @@ function getTodayDate(): string {
     return `${year}-${month}-${day}`;
 }
 
+
 // Add settings property to class:
 export default class FocusTracker {
     public rootElement: HTMLElement;
@@ -140,6 +141,38 @@ export default class FocusTracker {
                 cell.setAttribute('title', cell.textContent || '');
             }
         }
+    }
+
+    private addResizeHandle(cell: HTMLElement): void {
+        const handle = cell.createEl('div', {
+            cls: 'focus-tracker__resize-handle',
+        });
+
+        let startX: number;
+        let startWidth: number;
+
+        const startResize = (e: MouseEvent) => {
+            startX = e.pageX;
+            startWidth = cell.offsetWidth;
+            document.addEventListener('mousemove', resize);
+            document.addEventListener('mouseup', stopResize);
+            document.body.style.cursor = 'col-resize';
+            e.preventDefault();
+        };
+
+        const resize = (e: MouseEvent) => {
+            const width = startWidth + (e.pageX - startX);
+            cell.style.width = `${width}px`;
+            cell.style.minWidth = `${width}px`;
+        };
+
+        const stopResize = () => {
+            document.removeEventListener('mousemove', resize);
+            document.removeEventListener('mouseup', stopResize);
+            document.body.style.cursor = '';
+        };
+
+        handle.addEventListener('mousedown', startResize);
     }
 
     private createBaseStructure() {
@@ -521,6 +554,7 @@ export default class FocusTracker {
                 text: column
             });
             this.addSortingToHeader(headerCell, column);
+            this.addResizeHandle(headerCell);
         });
 
         // Render main label column
@@ -529,6 +563,7 @@ export default class FocusTracker {
             text: "Track"
         });
         this.addSortingToHeader(trackHeader, 'track');
+        this.addResizeHandle(trackHeader);
 
         // Render postfix column headers
         this.configuration.postfixColumns.forEach(column => {
@@ -537,6 +572,7 @@ export default class FocusTracker {
                 text: column
             });
             this.addSortingToHeader(headerCell, column);
+            this.addResizeHandle(headerCell);
         });
 
         // Render date cells
