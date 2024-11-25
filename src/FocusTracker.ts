@@ -488,18 +488,6 @@ export default class FocusTracker {
         return section;
     }
 
-    // private renderTableHeader(parent: HTMLElement): void {
-    //     const header = parent.createEl("div", {
-    //         cls: "focus-tracker__header focus-tracker__row",
-    //     });
-
-    //     header.createEl("div", {
-    //         cls: "focus-tracker__cell focus-tracker__cell--focus-target-label",
-    //     });
-
-    //     this.renderDateCells(header);
-    // }
-
     private renderTableHeader(parent: HTMLElement): void {
         const header = parent.createEl("div", {
             cls: "focus-tracker__header focus-tracker__row",
@@ -514,8 +502,12 @@ export default class FocusTracker {
         });
 
         // Render main label column
+        // header.createEl("div", {
+        //     cls: "focus-tracker__cell focus-tracker__cell--focus-target-label",
+        // });
         header.createEl("div", {
             cls: "focus-tracker__cell focus-tracker__cell--focus-target-label",
+            text: "Track"
         });
 
         // Render postfix column headers

@@ -284,7 +284,6 @@ body {
     border-left: 1px solid var(--background-modifier-border);
 }
 
-/* Update existing styles */
 .focus-tracker-container {
     overflow-x: auto;
     max-width: 100%;
