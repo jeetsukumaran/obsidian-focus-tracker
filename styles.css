@@ -219,16 +219,33 @@ body {
 }
 
 /* Title/Link Styles */
+/* .focus-tracker__cell--focus-target-label a { */
+/*     display: block; */
+/*     font-weight: 500; */
+/*     font-size: 0.8rem; */
+/*     max-width: 20rem; */
+/*     width: fit-content; */
+/*     overflow: hidden; */
+/*     white-space: nowrap; */
+/*     text-overflow: ellipsis; */
+/* } */
+
+.focus-tracker__cell--focus-target-label {
+    max-width: 10rem;  /* Initial max width */
+    min-width: 	1rem;  /* Ensure a reasonable minimum */
+    width: 2rem;      /* Default width */
+}
+
 .focus-tracker__cell--focus-target-label a {
     display: block;
     font-weight: 500;
     font-size: 0.8rem;
-    max-width: 20rem;
-    width: fit-content;
+    width: 100%;       /* Fill the cell width */
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
 }
+
 
 /* Special States */
 .focus-tracker__cell--today {
