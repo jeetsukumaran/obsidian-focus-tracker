@@ -254,12 +254,18 @@ body {
 /* Header Indicators */
 .focus-tracker__header .focus-tracker__cell--today::after,
 .focus-tracker__header .focus-tracker__cell--focal-date::after {
-    content: "•";
     position: absolute;
-    top: -5px;
+    top: 0px;
     left: 50%;
     transform: translateX(-50%);
-    font-size: 12px;
+    font-size: 8px;
+}
+.focus-tracker__header .focus-tracker__cell--today::after {
+    /* content: "⧭"; */
+}
+.focus-tracker__header .focus-tracker__cell--focal-date::after {
+    color: var(--focustracker-focal-date-color);
+    content: "▔▔▔";
 }
 
 .focus-tracker__header .focus-tracker__cell--today::after {
