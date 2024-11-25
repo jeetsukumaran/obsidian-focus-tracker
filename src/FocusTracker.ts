@@ -9,7 +9,7 @@ import {
 } from "obsidian";
 import { FocusTrackerSettings } from './FocusTrackerSettingsTab';
 import { RemarksModal } from './RemarksModal';
-import { FocusLogEntry, FocusLogsType, FocusTrackerConfiguration } from './types';
+import { FocusLogEntry, FocusLogsType, FocusTrackerConfiguration, ColumnConfig } from './types';
 import {
     DEFAULT_MAPS,
     DEFAULT_CONFIG,
@@ -38,8 +38,8 @@ const DEFAULT_CONFIGURATION = (): FocusTrackerConfiguration => ({
     focalDate: new Date(),
     rootElement: undefined,
     focusTracksGoHere: undefined,
-    prefixColumns: [],
-    postfixColumns: [],
+    prefixColumns: {},
+    postfixColumns: {},
     sortColumn: '',  // Will be set to first column on initialization
     sortDescending: false,
 });
@@ -122,18 +122,40 @@ export default class FocusTracker {
         return String(value);
     }
 
+    // private async renderCustomColumns(
+    //     row: HTMLElement,
+    //     frontmatter: {[key: string]: any},
+    //     columns: string[],
+    //     className: string
+    // ): Promise<void> {
+    //     for (const column of columns) {
+    //         const cell = row.createEl("div", {
+    //             cls: `focus-tracker__cell focus-tracker__cell--custom ${className}`,
+    //         });
+
+    //         const value = frontmatter[column];
+    //         cell.setText(this.formatFrontmatterValue(value));
+
+    //         // Add tooltip if content is truncated
+    //         if (cell.scrollWidth > cell.clientWidth) {
+    //             cell.setAttribute('title', cell.textContent || '');
+    //         }
+    //     }
+    // }
+
+
     private async renderCustomColumns(
         row: HTMLElement,
         frontmatter: {[key: string]: any},
-        columns: string[],
+        columns: ColumnConfig,
         className: string
     ): Promise<void> {
-        for (const column of columns) {
+        for (const [displayName, propertyName] of Object.entries(columns)) {
             const cell = row.createEl("div", {
                 cls: `focus-tracker__cell focus-tracker__cell--custom ${className}`,
             });
 
-            const value = frontmatter[column];
+            const value = frontmatter[propertyName];
             cell.setText(this.formatFrontmatterValue(value));
 
             // Add tooltip if content is truncated
@@ -323,27 +345,110 @@ export default class FocusTracker {
         return this.app.metadataCache.getFileCache(file) || null;
     }
 
+    // private loadConfiguration(configurationString: string): FocusTrackerConfiguration {
+    //     try {
+    //         const parsedConfig = parseYaml(configurationString) || {};
+    //         const normalizedConfig = normalizeKeys(parsedConfig);
+
+    //         // Handle prefix and postfix columns
+    //         let prefixColumns: string[] = [];
+    //         let postfixColumns: string[] = [];
+
+    //         if (parsedConfig['prefix-columns']) {
+    //             const prefix = parsedConfig['prefix-columns'];
+    //             prefixColumns = Array.isArray(prefix) ? prefix.map(String)
+    //                 : typeof prefix === 'string' ? [prefix]
+    //                 : [];
+    //         }
+
+    //         if (parsedConfig['postfix-columns']) {
+    //             const postfix = parsedConfig['postfix-columns'];
+    //             postfixColumns = Array.isArray(postfix) ? postfix.map(String)
+    //                 : typeof postfix === 'string' ? [postfix]
+    //                 : [];
+    //         }
+
+    //         const ratingMapKey = parsedConfig['rating-map'] || this.settings.defaultRatingMap;
+    //         const flagMapKey = parsedConfig['flag-map'] || this.settings.defaultFlagMap;
+
+    //         const ratingMap = DEFAULT_MAPS.ratings[ratingMapKey] ||
+    //                         DEFAULT_MAPS.ratings[this.settings.defaultRatingMap];
+    //         const flagMap = DEFAULT_MAPS.flags[flagMapKey] ||
+    //                         DEFAULT_MAPS.flags[this.settings.defaultFlagMap];
+
+    //         return {
+    //             ...DEFAULT_CONFIGURATION(),
+    //             ...normalizedConfig,
+    //             prefixColumns,
+    //             postfixColumns,
+    //             ratingSymbols: ratingMap.symbols,
+    //             flagSymbols: flagMap.symbols,
+    //             flagKeys: flagMap.keys,
+    //             daysInPast: Math.max(
+    //                 this.settings.minDaysPast,
+    //                 parsedConfig['days-past'] || this.settings.defaultDaysPast
+    //             ),
+    //             daysInFuture: Math.max(
+    //                 this.settings.minDaysFuture,
+    //                 parsedConfig['days-future'] || this.settings.defaultDaysFuture
+    //             )
+    //         };
+
+    //     } catch (error) {
+    //         new Notice(`${PLUGIN_NAME}: Invalid configuration. Using defaults.`);
+    //         return {
+    //             ...DEFAULT_CONFIGURATION(),
+    //             daysInPast: this.settings.defaultDaysPast,
+    //             daysInFuture: this.settings.defaultDaysFuture
+    //         };
+    //     }
+    // }
+
     private loadConfiguration(configurationString: string): FocusTrackerConfiguration {
         try {
             const parsedConfig = parseYaml(configurationString) || {};
             const normalizedConfig = normalizeKeys(parsedConfig);
 
-            // Handle prefix and postfix columns
-            let prefixColumns: string[] = [];
-            let postfixColumns: string[] = [];
+            // Handle prefix and postfix columns with new dictionary format
+            let prefixColumns: ColumnConfig = {};
+            let postfixColumns: ColumnConfig = {};
 
+            // Handle prefix columns
             if (parsedConfig['prefix-columns']) {
                 const prefix = parsedConfig['prefix-columns'];
-                prefixColumns = Array.isArray(prefix) ? prefix.map(String)
-                    : typeof prefix === 'string' ? [prefix]
-                    : [];
+                if (Array.isArray(prefix)) {
+                    // Backwards compatibility: convert array to dictionary
+                    prefix.forEach(field => {
+                        prefixColumns[String(field)] = String(field);
+                    });
+                } else if (typeof prefix === 'object') {
+                    // New dictionary format
+                    Object.entries(prefix).forEach(([display, field]) => {
+                        prefixColumns[display] = String(field);
+                    });
+                } else if (typeof prefix === 'string') {
+                    // Single string case
+                    prefixColumns[prefix] = prefix;
+                }
             }
 
+            // Handle postfix columns
             if (parsedConfig['postfix-columns']) {
                 const postfix = parsedConfig['postfix-columns'];
-                postfixColumns = Array.isArray(postfix) ? postfix.map(String)
-                    : typeof postfix === 'string' ? [postfix]
-                    : [];
+                if (Array.isArray(postfix)) {
+                    // Backwards compatibility: convert array to dictionary
+                    postfix.forEach(field => {
+                        postfixColumns[String(field)] = String(field);
+                    });
+                } else if (typeof postfix === 'object') {
+                    // New dictionary format
+                    Object.entries(postfix).forEach(([display, field]) => {
+                        postfixColumns[display] = String(field);
+                    });
+                } else if (typeof postfix === 'string') {
+                    // Single string case
+                    postfixColumns[postfix] = postfix;
+                }
             }
 
             const ratingMapKey = parsedConfig['rating-map'] || this.settings.defaultRatingMap;
@@ -353,28 +458,6 @@ export default class FocusTracker {
                             DEFAULT_MAPS.ratings[this.settings.defaultRatingMap];
             const flagMap = DEFAULT_MAPS.flags[flagMapKey] ||
                             DEFAULT_MAPS.flags[this.settings.defaultFlagMap];
-
-            // const configuration = {
-            //     ...DEFAULT_CONFIGURATION(),
-            //     ...normalizedConfig,
-            //     ratingSymbols: ratingMap.symbols,
-            //     flagSymbols: flagMap.symbols,
-            //     flagKeys: flagMap.keys,
-            //     daysInPast: Math.max(
-            //         this.settings.minDaysPast,
-            //         parsedConfig['days-past'] || this.settings.defaultDaysPast
-            //     ),
-            //     daysInFuture: Math.max(
-            //         this.settings.minDaysFuture,
-            //         parsedConfig['days-future'] || this.settings.defaultDaysFuture
-            //     )
-            // };
-            // if (configuration.path && configuration.paths.length === 0) {
-            //     configuration.paths = Array.isArray(configuration.path)
-            //         ? [...configuration.path]
-            //         : [String(configuration.path)];
-            // }
-            // return configuration;
 
             return {
                 ...DEFAULT_CONFIGURATION(),
@@ -393,7 +476,6 @@ export default class FocusTracker {
                     parsedConfig['days-future'] || this.settings.defaultDaysFuture
                 )
             };
-
         } catch (error) {
             new Notice(`${PLUGIN_NAME}: Invalid configuration. Using defaults.`);
             return {
@@ -551,18 +633,55 @@ export default class FocusTracker {
         return section;
     }
 
+    // private renderTableHeader(parent: HTMLElement): void {
+    //     const header = parent.createEl("div", {
+    //         cls: "focus-tracker__header focus-tracker__row",
+    //     });
+
+    //     // Render prefix column headers
+    //     this.configuration.prefixColumns.forEach(column => {
+    //         const headerCell = header.createEl("div", {
+    //             cls: "focus-tracker__cell focus-tracker__cell--custom focus-tracker__cell--prefix",
+    //             text: column
+    //         });
+    //         this.addSortingToHeader(headerCell, column);
+    //         this.addResizeHandle(headerCell);
+    //     });
+
+    //     // Render main label column
+    //     const trackHeader = header.createEl("div", {
+    //         cls: "focus-tracker__cell focus-tracker__cell--focus-target-label",
+    //         text: "Track"
+    //     });
+    //     this.addSortingToHeader(trackHeader, 'track');
+    //     this.addResizeHandle(trackHeader);
+
+    //     // Render postfix column headers
+    //     this.configuration.postfixColumns.forEach(column => {
+    //         const headerCell = header.createEl("div", {
+    //             cls: "focus-tracker__cell focus-tracker__cell--custom focus-tracker__cell--postfix",
+    //             text: column
+    //         });
+    //         this.addSortingToHeader(headerCell, column);
+    //         this.addResizeHandle(headerCell);
+    //     });
+
+    //     // Render date cells
+    //     this.renderDateCells(header);
+    // }
+
     private renderTableHeader(parent: HTMLElement): void {
         const header = parent.createEl("div", {
             cls: "focus-tracker__header focus-tracker__row",
         });
 
         // Render prefix column headers
-        this.configuration.prefixColumns.forEach(column => {
+        Object.entries(this.configuration.prefixColumns).forEach(([displayName, propertyName]) => {
             const headerCell = header.createEl("div", {
                 cls: "focus-tracker__cell focus-tracker__cell--custom focus-tracker__cell--prefix",
-                text: column
+                text: displayName
             });
-            this.addSortingToHeader(headerCell, column);
+            this.addSortingToHeader(headerCell, propertyName);
             this.addResizeHandle(headerCell);
         });
 
@@ -575,12 +694,12 @@ export default class FocusTracker {
         this.addResizeHandle(trackHeader);
 
         // Render postfix column headers
-        this.configuration.postfixColumns.forEach(column => {
+        Object.entries(this.configuration.postfixColumns).forEach(([displayName, propertyName]) => {
             const headerCell = header.createEl("div", {
                 cls: "focus-tracker__cell focus-tracker__cell--custom focus-tracker__cell--postfix",
-                text: column
+                text: displayName
             });
-            this.addSortingToHeader(headerCell, column);
+            this.addSortingToHeader(headerCell, propertyName);
             this.addResizeHandle(headerCell);
         });
 
@@ -1046,11 +1165,30 @@ export default class FocusTracker {
     //         this.configuration.sortColumn = sortColumn;
     //     }
 
+    //     // If sorting by track, we can skip getting frontmatter
+    //     if (sortColumn === 'track') {
+    //         const fileLabels = await Promise.all(
+    //             files.map(async (f) => {
+    //                 const label = await this.getFocusTargetLabel(f.path);
+    //                 return [label, f, label.toLowerCase()] as [string, TFile, string];
+    //             })
+    //         );
+
+    //         return fileLabels
+    //             .sort(([labelA, fileA, valueA], [labelB, fileB, valueB]) => {
+    //                 const comparison = valueA.localeCompare(valueB);
+    //                 return this.configuration.sortDescending ? -comparison : comparison;
+    //             })
+    //             .map(([label, file]) => [label, file]);
+    //     }
+
+    //     // For other columns, we need frontmatter
     //     const fileLabels = await Promise.all(
     //         files.map(async (f) => {
     //             const frontmatter = await this.getFrontmatter(f.path);
     //             const label = await this.getFocusTargetLabel(f.path);
-    //             const sortValue = await this.getSortableValue(frontmatter, sortColumn);
+    //             const value = frontmatter[sortColumn];
+    //             const sortValue = this.formatFrontmatterValue(value).toLowerCase();
     //             return [label, f, sortValue] as [string, TFile, string];
     //         })
     //     );
@@ -1068,9 +1206,8 @@ export default class FocusTracker {
 
         // If no sort column is set, use first prefix column or 'track'
         if (!sortColumn) {
-            sortColumn = this.configuration.prefixColumns.length > 0
-                ? this.configuration.prefixColumns[0]
-                : 'track';
+            const prefixColumns = Object.values(this.configuration.prefixColumns);
+            sortColumn = prefixColumns.length > 0 ? prefixColumns[0] : 'track';
             this.configuration.sortColumn = sortColumn;
         }
 

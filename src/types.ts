@@ -16,6 +16,10 @@ export interface FocusLogEntry {
 
 export type FocusLogsType = Record<string, number | string | FocusLogEntry>;
 
+export interface ColumnConfig {
+    [displayName: string]: string;
+}
+
 export interface FocusTrackerConfiguration {
     path: string;
     paths: string[];
@@ -35,8 +39,8 @@ export interface FocusTrackerConfiguration {
     focalDate: Date;
     rootElement?: HTMLElement;
     focusTracksGoHere?: HTMLElement;
-    prefixColumns: string[];
-    postfixColumns: string[];
+    prefixColumns: ColumnConfig;
+    postfixColumns: ColumnConfig;
     sortColumn: string;  // Column name being sorted
     sortDescending: boolean;  // Sort direction
 }
