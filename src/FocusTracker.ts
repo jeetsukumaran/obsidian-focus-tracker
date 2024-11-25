@@ -1083,13 +1083,32 @@ export default class FocusTracker {
         await this.renderCustomColumns(rowElement, frontmatter, this.configuration.prefixColumns, 'focus-tracker__cell--prefix');
 
         // Render focus title
+        // const focusTitle = rowElement.createEl("div", {
+        //     cls: "focus-tracker__cell focus-tracker__cell--focus-target-label",
+        // });
+        // const focusTitleLink = focusTitle.createEl("a", {
+        //     text: focusTargetLabel,
+        //     cls: "internal-link focus-title-link",
+        // });
+        // focusTitleLink.setAttribute("href", path);
+        // focusTitleLink.setAttribute("aria-label", path);
+
         const focusTitle = rowElement.createEl("div", {
             cls: "focus-tracker__cell focus-tracker__cell--focus-target-label",
         });
         const focusTitleLink = focusTitle.createEl("a", {
-            text: focusTargetLabel,
             cls: "internal-link focus-title-link",
         });
+
+        // Create and render markdown element within the link
+        const markdownRenderer = new MarkdownRenderChild(focusTitleLink);
+        await MarkdownRenderer.renderMarkdown(
+            focusTargetLabel,
+            focusTitleLink,
+            '',
+            markdownRenderer
+        );
+
         focusTitleLink.setAttribute("href", path);
         focusTitleLink.setAttribute("aria-label", path);
 
