@@ -342,3 +342,54 @@ body {
         display: table-cell;
     }
 }
+
+
+
+
+
+/* NEW */
+
+/* Custom Column Styles */
+.focus-tracker__cell--custom {
+    max-width: 12rem;  /* Maybe slightly smaller than title column */
+    min-width: 1rem;
+    width: 3rem;      /* Default width same as title */
+    padding: 0 8px;
+    color: var(--text-muted);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Remove these redundant properties from the combined selector */
+.focus-tracker__cell--custom,
+.focus-tracker__cell--focus-target-label {
+    padding: 0 8px;
+    color: var(--text-muted);
+}
+
+/* Keep border styles separate */
+.focus-tracker__cell--prefix {
+    border-right: 1px solid var(--background-modifier-border);
+}
+
+.focus-tracker__cell--postfix {
+    border-left: 1px solid var(--background-modifier-border);
+}
+
+/* Title styles remain the same */
+.focus-tracker__cell--focus-target-label {
+    max-width: 15rem;
+    min-width: 1rem;
+    width: 3rem;
+}
+
+.focus-tracker__cell--focus-target-label a {
+    display: block;
+    font-weight: 500;
+    font-size: 0.8rem;
+    width: 100%;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
