@@ -588,52 +588,6 @@ export default class FocusTracker {
         this.renderDateCells(header);
     }
 
-    // private renderDateCells(header: HTMLElement): void {
-    //     const totalDays = this.configuration.daysInPast + this.configuration.daysInFuture + 1;
-    //     let currentDate = new Date(this.configuration.focalDate);
-    //     currentDate.setDate(currentDate.getDate() - this.configuration.daysInPast);
-
-    //     for (let i = 0; i < totalDays; i++) {
-    //         const day = currentDate.getDate().toString();
-    //         const cellEl = header.createEl("div", {
-    //             cls: `focus-tracker__cell focus-tracker__cell--${this.getDayOfWeek(currentDate)}`,
-    //             text: day,
-    //         });
-
-    //         if (this.isSameDate(currentDate, this.configuration.focalDate)) {
-    //             cellEl.addClass("focus-tracker__cell--today");
-    //         } else if (currentDate > this.configuration.focalDate) {
-    //             cellEl.addClass("focus-tracker__cell--future");
-    //         }
-
-    //         currentDate.setDate(currentDate.getDate() + 1);
-    //     }
-    // }
-
-    // private renderDateCells(header: HTMLElement): void {
-    //     const totalDays = this.configuration.daysInPast + this.configuration.daysInFuture + 1;
-    //     let currentDate = new Date(this.configuration.focalDate);
-    //     currentDate.setDate(currentDate.getDate() - this.configuration.daysInPast);
-
-    //     for (let i = 0; i < totalDays; i++) {
-    //         const day = currentDate.getDate().toString();
-    //         const cellEl = header.createEl("div", {
-    //             cls: `focus-tracker__cell focus-tracker__cell--${this.getDayOfWeek(currentDate)}`,
-    //             text: day,
-    //         });
-
-    //         const today = new Date();
-    //         if (this.isSameDate(currentDate, today)) {
-    //             cellEl.addClass("focus-tracker__cell--today");
-    //         }
-    //         if (this.isSameDate(currentDate, this.configuration.focalDate)) {
-    //             cellEl.addClass("focus-tracker__cell--focal-date");
-    //         }
-
-    //         currentDate.setDate(currentDate.getDate() + 1);
-    //     }
-    // }
-
     private renderDateCells(header: HTMLElement): void {
         const totalDays = this.configuration.daysInPast + this.configuration.daysInFuture + 1;
         let currentDate = new Date(this.configuration.focalDate);
