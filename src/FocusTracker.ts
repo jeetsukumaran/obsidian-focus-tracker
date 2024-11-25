@@ -404,6 +404,13 @@ export default class FocusTracker {
         }
     }
 
+    private getLocalDateString(date: Date): string {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    }
+
     private renderControls(parent: HTMLElement): void {
         this.createControlSection(
             parent,
@@ -428,7 +435,7 @@ export default class FocusTracker {
 
         const focalDateInput = focalDateSection.createEl("input", {
             type: "date",
-            value: this.configuration.focalDate.toISOString().split("T")[0],
+            value: this.getLocalDateString(this.configuration.focalDate),
             cls: "focus-tracker__focal-date",
         });
 
@@ -470,7 +477,9 @@ export default class FocusTracker {
         };
 
         focalDateInput.onchange = () => {
-            this.configuration.focalDate = new Date(focalDateInput.value);
+            // this.configuration.focalDate = new Date(focalDateInput.value);
+            const [year, month, day] = focalDateInput.value.split('-').map(Number);
+            this.configuration.focalDate = new Date(year, month - 1, day);
             this.refresh();
         };
 
@@ -1006,6 +1015,7 @@ export default class FocusTracker {
         await this.renderCustomColumns(rowElement, frontmatter, this.configuration.postfixColumns, 'focus-tracker__cell--postfix');
 
         let startDate = new Date(this.configuration.focalDate);
+        // console.log(startDate);
         startDate.setDate(startDate.getDate() - this.configuration.daysInPast);
 
         for (let i = 0; i < (this.configuration.daysInPast + this.configuration.daysInFuture + 1); i++) {
