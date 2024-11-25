@@ -17,7 +17,7 @@ body {
     --focustracker-background-color: #00000010;
     --focustracker-weekend-color: #00000020;
     --today-column-bg-color: var(--background-secondary);
-    --today-column-text-color: var(--text-muted) ;
+    --today-column-text-color: var(--text-muted);
 }
 
 .theme-dark {
@@ -25,205 +25,93 @@ body {
     --focustracker-weekend-color: #ffffff10;
 }
 
-/* Markdown preview container fix */
-.cm-preview-code-block.markdown-rendered:has(.block-language-focustracker),
-.block-language-focustracker {
-    width: fit-content;
-}
-
-/* Main container */
+/* Container styles */
 .focus-tracker-container {
-    margin-top: 1rem;
-    margin-bottom: 1rem;
+    margin: 1rem 0;
     padding: 1rem;
     border-radius: 0.8rem;
-    /* width: fit-content; */
-    /* display: flex; */
-    /* flex-direction: column; */
     gap: 1rem;
     background-color: var(--focustracker-background-color);
+    overflow-x: auto;
+    max-width: 100%;
 }
 
 /* Controls section */
 .focus-tracker__controls {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  background-color: var(--background-secondary);
-  border-radius: 0.375rem;
-  padding: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background-color: var(--background-secondary);
+    border-radius: 0.375rem;
+    padding: 0.5rem;
 }
 
 .focus-tracker__control-section {
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
-  white-space: nowrap;
-}
-
-.focus-tracker__control-label {
-  font-size: 0.75rem;
-  font-weight: 500;
-  color: var(--text-muted);
-}
-
-.focus-tracker__days-input {
-  width: 2.5rem;
-  padding: 0.125rem 0.25rem;
-  border: 1px solid var(--background-modifier-border);
-  border-radius: 0.25rem;
-  font-size: 0.75rem;
-  text-align: center;
-}
-
-.focus-tracker__focal-date {
-  padding: 0.125rem 0.25rem;
-  border: 1px solid var(--background-modifier-border);
-  border-radius: 0.25rem;
-  font-size: 0.75rem;
-}
-
-.focus-tracker__btn {
-  padding: 0.125rem 0.375rem;
-  border: 1px solid var(--background-modifier-border);
-  border-radius: 0.25rem;
-  font-size: 0.75rem;
-  background-color: var(--background-primary);
-  color: var(--text-normal);
-  cursor: pointer;
-  transition: all 0.2s ease;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 1.5rem;
-}
-
-.focus-tracker__btn-reset,
-.focus-tracker__btn-today {
-  background-color: var(--interactive-accent);
-  color: var(--text-on-accent);
-  border: none;
-  margin-left: 0.25rem;
-  margin-right: 0.25rem;
-}
-
-/* .focus-tracker__btn-today::before { */
-/*   content: "⚫"; */
-/*   margin-right: 0.25rem; */
-/* } */
-
-/* Table layout */
-.focus-tracker {
-    display: table;
-    table-layout: fixed;
-    border-collapse: collapse;
-    /* width: 100%; */
-    /* min-width: max-content; */
-}
-
-.focus-tracker__row {
-    display: table-row;
-    height: 20px;
-}
-
-.focus-tracker__row.focus-tracker__header {
-    height: 18px;
-}
-
-.focus-tracker__cell {
-    box-sizing: border-box;
-    display: table-cell;
-    font-family: var(--focustracker-cell-fontfamily);
-    font-size: var(--focustracker-cell-font-size);
-    vertical-align: middle;
-    width: 20px;
-    font-weight: 500;
-}
-
-.focus-tracker__cell:not(:last-child) {
-    border-right: solid 6px transparent;
-}
-
-/* Focus target label styling */
-.focus-tracker__cell--focus-target-label {
-    padding: 0 4px;
-}
-
-.focus-tracker__cell--focus-target-label a {
-    display: block;
-    font-weight: 500;
-    font-size: 0.8rem;
-    max-width: 20rem;
-    width: fit-content;
-    overflow: hidden;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
     white-space: nowrap;
-    text-overflow: ellipsis;
-    overflow-wrap: break-word;
 }
 
-/* Cell states */
-.focus-tracker__cell--today {
-    /* border-top: solid 2px; */
-    /* box-shadow: 0 0 0 0.1px var(--interactive-accent-hover); */
-    color: var(--text-muted);
-}
-
-.focus-tracker__cell--future {
-    font-weight: 100;
-    font-style: italic;
-    background-color: transparent;
-}
-
-.focus-tracker__cell--saturday,
-.focus-tracker__cell--sunday {
-    background-color: var(--focustracker-weekend-color);
-}
-
-/* Header styling */
-.focus-tracker__header .focus-tracker__cell {
-    font-size: 80%;
-    border-top: solid 2px transparent;
-    padding-bottom: 0.3rem;
-    text-align: center;
-}
-
-/* Focus tick styling */
-.focus-tick {
-    line-height: 0;
-    text-align: center;
-}
-
-.focus-tick:hover {
-    cursor: pointer;
-}
-
-.theme-light .focus-tick--false::before {
-    content: "⚪";
-}
-
-.theme-dark .focus-tick--false::before {
-    content: "⚫";
-}
-
-/* Mobile responsiveness */
-@media (max-width: 399px) {
-    .focus-tracker__cell {
-        display: none;
-    }
-
-    .focus-tracker__cell--focus-target-label,
-    .focus-tracker__cell:nth-last-child(-n + 7) {
-        display: table-cell;
-    }
-}
-
-/* Control section spacing */
 .focus-tracker__control-section:not(:last-child) {
     padding-right: 1rem;
     border-right: 1px solid var(--background-modifier-border);
 }
 
-/* Button states */
+.focus-tracker__control-label {
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--text-muted);
+}
+
+.focus-tracker__days-input {
+    width: 2.5rem;
+    padding: 0.125rem 0.25rem;
+    border: 1px solid var(--background-modifier-border);
+    border-radius: 0.25rem;
+    font-size: 0.75rem;
+    text-align: center;
+}
+
+.focus-tracker__focal-date {
+    padding: 0.125rem 0.25rem;
+    border: 1px solid var(--background-modifier-border);
+    border-radius: 0.25rem;
+    font-size: 0.75rem;
+}
+
+/* Input focus states */
+.focus-tracker__days-input:focus,
+.focus-tracker__focal-date:focus {
+    outline: none;
+    border-color: var(--interactive-accent);
+    box-shadow: 0 0 0 2px var(--interactive-accent-hover);
+}
+
+/* Button styles */
+.focus-tracker__btn {
+    padding: 0.125rem 0.375rem;
+    border: 1px solid var(--background-modifier-border);
+    border-radius: 0.25rem;
+    font-size: 0.75rem;
+    background-color: var(--background-primary);
+    color: var(--text-normal);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 1.5rem;
+}
+
+.focus-tracker__btn-reset,
+.focus-tracker__btn-today {
+    background-color: var(--interactive-accent);
+    color: var(--text-on-accent);
+    border: none;
+    margin: 0 0.25rem;
+}
+
 .focus-tracker__btn-decrement:hover,
 .focus-tracker__btn-increment:hover,
 .focus-tracker__btn-date:hover {
@@ -235,38 +123,59 @@ body {
     background-color: var(--interactive-accent-hover);
 }
 
-/* Active button states */
-.focus-tracker__btn-decrement:active,
-.focus-tracker__btn-increment:active,
-.focus-tracker__btn-date:active,
-.focus-tracker__btn-reset:active,
-.focus-tracker__btn-today:active {
+.focus-tracker__btn:active {
     transform: translateY(1px);
 }
 
-/* Focus states */
-.focus-tracker__days-input:focus,
-.focus-tracker__focal-date:focus {
-    outline: none;
-    border-color: var(--interactive-accent);
-    box-shadow: 0 0 0 2px var(--interactive-accent-hover);
+/* Table layout */
+.focus-tracker {
+    display: table;
+    table-layout: fixed;
+    border-collapse: collapse;
+    min-width: max-content;
 }
 
-
-.focus-tracker__cell--today {
-  background-color: var(--today-column-bg-color);
-  color: var(--today-column-text-color);
+.focus-tracker__row {
+    display: table-row;
+    height: 20px;
 }
 
-
-.focus-tracker__cell--custom {
-    padding: 0 8px;
+/* Base cell styles */
+.focus-tracker__cell {
+    box-sizing: border-box;
+    display: table-cell;
+    font-family: var(--focustracker-cell-fontfamily);
+    font-size: var(--focustracker-cell-font-size);
+    vertical-align: middle;
+    position: relative;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    max-width: 120px;
+}
+
+/* Header styles */
+.focus-tracker__header {
+    height: 18px;
+}
+
+.focus-tracker__header .focus-tracker__cell {
+    font-size: 80%;
+    padding-bottom: 0.3rem;
+    text-align: center;
+}
+
+.focus-tracker__header .focus-tracker__cell--custom,
+.focus-tracker__header .focus-tracker__cell--focus-target-label {
+    text-align: left;
+    padding-left: 8px;
+}
+
+/* Custom column styles */
+.focus-tracker__cell--custom,
+.focus-tracker__cell--focus-target-label {
     min-width: 80px;
-    font-size: 0.8rem;
+    max-width: none;
+    padding: 0 8px;
     color: var(--text-muted);
 }
 
@@ -284,52 +193,75 @@ body {
     border-left: 1px solid var(--background-modifier-border);
 }
 
-.focus-tracker-container {
-    overflow-x: auto;
-    max-width: 100%;
+/* Title cell styles */
+.focus-tracker__cell--focus-target-label a {
+    display: block;
+    font-weight: 500;
+    font-size: 0.8rem;
+    max-width: 20rem;
+    width: fit-content;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }
 
-.focus-tracker {
-    min-width: max-content;
+/* Date cell states */
+.focus-tracker__cell--today {
+    background-color: var(--today-column-bg-color);
+    color: var(--today-column-text-color);
+}
+
+.focus-tracker__cell--future {
+    font-weight: 100;
+    font-style: italic;
+}
+
+.focus-tracker__cell--saturday,
+.focus-tracker__cell--sunday {
+    background-color: var(--focustracker-weekend-color);
+}
+
+/* Focus tick styles */
+.focus-tick {
+    line-height: 0;
+    text-align: center;
+    cursor: pointer;
+}
+
+.theme-light .focus-tick--false::before {
+    content: "⚪";
+}
+
+.theme-dark .focus-tick--false::before {
+    content: "⚫";
 }
 
 /* Resize handle styles */
-.focus-tracker__cell {
-    position: relative;
-}
-
 .focus-tracker__resize-handle {
     position: absolute;
     right: 0;
     top: 0;
     bottom: 0;
-    width: 4px;
+    width: 1px;
+    background: var(--background-modifier-border);
     cursor: col-resize;
-    opacity: 0;
-    transition: opacity 0.2s;
-}
-
-.focus-tracker__cell:hover .focus-tracker__resize-handle {
-    opacity: 1;
-    background: var(--interactive-accent);
-    opacity: 0.2;
+    transition: width 0.2s, background-color 0.2s;
 }
 
 .focus-tracker__resize-handle:hover,
 .focus-tracker__resize-handle:active {
-    opacity: 0.4;
+    width: 2px;
+    background: var(--interactive-accent);
 }
 
-/* Ensure cells maintain their new widths */
-.focus-tracker__cell--custom,
-.focus-tracker__cell--focus-target-label {
-    min-width: 80px;  /* Starting minimum width */
-    max-width: none;  /* Remove max-width constraint */
-}
+/* Mobile responsiveness */
+@media (max-width: 399px) {
+    .focus-tracker__cell {
+        display: none;
+    }
 
-/* Prevent text wrapping in resized cells */
-.focus-tracker__cell {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    .focus-tracker__cell--focus-target-label,
+    .focus-tracker__cell:nth-last-child(-n + 7) {
+        display: table-cell;
+    }
 }
