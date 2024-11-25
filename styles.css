@@ -233,17 +233,17 @@ body {
 /* Special States */
 .focus-tracker__cell--today {
     background-color: var(--focustracker-today-column-color) !important;
-    opacity: 0.15;
 }
 
 .focus-tracker__cell--focal-date {
-    background-color: var(--focustracker-focal-date-color) !important;
-    opacity: 0.3;
+    /* background-color: var(--focustracker-focal-date-color) !important; */
+    /* border: solid 1px var(--focustracker-focal-date-color); */
 }
 
 .focus-tracker__cell--future {
+    opacity: 0.5;
     font-weight: 100;
-    font-style: italic;
+    /* font-style: italic; */
 }
 
 .focus-tracker__cell--saturday,
@@ -256,7 +256,7 @@ body {
 .focus-tracker__header .focus-tracker__cell--focal-date::after {
     content: "•";
     position: absolute;
-    top: -3px;
+    top: -5px;
     left: 50%;
     transform: translateX(-50%);
     font-size: 12px;
