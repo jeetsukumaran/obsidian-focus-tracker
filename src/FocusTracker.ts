@@ -6,6 +6,8 @@ import {
     CachedMetadata,
     TAbstractFile,
     TFile,
+    MarkdownRenderer,
+    MarkdownRenderChild,
 } from "obsidian";
 import { FocusTrackerSettings } from './FocusTrackerSettingsTab';
 import { RemarksModal } from './RemarksModal';
@@ -125,15 +127,15 @@ export default class FocusTracker {
     // private async renderCustomColumns(
     //     row: HTMLElement,
     //     frontmatter: {[key: string]: any},
-    //     columns: string[],
+    //     columns: ColumnConfig,
     //     className: string
     // ): Promise<void> {
-    //     for (const column of columns) {
+    //     for (const [displayName, propertyName] of Object.entries(columns)) {
     //         const cell = row.createEl("div", {
     //             cls: `focus-tracker__cell focus-tracker__cell--custom ${className}`,
     //         });
 
-    //         const value = frontmatter[column];
+    //         const value = frontmatter[propertyName];
     //         cell.setText(this.formatFrontmatterValue(value));
 
     //         // Add tooltip if content is truncated
@@ -142,8 +144,6 @@ export default class FocusTracker {
     //         }
     //     }
     // }
-
-
     private async renderCustomColumns(
         row: HTMLElement,
         frontmatter: {[key: string]: any},
@@ -156,11 +156,20 @@ export default class FocusTracker {
             });
 
             const value = frontmatter[propertyName];
-            cell.setText(this.formatFrontmatterValue(value));
+            const formattedValue = this.formatFrontmatterValue(value);
+
+            // Create and render markdown element
+            const markdownRenderer = new MarkdownRenderChild(cell);
+            await MarkdownRenderer.renderMarkdown(
+                formattedValue,
+                cell,
+                '', // source path - empty string since this is inline
+                markdownRenderer
+            );
 
             // Add tooltip if content is truncated
             if (cell.scrollWidth > cell.clientWidth) {
-                cell.setAttribute('title', cell.textContent || '');
+                cell.setAttribute('title', formattedValue);
             }
         }
     }
