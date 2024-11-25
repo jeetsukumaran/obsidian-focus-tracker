@@ -194,15 +194,6 @@ body {
     text-overflow: ellipsis;
 }
 
-/* Custom Column Styles */
-.focus-tracker__cell--custom,
-.focus-tracker__cell--focus-target-label {
-    min-width: 80px;
-    max-width: none;
-    padding: 0 8px;
-    color: var(--text-muted);
-}
-
 .focus-tracker__cell--prefix {
     border-right: 1px solid var(--background-modifier-border);
 }
@@ -217,34 +208,6 @@ body {
     border-left: var(--focustracker-date-column-borders);
     border-right: var(--focustracker-date-column-borders);
     text-align: center;
-}
-
-/* Title/Link Styles */
-/* .focus-tracker__cell--focus-target-label a { */
-/*     display: block; */
-/*     font-weight: 500; */
-/*     font-size: 0.8rem; */
-/*     max-width: 20rem; */
-/*     width: fit-content; */
-/*     overflow: hidden; */
-/*     white-space: nowrap; */
-/*     text-overflow: ellipsis; */
-/* } */
-
-.focus-tracker__cell--focus-target-label {
-    max-width: 15rem;  /* Initial max width */
-    min-width: 	1rem;  /* Ensure a reasonable minimum */
-    width: 3rem;      /* Default width */
-}
-
-.focus-tracker__cell--focus-target-label a {
-    display: block;
-    font-weight: 500;
-    font-size: 0.8rem;
-    width: 100%;       /* Fill the cell width */
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
 }
 
 
@@ -344,11 +307,6 @@ body {
 }
 
 
-
-
-
-/* NEW */
-
 /* Custom Column Styles */
 .focus-tracker__cell--custom {
     max-width: 12rem;  /* Maybe slightly smaller than title column */
@@ -377,7 +335,6 @@ body {
     border-left: 1px solid var(--background-modifier-border);
 }
 
-/* Title styles remain the same */
 .focus-tracker__cell--focus-target-label {
     max-width: 15rem;
     min-width: 1rem;
