@@ -261,7 +261,6 @@ body {
     font-size: 8px;
 }
 .focus-tracker__header .focus-tracker__cell--today::after {
-    /* content: "⧭"; */
 }
 .focus-tracker__header .focus-tracker__cell--focal-date::after {
     color: var(--focustracker-focal-date-color);
