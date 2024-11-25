@@ -702,6 +702,9 @@ export default class FocusTracker {
         this.addSortingToHeader(trackHeader, 'track');
         this.addResizeHandle(trackHeader);
 
+        // Render date cells
+        this.renderDateCells(header);
+
         // Render postfix column headers
         Object.entries(this.configuration.postfixColumns).forEach(([displayName, propertyName]) => {
             const headerCell = header.createEl("div", {
@@ -711,9 +714,6 @@ export default class FocusTracker {
             this.addSortingToHeader(headerCell, propertyName);
             this.addResizeHandle(headerCell);
         });
-
-        // Render date cells
-        this.renderDateCells(header);
     }
 
     private renderDateCells(header: HTMLElement): void {
@@ -1112,9 +1112,6 @@ export default class FocusTracker {
         focusTitleLink.setAttribute("href", path);
         focusTitleLink.setAttribute("aria-label", path);
 
-        // Render postfix columns
-        await this.renderCustomColumns(rowElement, frontmatter, this.configuration.postfixColumns, 'focus-tracker__cell--postfix');
-
         let todayDate = new Date();
         let startDate = new Date(this.configuration.focalDate);
         // console.log(startDate);
@@ -1171,6 +1168,9 @@ export default class FocusTracker {
 
             startDate.setDate(startDate.getDate() + 1);
         }
+
+        // Render postfix columns
+        await this.renderCustomColumns(rowElement, frontmatter, this.configuration.postfixColumns, 'focus-tracker__cell--postfix');
     }
 
     private async getSortableValue(frontmatter: {[key: string]: any}, column: string): Promise<string> {
