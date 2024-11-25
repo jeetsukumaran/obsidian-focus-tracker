@@ -601,10 +601,41 @@ export default class FocusTracker {
     //     }
     // }
 
+    // private renderDateCells(header: HTMLElement): void {
+    //     const totalDays = this.configuration.daysInPast + this.configuration.daysInFuture + 1;
+    //     let currentDate = new Date(this.configuration.focalDate);
+    //     currentDate.setDate(currentDate.getDate() - this.configuration.daysInPast);
+
+    //     for (let i = 0; i < totalDays; i++) {
+    //         const day = currentDate.getDate().toString();
+    //         const cellEl = header.createEl("div", {
+    //             cls: `focus-tracker__cell focus-tracker__cell--${this.getDayOfWeek(currentDate)}`,
+    //             text: day,
+    //         });
+
+    //         const today = new Date();
+    //         if (this.isSameDate(currentDate, today)) {
+    //             cellEl.addClass("focus-tracker__cell--today");
+    //         }
+    //         if (this.isSameDate(currentDate, this.configuration.focalDate)) {
+    //             cellEl.addClass("focus-tracker__cell--focal-date");
+    //         }
+
+    //         currentDate.setDate(currentDate.getDate() + 1);
+    //     }
+    // }
+
     private renderDateCells(header: HTMLElement): void {
         const totalDays = this.configuration.daysInPast + this.configuration.daysInFuture + 1;
         let currentDate = new Date(this.configuration.focalDate);
+        currentDate.setHours(0, 0, 0, 0);  // Reset time components
         currentDate.setDate(currentDate.getDate() - this.configuration.daysInPast);
+
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);  // Reset time components
+
+        const focalDate = new Date(this.configuration.focalDate);
+        focalDate.setHours(0, 0, 0, 0);  // Reset time components
 
         for (let i = 0; i < totalDays; i++) {
             const day = currentDate.getDate().toString();
@@ -613,17 +644,27 @@ export default class FocusTracker {
                 text: day,
             });
 
-            const today = new Date();
             if (this.isSameDate(currentDate, today)) {
                 cellEl.addClass("focus-tracker__cell--today");
             }
-            if (this.isSameDate(currentDate, this.configuration.focalDate)) {
+            if (this.isSameDate(currentDate, focalDate)) {
                 cellEl.addClass("focus-tracker__cell--focal-date");
             }
 
             currentDate.setDate(currentDate.getDate() + 1);
         }
     }
+
+    private isSameDate(date1: Date, date2: Date): boolean {
+        return date1.getFullYear() === date2.getFullYear() &&
+            date1.getMonth() === date2.getMonth() &&
+            date1.getDate() === date2.getDate();
+    }
+    // private isSameDate(date1: Date, date2: Date): boolean {
+    //     return date1.getFullYear() === date2.getFullYear() &&
+    //         date1.getMonth() === date2.getMonth() &&
+    //         date1.getDate() === date2.getDate();
+    // }
 
 
     private renderNoFocussFoundMessage(): void {
@@ -1123,12 +1164,6 @@ export default class FocusTracker {
     }
 
 
-
-    private isSameDate(date1: Date, date2: Date): boolean {
-        return date1.getFullYear() === date2.getFullYear() &&
-               date1.getMonth() === date2.getMonth() &&
-               date1.getDate() === date2.getDate();
-    }
 
     private removeAllChildNodes(parent: HTMLElement): void {
         while (parent.firstChild) {
