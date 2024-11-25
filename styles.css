@@ -232,9 +232,9 @@ body {
 /* } */
 
 .focus-tracker__cell--focus-target-label {
-    max-width: 10rem;  /* Initial max width */
+    max-width: 20rem;  /* Initial max width */
     min-width: 	1rem;  /* Ensure a reasonable minimum */
-    width: 2rem;      /* Default width */
+    width: 3rem;      /* Default width */
 }
 
 .focus-tracker__cell--focus-target-label a {
