@@ -1,7 +1,7 @@
 {
 	"id": "focus-tracker",
 	"name": "Focus Tracker",
-	"version": "3.0.0",
+	"version": "3.0.1",
 	"description": "Track and align your focus.",
 	"minAppVersion": "1.4.14",
 	"author": "Jeet Sukumaran",
