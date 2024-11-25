@@ -1055,6 +1055,7 @@ private renderDateCells(header: HTMLElement): void {
 
         // Render postfix columns
         await this.renderCustomColumns(rowElement, frontmatter, this.configuration.postfixColumns, 'focus-tracker__cell--postfix');
+
         let startDate = new Date(this.configuration.focalDate);
         startDate.setDate(startDate.getDate() - this.configuration.daysInPast);
 
