@@ -963,6 +963,34 @@ export default class FocusTracker {
         return this.formatFrontmatterValue(value).toLowerCase();
     }
 
+    // private async sortFiles(files: TFile[]): Promise<[string, TFile][]> {
+    //     let sortColumn = this.configuration.sortColumn;
+
+    //     // If no sort column is set, use first prefix column or 'track'
+    //     if (!sortColumn) {
+    //         sortColumn = this.configuration.prefixColumns.length > 0
+    //             ? this.configuration.prefixColumns[0]
+    //             : 'track';
+    //         this.configuration.sortColumn = sortColumn;
+    //     }
+
+    //     const fileLabels = await Promise.all(
+    //         files.map(async (f) => {
+    //             const frontmatter = await this.getFrontmatter(f.path);
+    //             const label = await this.getFocusTargetLabel(f.path);
+    //             const sortValue = await this.getSortableValue(frontmatter, sortColumn);
+    //             return [label, f, sortValue] as [string, TFile, string];
+    //         })
+    //     );
+
+    //     return fileLabels
+    //         .sort(([labelA, fileA, valueA], [labelB, fileB, valueB]) => {
+    //             const comparison = valueA.localeCompare(valueB);
+    //             return this.configuration.sortDescending ? -comparison : comparison;
+    //         })
+    //         .map(([label, file]) => [label, file]);
+    // }
+
     private async sortFiles(files: TFile[]): Promise<[string, TFile][]> {
         let sortColumn = this.configuration.sortColumn;
 
@@ -974,11 +1002,30 @@ export default class FocusTracker {
             this.configuration.sortColumn = sortColumn;
         }
 
+        // If sorting by track, we can skip getting frontmatter
+        if (sortColumn === 'track') {
+            const fileLabels = await Promise.all(
+                files.map(async (f) => {
+                    const label = await this.getFocusTargetLabel(f.path);
+                    return [label, f, label.toLowerCase()] as [string, TFile, string];
+                })
+            );
+
+            return fileLabels
+                .sort(([labelA, fileA, valueA], [labelB, fileB, valueB]) => {
+                    const comparison = valueA.localeCompare(valueB);
+                    return this.configuration.sortDescending ? -comparison : comparison;
+                })
+                .map(([label, file]) => [label, file]);
+        }
+
+        // For other columns, we need frontmatter
         const fileLabels = await Promise.all(
             files.map(async (f) => {
                 const frontmatter = await this.getFrontmatter(f.path);
                 const label = await this.getFocusTargetLabel(f.path);
-                const sortValue = await this.getSortableValue(frontmatter, sortColumn);
+                const value = frontmatter[sortColumn];
+                const sortValue = this.formatFrontmatterValue(value).toLowerCase();
                 return [label, f, sortValue] as [string, TFile, string];
             })
         );
