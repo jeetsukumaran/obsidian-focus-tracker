@@ -309,9 +309,9 @@ body {
 
 /* Custom Column Styles */
 .focus-tracker__cell--custom {
-    max-width: 12rem;  /* Maybe slightly smaller than title column */
-    min-width: 1rem;
-    width: 3rem;      /* Default width same as title */
+    max-width: 8rem;  /* Maybe slightly smaller than title column */
+    min-width: 0.5rem;
+    width: 2rem;
     padding: 0 8px;
     color: var(--text-muted);
     overflow: hidden;
@@ -336,9 +336,9 @@ body {
 }
 
 .focus-tracker__cell--focus-target-label {
-    max-width: 15rem;
-    min-width: 1rem;
-    width: 3rem;
+    max-width: 12rem;
+    min-width: 0.5rem;
+    width: 2rem;
 }
 
 .focus-tracker__cell--focus-target-label a {
