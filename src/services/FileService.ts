@@ -1,8 +1,17 @@
 import { App, TFile, TAbstractFile, parseYaml, CachedMetadata } from "obsidian";
 import { Notice } from "obsidian";
-import { PLUGIN_NAME } from '../constants';
+import {
+    FocusLogsType,
+} from '../types';
+import {
+    PLUGIN_NAME,
+} from '../constants';
+import {
+    normalizeLogs,
+} from '../utils/formatting';
 import { patternsToRegex } from '../utils/strings';
 import { FocusTrackerConfiguration } from '../types';
+import { isSameDate } from '../utils/dates';
 
 export class FileService {
     constructor(private app: App) {}

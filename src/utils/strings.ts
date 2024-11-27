@@ -20,3 +20,11 @@ export function patternsToRegex(patterns: string[]): RegExp[] {
         return new RegExp(".*" + pattern + ".*");
     });
 }
+
+export function normalizeKeys<T>(dictionary: Record<string, T>): Record<string, T> {
+    const normalizedDictionary: Record<string, T> = {};
+    Object.keys(dictionary).forEach(key => {
+        normalizedDictionary[kebabToCamel(key)] = dictionary[key];
+    });
+    return normalizedDictionary;
+}

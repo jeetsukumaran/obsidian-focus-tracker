@@ -15,7 +15,6 @@
 //     remarks?: string;
 // }
 
-// export type FocusLogsType = Record<string, number | string | FocusLogEntry>;
 
 // export interface ColumnConfig {
 //     [displayName: string]: string;
@@ -71,6 +70,15 @@ export interface FocusTrackerConfiguration {
     sortDescending: boolean;
 }
 
+export interface FocusTrackerSettings {
+    defaultRatingMap: string;
+    defaultFlagMap: string;
+    defaultDaysPast: number;
+    defaultDaysFuture: number;
+    minDaysPast: number;
+    minDaysFuture: number;
+}
+
 export interface FocusLogEntry {
     rating: number;
     remarks?: string;
@@ -83,3 +91,14 @@ export interface FocusLogsType {
 export interface ColumnConfig {
     [displayName: string]: string;
 }
+
+export interface RatingMap {
+    symbols: string[];
+}
+
+export interface FlagMap {
+    symbols: string[];
+    keys: string[];
+}
+
+// export type FocusLogsType = Record<string, number | string | FocusLogEntry>;

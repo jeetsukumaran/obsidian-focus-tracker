@@ -230,3 +230,4 @@ export const MIN_DAYS_PAST = 7;
 export const MIN_DAYS_FUTURE = 7;
 export const OUT_OF_BOUNDS = "❗";
 export const PLUGIN_NAME = "Focus Tracker";
+

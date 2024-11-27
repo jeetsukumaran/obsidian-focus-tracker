@@ -1,6 +1,13 @@
 import { App } from "obsidian";
 import { FocusTrackerConfiguration } from '../types';
 import { getLocalDateString } from '../utils/dates';
+import {
+    MIN_DAYS_PAST,
+    MIN_DAYS_FUTURE,
+    OUT_OF_BOUNDS,
+    PLUGIN_NAME,
+    DEFAULT_CONFIG,
+} from '../constants';
 
 export class FocusTrackerControls {
     constructor(

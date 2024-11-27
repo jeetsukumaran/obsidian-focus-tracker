@@ -1,4 +1,4 @@
-import { App, Notice, TFile, MarkdownRenderer, MarkdownRenderChild } from "obsidian";
+import { App, Notice, TFile, MarkdownRenderer, MarkdownRenderChild, Menu } from "obsidian";
 import { FileService } from './services/FileService';
 import { SortingService } from './services/SortingService';
 import { FocusTrackerControls } from './components/FocusTrackerControls';
@@ -6,6 +6,7 @@ import { FocusTrackerHeader } from './components/FocusTrackerHeader';
 import { FocusTrackerConfiguration, FocusTrackerSettings, FocusLogsType, FocusLogEntry } from './types';
 import { DEFAULT_CONFIGURATION } from './config/defaults';
 import { RemarksModal } from './components/RemarksModal';
+import { isSameDate } from './utils/dates';
 import { generateUniqueId, normalizeKeys, pathToId } from './utils/strings';
 import { formatFrontmatterValue } from './utils/formatting';
 import { parseYaml } from 'obsidian';
@@ -496,7 +497,7 @@ export default class FocusTracker {
         today.setHours(0, 0, 0, 0);
 
         for (let i = 0; i < totalDays; i++) {
-            const dateString = this.fileService.getDateId(currentDate);
+            const dateString = this.getDateId(currentDate);
             const entry = entries[dateString];
             const {
                 hasValue,
@@ -583,6 +584,14 @@ export default class FocusTracker {
         ];
         return daysOfWeek[date.getDay()].toLowerCase();
     }
+
+    public getDateId(date: Date): string {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, "0");
+        const day = String(date.getDate()).padStart(2, "0");
+        return `${year}-${month}-${day}`;
+    }
+
 }
 
 
