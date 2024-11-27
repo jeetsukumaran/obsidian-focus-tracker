@@ -37,7 +37,7 @@ export const DEFAULT_MAPS = {
                 "❎",
                 "⛔",
                 "📦",
-                "🚩",
+                "❌",
             ],
             keys: [
                 "goal: aspirational",
@@ -55,7 +55,7 @@ export const DEFAULT_MAPS = {
                 "canceled",
                 "blocked",
                 "stowed",
-                "flagged",
+                "unsuccessful",
             ]
         },
         activity: {
