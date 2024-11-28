@@ -264,7 +264,11 @@ export default class FocusTracker {
                     for (let tagValue of fileTags) {
                         const matches = tagValue.matchAll(rx);
                         for (const match of matches) {
-                            matchedValues.push(match[1]);
+                            if (match[1]) {
+                                matchedValues.push(match[1]);
+                            } else {
+                                matchedValues.push(match[0]);
+                            }
                         }
                     }
                     value = matchedValues.join("•");
