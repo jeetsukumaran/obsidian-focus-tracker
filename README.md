@@ -281,23 +281,7 @@ exclude-tags:
 ### Custom Columns
 Add metadata columns from your notes in two ways:
 
-#### 1. Simple Format (Legacy)
-Uses property names directly as column headers:
-
-````
-```focustracker
-tag-set:
-  - type/project
-prefix-columns:
-  - status
-  - priority
-postfix-columns:
-  - due-date
-  - assigned-to
-```
-````
-
-#### 2. Dictionary Format (New)
+#### Dictionary Format
 Specify custom display names for columns:
 
 ````
@@ -314,6 +298,39 @@ postfix-columns:
   "Completion %": completion-percentage
 ```
 ````
+
+#### Tag-based Metadata with Regular Expression Extraction
+
+````
+```focustracker
+tag-set:
+  - type/project
+prefix-columns:
+  "Status": status
+  "Priority": "#workflow/priority/(.*)"
+  "Type": "#workflow/type/(.*)"
+```
+````
+
+Regular expression captures can be used to pull metadata out of tags. In the above, a note with tags "``#workflow/priority/high``" and "``#workflow/type/review``" with have "high" and "review" in columns "Priority" and "Type" respectively.
+
+
+#### Legacy: Simple Format
+Uses property names directly as column headers:
+
+````
+```focustracker
+tag-set:
+  - type/project
+prefix-columns:
+  - status
+  - priority
+postfix-columns:
+  - due-date
+  - assigned-to
+```
+````
+
 
 The dictionary format allows you to:
 - Use friendly display names in column headers
