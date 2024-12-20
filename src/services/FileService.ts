@@ -55,21 +55,36 @@ export class FileService {
     }
 
     loadFiles(config: FocusTrackerConfiguration): TFile[] {
-        let pathPatterns = patternsToRegex(config.paths);
-        let tagAnyPatterns = patternsToRegex(config.tags.map(s => s.replace(/^#/,"")));
-        let tagSetPatterns = patternsToRegex(config.tagSet.map(s => s.replace(/^#/,"")));
-        let excludeTagPatterns = patternsToRegex((config.excludeTags || []).map(s => s.replace(/^#/,"")));
-        let excludeTagSetPatterns = patternsToRegex((config.excludeTagSet || []).map(s => s.replace(/^#/,"")));
+        // Ensure config and its properties exist
+        if (!config) {
+            return [];
+        }
 
-        return this.app.vault
-            .getMarkdownFiles()
+        // Safe access to configuration properties with defaults
+        const paths = config.paths || [];
+        const tags = config.tags || [];
+        const tagSet = config.tagSet || [];
+        const excludeTags = config.excludeTags || [];
+        const excludeTagSet = config.excludeTagSet || [];
+        const properties = config.properties || {};
+
+        let pathPatterns = patternsToRegex(paths);
+        let tagAnyPatterns = patternsToRegex(tags.map(s => s.replace(/^#/, "")));
+        let tagSetPatterns = patternsToRegex(tagSet.map(s => s.replace(/^#/, "")));
+        let excludeTagPatterns = patternsToRegex(excludeTags.map(s => s.replace(/^#/, "")));
+        let excludeTagSetPatterns = patternsToRegex(excludeTagSet.map(s => s.replace(/^#/, "")));
+
+        // Safely get markdown files
+        const markdownFiles = this.app.vault.getMarkdownFiles() || [];
+
+        return markdownFiles
             .filter((file: TFile) => this.fileMatchesFilters(file, {
                 pathPatterns,
                 tagAnyPatterns,
                 tagSetPatterns,
                 excludeTagPatterns,
                 excludeTagSetPatterns,
-                properties: config.properties
+                properties
             }))
             .sort((a, b) => a.name.localeCompare(b.name));
     }
