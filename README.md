@@ -276,8 +276,6 @@ exclude-tags:
 
 # Focus Tracker
 
-[Previous sections remain unchanged until Custom Columns section]
-
 ### Custom Columns
 Add metadata columns from your notes in two ways:
 
