@@ -28,18 +28,44 @@ export class SortingService {
             return this.sortFileLabels(fileLabels, configuration.sortDescending);
         }
 
-        // For other columns, we need frontmatter
+        // For other columns, get frontmatter and handle tag patterns
         const fileLabels = await Promise.all(
             files.map(async (f) => {
                 const frontmatter = await this.fileService.getFrontmatter(f.path);
                 const label = await this.fileService.getFocusTargetLabel(f.path, configuration.titlePropertyNames);
-                const value = frontmatter[sortColumn];
-                const sortValue = formatFrontmatterValue(value).toLowerCase();
-                return [label, f, sortValue] as [string, TFile, string];
+
+                let sortValue = "";
+                if (sortColumn.startsWith("#")) {
+                    sortValue = this.extractTagValue(frontmatter.tags, sortColumn.slice(1)) || "";
+                } else {
+                    const value = frontmatter[sortColumn];
+                    sortValue = formatFrontmatterValue(value);
+                }
+
+                return [label, f, sortValue.toLowerCase()] as [string, TFile, string];
             })
         );
 
         return this.sortFileLabels(fileLabels, configuration.sortDescending);
+    }
+
+    private extractTagValue(tags: string | string[] | undefined, pattern: string): string {
+        if (!tags) return "";
+
+        const rx = new RegExp(pattern, "g");
+        const tagArray = Array.isArray(tags) ? tags : [String(tags)];
+
+        for (const tag of tagArray) {
+            const matches = tag.matchAll(rx);
+            for (const match of matches) {
+                if (match[1]) {
+                    return match[1];
+                } else {
+                    return match[0];
+                }
+            }
+        }
+        return "";
     }
 
     private sortFileLabels(
