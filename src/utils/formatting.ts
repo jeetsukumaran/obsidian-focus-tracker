@@ -2,7 +2,7 @@ import {
     FocusLogsType,
 } from '../types'
 
-export function formatFrontmatterValue(value: any): string {
+export function ensureFrontmatterValueString(value: any): string {
     if (Array.isArray(value)) {
         return value.join(' • ');
     }

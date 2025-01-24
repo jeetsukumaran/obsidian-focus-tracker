@@ -8,7 +8,7 @@ import { DEFAULT_CONFIGURATION } from './config/defaults';
 import { RemarksModal } from './components/RemarksModal';
 import { isSameDate } from './utils/dates';
 import { generateUniqueId, normalizeKeys, pathToId } from './utils/strings';
-import { formatFrontmatterValue } from './utils/formatting';
+import { ensureFrontmatterValueString } from './utils/formatting';
 import { parseYaml } from 'obsidian';
 import { PLUGIN_NAME, DEFAULT_MAPS, DEFAULT_CONFIG, OUT_OF_BOUNDS } from './constants';
 
@@ -276,7 +276,7 @@ export default class FocusTracker {
             } else {
                 value = frontmatter[propertyName];
             }
-            const formattedValue = formatFrontmatterValue(value);
+            const formattedValue = ensureFrontmatterValueString(value);
 
             const markdownRenderer = new MarkdownRenderChild(cell);
             await MarkdownRenderer.renderMarkdown(

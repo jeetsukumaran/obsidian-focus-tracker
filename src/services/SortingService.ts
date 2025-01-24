@@ -1,7 +1,7 @@
 import { TFile } from "obsidian";
 import { FileService } from './FileService';
 import { FocusTrackerConfiguration } from '../types';
-import { formatFrontmatterValue } from '../utils/formatting';
+import { ensureFrontmatterValueString } from '../utils/formatting';
 
 export class SortingService {
     constructor(private fileService: FileService) {}
@@ -40,7 +40,7 @@ export class SortingService {
                     sortValue = this.extractTagValue(frontmatter.tags, sortColumn.slice(1)) || "";
                 } else {
                     const value = frontmatter[sortColumn];
-                    sortValue = formatFrontmatterValue(value);
+                    sortValue = ensureFrontmatterValueString(value);
                 }
 
                 return [label, f, sortValue.toLowerCase()] as [string, TFile, string];
