@@ -279,7 +279,11 @@ export default class FocusTracker {
             let formattedValue = ensureFrontmatterValueString(value);
             let parsedLink = parseLink(formattedValue);
             if (parsedLink.filepath && !parsedLink.displayText) {
-                const parsedLinkFrontmatter = await this.fileService.getFrontmatter(parsedLink.filepath + ".md");
+                let filepath = parsedLink.filepath;
+                if (!filepath.endsWith(".md")) {
+                    filepath = filepath + ".md";
+                }
+                const parsedLinkFrontmatter = await this.fileService.getFrontmatter(filepath);
                 if (parsedLinkFrontmatter && parsedLinkFrontmatter["title"]) {
                     let title = parsedLinkFrontmatter["title"];
                     formattedValue = `[[${parsedLink.filepath}|${title}]]`;
