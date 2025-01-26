@@ -29,6 +29,16 @@ export class FocusTrackerHeader {
         });
         this.addSortingToHeader(trackHeader, 'track');
         this.addResizeHandle(trackHeader);
+        //
+        // Render infix column headers
+        Object.entries(this.config.infixColumns).forEach(([displayName, propertyName]) => {
+            const headerCell = header.createEl("div", {
+                cls: "focus-tracker__cell focus-tracker__cell--custom focus-tracker__cell--infix",
+                text: displayName
+            });
+            this.addSortingToHeader(headerCell, propertyName);
+            this.addResizeHandle(headerCell);
+        });
 
         // Render date cells
         this.renderDateCells(header);
