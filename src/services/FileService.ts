@@ -35,16 +35,23 @@ export class FileService {
         }
     }
 
-    async getFocusTargetLabel(path: string, titlePropertyNames: string[]): Promise<string> {
-        let focusTargetLabel = path.split('/').pop()?.replace('.md', '') || path;
+    async getFileDisplayHeadingAndValue(path: string, titlePropertyNames: string[]): Promise<[string, string]> {
+        let fileDisplayHeading = "Track";
+        let fileDisplayLabel = path.split('/').pop()?.replace('.md', '') || path;
         if (titlePropertyNames?.length > 0) {
             let frontmatter = await this.getFrontmatter(path) || {};
             titlePropertyNames.slice().reverse().forEach((propertyName: string) => {
                 if (frontmatter[propertyName]) {
-                    focusTargetLabel = frontmatter[propertyName] || focusTargetLabel;
+                    fileDisplayHeading = propertyName;
+                    fileDisplayLabel = frontmatter[propertyName] || fileDisplayLabel;
                 }
             });
         }
+        return [fileDisplayHeading, fileDisplayLabel];
+    }
+
+    async getFocusTargetLabel(path: string, titlePropertyNames: string[]): Promise<string> {
+        const [, focusTargetLabel] = await this.getFileDisplayHeadingAndValue(path, titlePropertyNames);
         return focusTargetLabel;
     }
 
