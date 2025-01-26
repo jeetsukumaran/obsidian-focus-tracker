@@ -46,6 +46,7 @@ export default class FocusTracker {
             const normalizedConfig = normalizeKeys(parsedConfig);
 
             // Handle prefix and postfix columns with dictionary format
+            let titleColumn = this.processColumnConfig(parsedConfig['title-column']);
             let prefixColumns = this.processColumnConfig(parsedConfig['prefix-columns']);
             let infixColumns = this.processColumnConfig(parsedConfig['infix-columns']);
             let postfixColumns = this.processColumnConfig(parsedConfig['postfix-columns']);
@@ -61,6 +62,7 @@ export default class FocusTracker {
             return {
                 ...DEFAULT_CONFIGURATION(),
                 ...normalizedConfig,
+                titleColumn,
                 prefixColumns,
                 infixColumns,
                 postfixColumns,
