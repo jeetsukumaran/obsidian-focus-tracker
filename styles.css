@@ -41,6 +41,7 @@ body {
     --focustracker-background-color: #ffffff10;
     --focustracker-weekend-color: #ffffff10;
     --focustracker-alternate-row-color: rgba(255, 255, 255, 0.1);
+    --today-column-text-color: var(--text-muted);
 }
 
 /* Main Container */
@@ -350,3 +351,12 @@ body {
     white-space: nowrap;
     text-overflow: ellipsis;
 }
+
+.focus-tracker__cell.focus-tracker__cell,
+.focus-tracker__cell.focus-tracker__cell > p,
+.focus-tracker__cell.focus-tracker__cell > a,
+.focus-tracker__cell.focus-tracker__cell > p > a
+{
+    color: var(--text-normal);
+}
+
