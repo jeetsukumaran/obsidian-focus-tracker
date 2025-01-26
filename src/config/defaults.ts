@@ -21,7 +21,6 @@ export const DEFAULT_CONFIGURATION = (): FocusTrackerConfiguration => ({
     focalDate: new Date(),
     rootElement: undefined,
     focusTracksGoHere: undefined,
-    titleColumn: {},
     prefixColumns: {},
     infixColumns: {},
     postfixColumns: {},
