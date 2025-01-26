@@ -22,6 +22,7 @@ export const DEFAULT_CONFIGURATION = (): FocusTrackerConfiguration => ({
     rootElement: undefined,
     focusTracksGoHere: undefined,
     prefixColumns: {},
+    infixColumns: {},
     postfixColumns: {},
     sortColumn: '',
     sortDescending: false,

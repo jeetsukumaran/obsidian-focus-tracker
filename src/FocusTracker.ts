@@ -47,6 +47,7 @@ export default class FocusTracker {
 
             // Handle prefix and postfix columns with dictionary format
             let prefixColumns = this.processColumnConfig(parsedConfig['prefix-columns']);
+            let infixColumns = this.processColumnConfig(parsedConfig['infix-columns']);
             let postfixColumns = this.processColumnConfig(parsedConfig['postfix-columns']);
 
             const ratingMapKey = parsedConfig['rating-map'] || this.settings.defaultRatingMap;
@@ -61,6 +62,7 @@ export default class FocusTracker {
                 ...DEFAULT_CONFIGURATION(),
                 ...normalizedConfig,
                 prefixColumns,
+                infixColumns,
                 postfixColumns,
                 ratingSymbols: ratingMap.symbols,
                 flagSymbols: flagMap.symbols,
@@ -204,6 +206,14 @@ export default class FocusTracker {
 
         // Render focus title with markdown support
         await this.renderFocusTitle(rowElement, focusTargetLabel, path);
+
+        // Render infix columns
+        await this.renderCustomColumns(
+            rowElement,
+            frontmatter,
+            this.configuration.infixColumns,
+            'focus-tracker__cell--infix'
+        );
 
         // Render focus entries
         await this.renderFocusEntries(rowElement, path, entries);

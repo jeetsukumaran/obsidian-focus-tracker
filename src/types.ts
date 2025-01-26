@@ -18,6 +18,7 @@ export interface FocusTrackerConfiguration {
     rootElement: HTMLElement | undefined;
     focusTracksGoHere: HTMLElement | undefined;
     prefixColumns: ColumnConfig;
+    infixColumns: ColumnConfig;
     postfixColumns: ColumnConfig;
     sortColumn: string;
     sortDescending: boolean;
