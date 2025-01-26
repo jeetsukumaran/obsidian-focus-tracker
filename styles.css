@@ -199,6 +199,11 @@ body {
     border-right: 1px solid var(--background-modifier-border);
 }
 
+.focus-tracker__cell--infix {
+    border-left: 1px solid var(--background-modifier-border);
+    border-right: 1px solid var(--background-modifier-border);
+}
+
 .focus-tracker__cell--postfix {
     border-left: 1px solid var(--background-modifier-border);
 }
@@ -329,6 +334,11 @@ body {
 
 /* Keep border styles separate */
 .focus-tracker__cell--prefix {
+    border-right: 1px solid var(--background-modifier-border);
+}
+
+.focus-tracker__cell--infix {
+    border-left: 1px solid var(--background-modifier-border);
     border-right: 1px solid var(--background-modifier-border);
 }
 
