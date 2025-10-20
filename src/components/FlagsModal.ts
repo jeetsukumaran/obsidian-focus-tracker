@@ -51,31 +51,44 @@ export class FlagsModal extends Modal {
         paletteContainer.createEl('label', { text: 'Palette (click to select):' });
 
         // PLACEHOLDER PALETTE
-        const palette = [
-            '⭐',
-            '✅',
-            '🚀',
-            '🔥',
-            '✨',
-            '🧠',
-            '💡',
-            '🔔',
-            '⚠️',
-            '❌',
-            '✅',
-            '➕',
-            '➖'
-        ];
-        const paletteGrid = paletteContainer.createEl('div', { cls: 'flags-palette-grid' });
-        palette.forEach((p) => {
-            const b = paletteGrid.createEl('button', { cls: 'flag-palette-item', text: p });
-            b.onclick = () => {
-                // toggle in selectedFlags
-                const idx = this.selectedFlags.indexOf(p);
-                if (idx === -1) this.selectedFlags.push(p);
-                else this.selectedFlags.splice(idx, 1);
-                refreshSelected();
-            };
+        // Create container for all palettes
+        const allPalettesContainer = paletteContainer.createEl('div', { cls: 'flags-all-palettes' });
+
+        // Create a palette grid for each flag map
+        Object.entries(DEFAULT_MAPS.flags).forEach(([mapName, flagMap]) => {
+            // Create a container for this palette group
+            const paletteGroupContainer = allPalettesContainer.createEl('div', { cls: 'flags-palette-group' });
+            
+            // Add a label for this palette
+            paletteGroupContainer.createEl('div', { 
+                cls: 'flags-palette-group-label',
+                text: mapName.charAt(0).toUpperCase() + mapName.slice(1)
+            });
+
+            // Create the grid for this palette
+            const paletteGrid = paletteGroupContainer.createEl('div', { cls: 'flags-palette-grid' });
+
+            // Add each symbol to the grid
+            flagMap.symbols.forEach((symbol, index) => {
+                const button = paletteGrid.createEl('button', { 
+                    cls: 'flag-palette-item', 
+                    text: symbol 
+                });
+                
+                // Add tooltip with the key description
+                const key = flagMap.keys[index];
+                if (key) {
+                    button.setAttribute('title', key);
+                }
+
+                button.onclick = () => {
+                    // toggle in selectedFlags
+                    const idx = this.selectedFlags.indexOf(symbol);
+                    if (idx === -1) this.selectedFlags.push(symbol);
+                    else this.selectedFlags.splice(idx, 1);
+                    refreshSelected();
+                };
+            });
         });
 
         // Add / Remove selected to/from palette using << / >> buttons
