@@ -298,12 +298,14 @@ body {
     align-items: flex-start;
     font-size: 0.85em;
     line-height: 1;
+    width: 1em;
 }
 
 .focus-cell-flag {
     padding: 0 2px;
 }
 
+/*
 .theme-light .focus-tick--false::before {
     content: "⚪";
 }
@@ -311,6 +313,7 @@ body {
 .theme-dark .focus-tick--false::before {
     content: "⚫";
 }
+*/
 
 /* Resize Handle Styles */
 .focus-tracker__resize-handle {

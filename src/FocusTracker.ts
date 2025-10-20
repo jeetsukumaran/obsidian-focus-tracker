@@ -346,7 +346,7 @@ export default class FocusTracker {
     } {
         let result = {
             hasValue: false,
-            ratingSymbol: " ",
+            ratingSymbol: "",
             flagSymbols: [] as string[],
             tooltip: "",
             focusRatingValue: 0,
@@ -663,7 +663,7 @@ export default class FocusTracker {
         // Create rating symbol column
         const ratingSymbolColumn = cellContainer.createEl('div', {
             cls: 'focus-cell-rating',
-            text: config.ratingSymbol
+            text: config.ratingSymbol || "⚪",
         });
 
         // Create flags column if there are flags
