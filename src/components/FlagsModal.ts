@@ -62,26 +62,26 @@ export class FlagsModal extends Modal {
 
         // Add / Remove selected to/from palette using << / >> buttons
         const actions = contentEl.createEl('div', { cls: 'flags-actions' });
-        const addButton = actions.createEl('button', { text: '<< Add selected to list' });
-        const removeButton = actions.createEl('button', { text: 'Remove selected >>' });
+        // const addButton = actions.createEl('button', { text: '<< Add selected to list' });
+        // const removeButton = actions.createEl('button', { text: 'Remove selected >>' });
 
-        addButton.onclick = () => {
-            // parse textarea into tokens and add to selected
-            const tokens = this.tokenizeFlags(this.allFlagsInput.getValue());
-            tokens.forEach(t => {
-                if (!this.selectedFlags.includes(t)) this.selectedFlags.push(t);
-            });
-            refreshSelected();
-        };
+        // addButton.onclick = () => {
+        //     // parse textarea into tokens and add to selected
+        //     const tokens = this.tokenizeFlags(this.allFlagsInput.getValue());
+        //     tokens.forEach(t => {
+        //         if (!this.selectedFlags.includes(t)) this.selectedFlags.push(t);
+        //     });
+        //     refreshSelected();
+        // };
 
-        removeButton.onclick = () => {
-            const tokens = this.tokenizeFlags(this.allFlagsInput.getValue());
-            tokens.forEach(t => {
-                const idx = this.selectedFlags.indexOf(t);
-                if (idx !== -1) this.selectedFlags.splice(idx, 1);
-            });
-            refreshSelected();
-        };
+        // removeButton.onclick = () => {
+        //     const tokens = this.tokenizeFlags(this.allFlagsInput.getValue());
+        //     tokens.forEach(t => {
+        //         const idx = this.selectedFlags.indexOf(t);
+        //         if (idx !== -1) this.selectedFlags.splice(idx, 1);
+        //     });
+        //     refreshSelected();
+        // };
 
         // Save / Cancel
         const buttons = contentEl.createEl('div', { cls: 'flags-modal-buttons' });
