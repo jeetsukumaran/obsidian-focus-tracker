@@ -429,6 +429,28 @@ export default class FocusTracker {
     private showFocusMenu(event: MouseEvent, path: string, dateString: string, currentRemarks?: string): void {
         const menu = new Menu();
 
+        // Flags editor
+        menu.addItem((item) =>
+            item
+                .setTitle('Set flags')
+                .setIcon('flag')
+                .onClick(() => {
+                    // read current flags from element attributes if available
+                    const activeEl = (document.querySelector(`[focusTrackerPath="${path}"][date="${dateString}"]`) as HTMLElement) || null;
+                    const currentFlagsAttr = activeEl ? activeEl.getAttribute('focusFlags') || '' : '';
+                    const currentFlags = currentFlagsAttr ? Array.from(currentFlagsAttr) : [];
+                    new FlagsModal(this.app, currentFlags, async (flags: string[]) => {
+                        await this.setFocusEntry(
+                            path,
+                            dateString,
+                            undefined,
+                            flags,
+                            undefined,
+                        );
+                    }).open();
+                })
+        );
+
         // Remarks section
         menu.addItem((item) =>
             item
@@ -451,22 +473,6 @@ export default class FocusTracker {
                 })
         );
 
-        // Flags editor
-        menu.addItem((item) =>
-            item
-                .setTitle('Add/remove flags')
-                .setIcon('flag')
-                .onClick(() => {
-                    // read current flags from element attributes if available
-                    const activeEl = (document.querySelector(`[focusTrackerPath="${path}"][date="${dateString}"]`) as HTMLElement) || null;
-                    const currentFlagsAttr = activeEl ? activeEl.getAttribute('focusFlags') || '' : '';
-                    const currentFlags = currentFlagsAttr ? Array.from(currentFlagsAttr) : [];
-                    new FlagsModal(this.app, currentFlags, async (flags: string[]) => {
-                        await this.setFocusEntry(path, dateString, undefined, flags, undefined);
-                    }).open();
-                })
-        );
-
         menu.addSeparator();
 
         // Rating options
@@ -481,7 +487,8 @@ export default class FocusTracker {
                             path,
                             dateString,
                             symbolIndex,
-                            [] as string[],
+                            undefined,
+                            undefined,
                         );
                     })
             );
@@ -502,22 +509,6 @@ export default class FocusTracker {
                     );
                 })
         );
-
-        // // Flag options
-        // menu.addSeparator();
-        // this.configuration.flagSymbols.forEach((symbol: string, symbolIndex: number) => {
-        //     let newValue = 0 - (symbolIndex + 1);
-        //     let flagKey = this.configuration.flagKeys?.[symbolIndex];
-        //     let flagDesc = flagKey ? `: ${flagKey}` : "";
-        //     menu.addItem((item) =>
-        //         item
-        //             .setTitle(`${symbol} (Flag ${-1 * newValue}${flagDesc})`)
-        //             .setIcon("flag")
-        //             .onClick(async () => {
-        //                 await this.setFocusEntry(path, dateString, newValue);
-        //             })
-        //     );
-        // });
 
         menu.showAtMouseEvent(event);
     }
