@@ -35,6 +35,7 @@ export interface FocusTrackerSettings {
 
 export interface FocusLogEntry {
     rating: number;
+    flags?: string[],
     remarks?: string;
 }
 

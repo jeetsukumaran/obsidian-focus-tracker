@@ -12,6 +12,27 @@ import { ensureFrontmatterValueString } from './utils/formatting';
 import { parseYaml } from 'obsidian';
 import { PLUGIN_NAME, DEFAULT_MAPS, DEFAULT_CONFIG, OUT_OF_BOUNDS } from './constants';
 
+function normalizeFlags(flags: any): string[] {
+  // Handle null or undefined flags. The `== null` check covers both.
+  if (flags == null) {
+    return [];
+  }
+
+  // Handle arrays
+  if (Array.isArray(flags)) {
+    // Ensure all elements are strings
+    return flags.map(item => String(item));
+  }
+
+  // Handle objects
+  if (typeof flags === 'object') {
+    return Object.entries(flags).map(([key, value]) => `${key} → ${value}`);
+  }
+
+  // Handle all other scalar values (number, string, boolean, etc.)
+  return [String(flags)];
+}
+
 export default class FocusTracker {
     private fileService: FileService;
     private sortingService: SortingService;
@@ -325,7 +346,7 @@ export default class FocusTracker {
         let result = {
             hasValue: false,
             ratingSymbol: " ",
-            flagSymbols: [],
+            flagSymbols: [] as string[],
             tooltip: "",
             focusRatingValue: 0,
             remarks: undefined as string | undefined
@@ -334,6 +355,7 @@ export default class FocusTracker {
         if (typeof entry === 'object' && entry !== null) {
             result.focusRatingValue = entry.rating;
             result.remarks = entry.remarks;
+            result.flagSymbols = normalizeFlags(entry.flags)
         } else if (typeof entry === 'number') {
             result.focusRatingValue = entry;
         } else if (typeof entry === 'string') {
@@ -492,9 +514,9 @@ export default class FocusTracker {
             if (typeof currentEntry === 'object' && currentEntry !== null) {
                 newEntry = { ...currentEntry };
             } else if (typeof currentEntry === 'number') {
-                newEntry = { rating: currentEntry };
+                newEntry = { rating: currentEntry, flags: [] as string[]};
             } else {
-                newEntry = { rating: 0 };
+                newEntry = { rating: 0, flags: [] as string[]};
             }
 
             if (newRating !== undefined) {
