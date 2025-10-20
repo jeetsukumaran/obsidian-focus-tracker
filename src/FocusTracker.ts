@@ -316,48 +316,50 @@ export default class FocusTracker {
 
     private getDisplayValues(entry: number | string | FocusLogEntry): {
         hasValue: boolean;
-        symbol: string;
+        ratingSymbol: string;
+        flagSymbols: string[];
         tooltip: string;
-        entryScalarValue: number;
+        focusRatingValue: number;
         remarks?: string;
     } {
         let result = {
             hasValue: false,
-            symbol: " ",
+            ratingSymbol: " ",
+            flagSymbols: [],
             tooltip: "",
-            entryScalarValue: 0,
+            focusRatingValue: 0,
             remarks: undefined as string | undefined
         };
 
         if (typeof entry === 'object' && entry !== null) {
-            result.entryScalarValue = entry.rating;
+            result.focusRatingValue = entry.rating;
             result.remarks = entry.remarks;
         } else if (typeof entry === 'number') {
-            result.entryScalarValue = entry;
+            result.focusRatingValue = entry;
         } else if (typeof entry === 'string') {
             if (entry === "") {
                 result.hasValue = false;
             } else {
                 result.hasValue = true;
-                result.symbol = entry;
+                result.ratingSymbol = entry;
                 result.tooltip = entry;
             }
             return result;
         }
 
-        if (result.entryScalarValue === 0) {
+        if (result.focusRatingValue === 0) {
             result.hasValue = false;
         } else {
             result.hasValue = true;
-            if (result.entryScalarValue >= 1) {
-                result.symbol = this.getSymbol(this.ratingSymbols, result.entryScalarValue - 1);
-                result.tooltip = `Rating: ${result.entryScalarValue}`;
+            if (result.focusRatingValue >= 1) {
+                result.ratingSymbol = this.getSymbol(this.ratingSymbols, result.focusRatingValue - 1);
+                result.tooltip = `Rating: ${result.focusRatingValue}`;
             } else {
-                let arrayIndex = (-1 * result.entryScalarValue) - 1;
-                result.symbol = this.getSymbol(this.flagSymbols, arrayIndex);
+                let arrayIndex = (-1 * result.focusRatingValue) - 1;
+                result.ratingSymbol = this.getSymbol(this.flagSymbols, arrayIndex);
                 let flagKey = this.configuration.flagKeys?.[arrayIndex];
                 let flagDesc = flagKey ? `: ${flagKey}` : "";
-                result.tooltip = `Flag ${-1 * result.entryScalarValue}${flagDesc}`;
+                result.tooltip = `Flag ${-1 * result.focusRatingValue}${flagDesc}`;
             }
         }
 
@@ -546,9 +548,10 @@ export default class FocusTracker {
             const entry = entries[dateString];
             const {
                 hasValue,
-                symbol,
+                ratingSymbol,
+                flagSymbols,
                 tooltip,
-                entryScalarValue,
+                focusRatingValue,
                 remarks
             } = this.getDisplayValues(entry);
 
@@ -561,9 +564,10 @@ export default class FocusTracker {
                 hasValue,
                 dateString,
                 path,
-                entryScalarValue,
+                focusRatingValue,
                 remarks,
-                symbol,
+                ratingSymbol,
+                flagSymbols,
                 currentDate,
                 today
             });
@@ -578,9 +582,10 @@ export default class FocusTracker {
             hasValue: boolean;
             dateString: string;
             path: string;
-            entryScalarValue: number;
+            focusRatingValue: number;
             remarks?: string;
-            symbol: string;
+            ratingSymbol: string;
+            flagSymbols: string[];
             currentDate: Date;
             today: Date;
         }
@@ -588,13 +593,13 @@ export default class FocusTracker {
         focusCell.setAttribute("ticked", config.hasValue.toString());
         focusCell.setAttribute("date", config.dateString);
         focusCell.setAttribute("focusTrackerPath", config.path);
-        focusCell.setAttribute("focusRating", config.entryScalarValue?.toString() || "");
+        focusCell.setAttribute("focusRating", config.focusRatingValue?.toString() || "");
 
         if (config.remarks) {
             focusCell.setAttribute("focusRemarks", config.remarks);
         }
 
-        focusCell.setText(config.symbol);
+        focusCell.setText(config.ratingSymbol + config.flagSymbols);
 
         focusCell.addEventListener("click", (e: MouseEvent) => {
             if (e.altKey) {
