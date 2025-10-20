@@ -6,6 +6,7 @@ import { FocusTrackerHeader } from './components/FocusTrackerHeader';
 import { FocusTrackerConfiguration, FocusTrackerSettings, FocusLogsType, FocusLogEntry } from './types';
 import { DEFAULT_CONFIGURATION } from './config/defaults';
 import { RemarksModal } from './components/RemarksModal';
+import { FlagsModal } from './components/FlagsModal';
 import { isSameDate } from './utils/dates';
 import { generateUniqueId, normalizeKeys, pathToId, parseLink } from './utils/strings';
 import { ensureFrontmatterValueString } from './utils/formatting';
@@ -450,6 +451,22 @@ export default class FocusTracker {
                 })
         );
 
+        // Flags editor
+        menu.addItem((item) =>
+            item
+                .setTitle('Add/remove flags')
+                .setIcon('flag')
+                .onClick(() => {
+                    // read current flags from element attributes if available
+                    const activeEl = (document.querySelector(`[focusTrackerPath="${path}"][date="${dateString}"]`) as HTMLElement) || null;
+                    const currentFlagsAttr = activeEl ? activeEl.getAttribute('focusFlags') || '' : '';
+                    const currentFlags = currentFlagsAttr ? Array.from(currentFlagsAttr) : [];
+                    new FlagsModal(this.app, currentFlags, async (flags: string[]) => {
+                        await this.setFocusEntry(path, dateString, undefined, flags, undefined);
+                    }).open();
+                })
+        );
+
         menu.addSeparator();
 
         // Rating options
@@ -639,6 +656,12 @@ export default class FocusTracker {
 
         if (config.remarks) {
             focusCell.setAttribute("focusRemarks", config.remarks);
+        }
+        if (config.flagSymbols && config.flagSymbols.length > 0) {
+            // store flags as a joined string so they can be returned and edited
+            focusCell.setAttribute('focusFlags', config.flagSymbols.join(''));
+        } else {
+            focusCell.setAttribute('focusFlags', '');
         }
 
         focusCell.setText(config.ratingSymbol + config.flagSymbols);
