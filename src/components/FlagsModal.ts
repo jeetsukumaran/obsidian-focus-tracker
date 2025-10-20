@@ -1,5 +1,9 @@
 import { App, Modal, TextAreaComponent } from 'obsidian';
 
+import {
+    DEFAULT_MAPS
+} from "../constants";
+
 export class FlagsModal extends Modal {
     private allFlagsInput: TextAreaComponent;
     private selectedFlags: string[];
@@ -47,7 +51,21 @@ export class FlagsModal extends Modal {
         paletteContainer.createEl('label', { text: 'Palette (click to select):' });
 
         // Very small built-in palette for convenience. User can paste more in the textarea.
-        const palette = ['⭐','✅','🚀','🔥','✨','🧠','💡','🔔','⚠️','❌','✅','➕','➖'];
+        const palette = [
+            '⭐',
+            '✅',
+            '🚀',
+            '🔥',
+            '✨',
+            '🧠',
+            '💡',
+            '🔔',
+            '⚠️',
+            '❌',
+            '✅',
+            '➕',
+            '➖'
+        ];
         const paletteGrid = paletteContainer.createEl('div', { cls: 'flags-palette-grid' });
         palette.forEach((p) => {
             const b = paletteGrid.createEl('button', { cls: 'flag-palette-item', text: p });
