@@ -498,7 +498,7 @@ export default class FocusTracker {
                         path,
                         dateString,
                         0,
-                        [] as string[],
+                        undefined,
                     );
                 })
         );
