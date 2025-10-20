@@ -655,7 +655,30 @@ export default class FocusTracker {
             focusCell.setAttribute('focusFlags', '');
         }
 
-        focusCell.setText(config.ratingSymbol + config.flagSymbols);
+        // Create a container for the layout
+        const cellContainer = focusCell.createEl('div', {
+            cls: 'focus-cell-container',
+        });
+
+        // Create rating symbol column
+        const ratingSymbolColumn = cellContainer.createEl('div', {
+            cls: 'focus-cell-rating',
+            text: config.ratingSymbol
+        });
+
+        // Create flags column if there are flags
+        if (config.flagSymbols && config.flagSymbols.length > 0) {
+            const flagsColumn = ratingSymbolColumn.createEl('div', {
+                cls: 'focus-cell-flags',
+            });
+            // Add each flag as a separate div
+            config.flagSymbols.forEach(flag => {
+                flagsColumn.createEl('div', {
+                    cls: 'focus-cell-flag',
+                    text: flag
+                });
+            });
+        }
 
         focusCell.addEventListener("click", (e: MouseEvent) => {
             if (e.altKey) {

@@ -270,8 +270,38 @@ body {
 /* Focus Tick Styles */
 .focus-tick {
     line-height: 0;
-    text-align: center;
     cursor: pointer;
+    padding: 2px;
+}
+
+/* New CSS for the focus cell layout */
+.focus-cell-container {
+    display: grid;
+    grid-template-columns: auto auto;
+    gap: 2px;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    width: 100%;
+}
+
+.focus-cell-rating {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 2px;
+}
+
+.focus-cell-flags {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    font-size: 0.85em;
+    line-height: 1;
+}
+
+.focus-cell-flag {
+    padding: 0 2px;
 }
 
 .theme-light .focus-tick--false::before {
