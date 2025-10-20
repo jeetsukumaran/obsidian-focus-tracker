@@ -438,7 +438,13 @@ export default class FocusTracker {
                         this.app,
                         currentRemarks || "",
                         async (result) => {
-                            await this.setFocusEntry(path, dateString, undefined, result);
+                            await this.setFocusEntry(
+                                path,
+                                dateString,
+                                undefined,
+                                undefined,
+                                result
+                            );
                         }
                     ).open();
                 })
@@ -454,7 +460,12 @@ export default class FocusTracker {
                     .setTitle(`${symbol} (Rating = ${symbolIndex})`)
                     .setIcon("check-circle")
                     .onClick(async () => {
-                        await this.setFocusEntry(path, dateString, symbolIndex);
+                        await this.setFocusEntry(
+                            path,
+                            dateString,
+                            symbolIndex,
+                            [] as string[],
+                        );
                     })
             );
         });
@@ -466,25 +477,30 @@ export default class FocusTracker {
                 .setTitle("Clear Rating")
                 .setIcon("x-circle")
                 .onClick(async () => {
-                    await this.setFocusEntry(path, dateString, 0);
+                    await this.setFocusEntry(
+                        path,
+                        dateString,
+                        0,
+                        [] as string[],
+                    );
                 })
         );
 
-        // Flag options
-        menu.addSeparator();
-        this.configuration.flagSymbols.forEach((symbol: string, symbolIndex: number) => {
-            let newValue = 0 - (symbolIndex + 1);
-            let flagKey = this.configuration.flagKeys?.[symbolIndex];
-            let flagDesc = flagKey ? `: ${flagKey}` : "";
-            menu.addItem((item) =>
-                item
-                    .setTitle(`${symbol} (Flag ${-1 * newValue}${flagDesc})`)
-                    .setIcon("flag")
-                    .onClick(async () => {
-                        await this.setFocusEntry(path, dateString, newValue);
-                    })
-            );
-        });
+        // // Flag options
+        // menu.addSeparator();
+        // this.configuration.flagSymbols.forEach((symbol: string, symbolIndex: number) => {
+        //     let newValue = 0 - (symbolIndex + 1);
+        //     let flagKey = this.configuration.flagKeys?.[symbolIndex];
+        //     let flagDesc = flagKey ? `: ${flagKey}` : "";
+        //     menu.addItem((item) =>
+        //         item
+        //             .setTitle(`${symbol} (Flag ${-1 * newValue}${flagDesc})`)
+        //             .setIcon("flag")
+        //             .onClick(async () => {
+        //                 await this.setFocusEntry(path, dateString, newValue);
+        //             })
+        //     );
+        // });
 
         menu.showAtMouseEvent(event);
     }
@@ -493,6 +509,7 @@ export default class FocusTracker {
         focusTrackerPath: string | null,
         date: string | null,
         newRating?: number,
+        newFlags?: string[],
         remarks?: string
     ) {
         if (!focusTrackerPath || !date) {
@@ -521,6 +538,9 @@ export default class FocusTracker {
 
             if (newRating !== undefined) {
                 newEntry.rating = newRating;
+            }
+            if (newFlags !== undefined) {
+                newEntry.flags = newFlags;
             }
             if (remarks !== undefined) {
                 if (remarks.trim() === '') {
