@@ -50,7 +50,7 @@ export class FlagsModal extends Modal {
         const paletteContainer = contentEl.createEl('div', { cls: 'flags-palette-container' });
         paletteContainer.createEl('label', { text: 'Palette (click to select):' });
 
-        // Very small built-in palette for convenience. User can paste more in the textarea.
+        // PLACEHOLDER PALETTE
         const palette = [
             '⭐',
             '✅',
