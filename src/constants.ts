@@ -58,6 +58,58 @@ export const DEFAULT_MAPS = {
                 "unsuccessful",
             ]
         },
+        planning: {
+            symbols: [
+                "🚀",
+                "🏹",
+                "📅",
+                "⏳",
+                "🏁",
+                "📈",
+                "🐂",
+            ],
+            keys: [
+                "goal: aspirational",
+                "goal: committed",
+                "due",
+                "scheduled",
+                "get started",
+                "make progress",
+                "yak shaving",
+            ]
+        },
+        results: {
+            symbols: [
+                "⭐",
+                "🏅",
+                "🎯",
+                "✅",
+                "🪜",
+                "🕰",
+                "🐂",
+                "🚧",
+                "⚠️",
+                "⏩",
+                "❎",
+                "⛔",
+                "📦",
+            ],
+            keys: [
+                "supreme",
+                "heroic",
+                "on target",
+                "success",
+                "made progress",
+                "clocked in the time",
+                "yak-shaving",
+                "in-progress",
+                "broken",
+                "forwarded",
+                "canceled",
+                "blocked",
+                "boxed",
+            ]
+        },
         activity: {
             symbols: [
                 "🏯",
