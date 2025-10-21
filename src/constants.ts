@@ -3,8 +3,8 @@ import { RatingMap, FlagMap } from './types';
 export const DEFAULT_MAPS = {
     ratings: {
         colors1: {
-            symbols: ["🔴", "🟠", "🟡", "🟢", "🔵"],
-            descriptions: ["Poor", "Fair", "Good", "Very Good", "Excellent"]
+                 symbols: ["🔴",  "🟠",   "🟡",   "🟢",        "🔵",        "🟣"],
+            descriptions: ["Fail", "Fair", "Good", "Very Good", "Excellent", "Superior"]
         },
         digitsOpen: {
             symbols: ["➀", "➁", "➂", "➃", "➄", "➅", "➆", "➇", "➈", "➉"],
@@ -42,7 +42,7 @@ export const DEFAULT_MAPS = {
         },
         results: {
             symbols: [
-                "⭐",
+                "👑",
                 "🏅",
                 "🎯",
                 "✅",
@@ -57,7 +57,7 @@ export const DEFAULT_MAPS = {
                 "📦",
             ],
             keys: [
-                "supreme",
+                "regal",
                 "heroic",
                 "on target",
                 "success",
