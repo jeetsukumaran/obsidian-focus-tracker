@@ -278,7 +278,7 @@ body {
 .focus-cell-container {
     display: grid;
     grid-template-columns: auto auto;
-    gap: 2px;
+    gap: 0px;
     align-items: center;
     justify-content: center;
     height: 100%;
@@ -289,7 +289,8 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 0 2px;
+    padding-left: 2px;
+    padding-right: 0px;
     font-size: 1.0em;
 }
 
@@ -298,19 +299,22 @@ body {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    line-height: 1;
-    width: 1em;
+    width: 1.5em;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    font-size: 0.8em;
+    line-height: 1.0;
+    filter: contrast(200%) saturate(200%); 
+    border-radius: 4px;
 }
-/* .focus-cell-flags {
-    position: absolute;
-    top: 0; 
-    right:0;
-} */
 
-
-.focus-cell-flags {
-    filter: contrast(200%);
+.theme-light .focus-cell-flags {
+    background-color:rgba(0, 0, 0, 0.1)
 }
+.theme-dark .focus-cell-flags {
+    background-color: #ffffff44;
+}
+
 
 .focus-cell-flag {
     /* padding-right: 4px; */
@@ -320,7 +324,7 @@ body {
     padding-left: 2px;
     padding-top: 2px;
     padding-bottom: 2px;
-
+    padding-right: 0px;
 }
 
 /*
