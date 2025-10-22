@@ -281,8 +281,8 @@ export const DEFAULT_CONFIG = {
     flagMap: 'default' as keyof typeof DEFAULT_MAPS.flags
 } as const;
 
-export const MIN_DAYS_PAST = 7;
-export const MIN_DAYS_FUTURE = 7;
+export const MIN_DAYS_PAST = 1;
+export const MIN_DAYS_FUTURE = 1;
 export const OUT_OF_BOUNDS = "❗";
 export const PLUGIN_NAME = "Focus Tracker";
 
