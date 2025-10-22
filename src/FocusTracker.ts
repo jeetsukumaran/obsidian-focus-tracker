@@ -659,6 +659,11 @@ export default class FocusTracker {
         const cellContainer = focusCell.createEl('div', {
             cls: 'focus-cell-container',
         });
+        if (config.flagSymbols && config.flagSymbols.length > 0) {
+            cellContainer.addClass("focus-tracker__cell-container--has-flags")
+        } else {
+            cellContainer.addClass("focus-tracker__cell-container--no-flags")
+        }
 
         // Create rating symbol column
         const ratingSymbolColumn = cellContainer.createEl('div', {

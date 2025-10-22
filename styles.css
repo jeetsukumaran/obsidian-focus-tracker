@@ -277,7 +277,6 @@ body {
 /* New CSS for the focus cell layout */
 .focus-cell-container {
     display: grid;
-    /* grid-template-columns: auto auto; */
     grid-template-columns: 1fr 1fr;
     gap: 0px;
     align-items: center;
@@ -285,6 +284,16 @@ body {
     height: 100%;
     width: 2em;
 }
+
+/*
+.focus-tracker__cell-container--no-flags {
+    grid-template-columns: 1;
+}
+
+.focus-tracker__cell-container--has-flags {
+    grid-template-columns: 1fr 1fr;
+}
+*/
 
 .focus-cell-rating {
     display: flex;
