@@ -20,6 +20,24 @@ export const DEFAULT_MAPS = {
         }
     } as Record<string, RatingMap>,
     flags: {
+        activity: {
+            symbols: [
+                "🏯",
+                "🔮",
+                "📜",
+                "🔱",
+                "🛠️",
+                "🛞",
+            ],
+            keys: [
+                "Administration",
+                "Informatics",
+                "Literature",
+                "Manuscripting",
+                "System",
+                "Other",
+            ],
+        },
         planning: {
             symbols: [
                 "🚀",
@@ -31,13 +49,13 @@ export const DEFAULT_MAPS = {
                 "🐂",
             ],
             keys: [
-                "goal: aspirational",
-                "goal: committed",
-                "due",
-                "scheduled",
-                "get started",
-                "make progress",
-                "yak shaving",
+                "Goal: aspirational",
+                "Goal: committed",
+                "Due",
+                "Scheduled",
+                "Get started",
+                "Make progress",
+                "Yak shaving",
             ]
         },
         results: {
@@ -60,38 +78,20 @@ export const DEFAULT_MAPS = {
                 "📦",
             ],
             keys: [
-                "regal",
-                "heroic",
-                "on target",
-                "success",
-                "made progress",
-                "clocked in the time",
-                "yak-shaving",
-                "in-progress",
-                "broken",
-                "forwarded",
-                "canceled",
-                "blocked",
-                "boxed",
+                "Champion",
+                "Heroic",
+                "On target",
+                "Success",
+                "Made progress",
+                "Clocked in the time",
+                "Yak-shaving",
+                "In-progress",
+                "Broken",
+                "Forwarded",
+                "Canceled",
+                "Blocked",
+                "Boxed",
             ]
-        },
-        activity: {
-            symbols: [
-                "🏯",
-                "🔮",
-                "📜",
-                "🔱",
-                "🛠️",
-                "🛞",
-            ],
-            keys: [
-                "administration",
-                "informatics",
-                "literature",
-                "manuscripting",
-                "system",
-                "other",
-            ],
         },
         // academic: {
         //     symbols: ["📚", "✍️", "📝", "🔬", "📖", "❓", "📌", "⭐", "🎓"],
