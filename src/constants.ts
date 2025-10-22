@@ -41,7 +41,8 @@ export const DEFAULT_MAPS = {
         planning: {
             symbols: [
                 "🚀",
-                "🏹",
+                // "🏹",
+                "🎯",
                 "📅",
                 "⏳",
                 "🏁",
@@ -65,7 +66,7 @@ export const DEFAULT_MAPS = {
                 // "🗿",
                 "🏆",
                 "🏅",
-                "🎯",
+                // "🎯",
                 "✅",
                 "🪜",
                 "⌛",
@@ -76,11 +77,13 @@ export const DEFAULT_MAPS = {
                 "❎",
                 "⛔",
                 "📦",
+                "🚩",
+                // "❌",
             ],
             keys: [
                 "Champion",
                 "Heroic",
-                "On target",
+                // "On target",
                 "Success",
                 "Made progress",
                 "Clocked in the time",
@@ -91,6 +94,7 @@ export const DEFAULT_MAPS = {
                 "Canceled",
                 "Blocked",
                 "Boxed",
+                "Fail"
             ]
         },
         // academic: {
