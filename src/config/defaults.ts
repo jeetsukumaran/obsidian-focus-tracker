@@ -13,8 +13,6 @@ export const DEFAULT_CONFIGURATION = (): FocusTrackerConfiguration => ({
     lastDisplayedDate: getTodayDate(),
     logPropertyName: "focus-logs",
     ratingSymbols: DEFAULT_MAPS.ratings[DEFAULT_CONFIG.ratingMap].symbols,
-    flagSymbols: DEFAULT_MAPS.flags[DEFAULT_CONFIG.flagMap].symbols,
-    flagKeys: DEFAULT_MAPS.flags[DEFAULT_CONFIG.flagMap].keys,
     titlePropertyNames: ["track-label", "focus-tracker-title", "title"],
     daysInPast: DEFAULT_CONFIG.daysPast,
     daysInFuture: DEFAULT_CONFIG.daysFuture,

@@ -4,7 +4,7 @@ import { DEFAULT_MAPS, DEFAULT_CONFIG } from './constants';
 
 export interface FocusTrackerSettings {
     defaultRatingMap: keyof typeof DEFAULT_MAPS.ratings;
-    defaultFlagMap: keyof typeof DEFAULT_MAPS.flags;
+    // defaultFlagMap: keyof typeof DEFAULT_MAPS.flags;
     minDaysPast: number;
     minDaysFuture: number;
     defaultDaysPast: number;
@@ -13,7 +13,7 @@ export interface FocusTrackerSettings {
 
 export const DEFAULT_SETTINGS: FocusTrackerSettings = {
     defaultRatingMap: DEFAULT_CONFIG.ratingMap,
-    defaultFlagMap: DEFAULT_CONFIG.flagMap,
+    // defaultFlagMap: DEFAULT_CONFIG.flagMap,
     minDaysPast: 1,
     minDaysFuture: 1,
     defaultDaysPast: DEFAULT_CONFIG.daysPast,
@@ -51,18 +51,18 @@ export class FocusTrackerSettingsTab extends PluginSettingTab {
                     await this.plugin.saveSettings();
                 }));
 
-        new Setting(containerEl)
-            .setName('Default Flag Map')
-            .setDesc('Choose the default flag map for new focus trackers')
-            .addDropdown(dropdown => dropdown
-                .addOptions(Object.fromEntries(
-                    Object.keys(DEFAULT_MAPS.flags).map(key => [key, key])
-                ))
-                .setValue(this.plugin.settings.defaultFlagMap)
-                .onChange(async (value) => {
-                    this.plugin.settings.defaultFlagMap = value as keyof typeof DEFAULT_MAPS.flags;
-                    await this.plugin.saveSettings();
-                }));
+        // new Setting(containerEl)
+        //     .setName('Default Flag Map')
+        //     .setDesc('Choose the default flag map for new focus trackers')
+        //     .addDropdown(dropdown => dropdown
+        //         .addOptions(Object.fromEntries(
+        //             Object.keys(DEFAULT_MAPS.flags).map(key => [key, key])
+        //         ))
+        //         .setValue(this.plugin.settings.defaultFlagMap)
+        //         .onChange(async (value) => {
+        //             this.plugin.settings.defaultFlagMap = value as keyof typeof DEFAULT_MAPS.flags;
+        //             await this.plugin.saveSettings();
+        //         }));
 
         this.createDualInputSetting(
             containerEl,

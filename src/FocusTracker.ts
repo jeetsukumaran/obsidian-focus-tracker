@@ -73,12 +73,12 @@ export default class FocusTracker {
             let postfixColumns = this.processColumnConfig(parsedConfig['postfix-columns']);
 
             const ratingMapKey = parsedConfig['rating-map'] || this.settings.defaultRatingMap;
-            const flagMapKey = parsedConfig['flag-map'] || this.settings.defaultFlagMap;
+            // const flagMapKey = parsedConfig['flag-map'] || this.settings.defaultFlagMap;
 
             const ratingMap = DEFAULT_MAPS.ratings[ratingMapKey] ||
                             DEFAULT_MAPS.ratings[this.settings.defaultRatingMap];
-            const flagMap = DEFAULT_MAPS.flags[flagMapKey] ||
-                            DEFAULT_MAPS.flags[this.settings.defaultFlagMap];
+            // const flagMap = DEFAULT_MAPS.flags[flagMapKey] ||
+            //                 DEFAULT_MAPS.flags[this.settings.defaultFlagMap];
 
             return {
                 ...DEFAULT_CONFIGURATION(),
@@ -87,8 +87,8 @@ export default class FocusTracker {
                 infixColumns,
                 postfixColumns,
                 ratingSymbols: ratingMap.symbols,
-                flagSymbols: flagMap.symbols,
-                flagKeys: flagMap.keys,
+                // flagSymbols: flagMap.symbols,
+                // flagKeys: flagMap.keys,
                 daysInPast: Math.max(
                     this.settings.minDaysPast,
                     parsedConfig['days-past'] || this.settings.defaultDaysPast
@@ -185,12 +185,12 @@ export default class FocusTracker {
         return this._ratingSymbols;
     }
 
-    public get flagSymbols(): string[] {
-        if (!this._flagSymbols) {
-            this._flagSymbols = [...this.configuration.flagSymbols];
-        }
-        return this._flagSymbols;
-    }
+    // public get flagSymbols(): string[] {
+    //     if (!this._flagSymbols) {
+    //         this._flagSymbols = [...this.configuration.flagSymbols];
+    //     }
+    //     return this._flagSymbols;
+    // }
 
     private async renderFocusLogs(
         path: string,
@@ -374,15 +374,16 @@ export default class FocusTracker {
             result.hasValue = false;
         } else {
             result.hasValue = true;
+            result.tooltip = `Rating: ${result.focusRatingValue}`;
             if (result.focusRatingValue >= 1) {
                 result.ratingSymbol = this.getSymbol(this.ratingSymbols, result.focusRatingValue - 1);
-                result.tooltip = `Rating: ${result.focusRatingValue}`;
             } else {
-                let arrayIndex = (-1 * result.focusRatingValue) - 1;
-                result.ratingSymbol = this.getSymbol(this.flagSymbols, arrayIndex);
-                let flagKey = this.configuration.flagKeys?.[arrayIndex];
-                let flagDesc = flagKey ? `: ${flagKey}` : "";
-                result.tooltip = `Flag ${-1 * result.focusRatingValue}${flagDesc}`;
+                result.ratingSymbol = "⭕"
+                // let arrayIndex = (-1 * result.focusRatingValue) - 1;
+                // result.ratingSymbol = this.getSymbol(this.flagSymbols, arrayIndex);
+                // let flagKey = this.configuration.flagKeys?.[arrayIndex];
+                // let flagDesc = flagKey ? `: ${flagKey}` : "";
+                // result.tooltip = `Flag ${-1 * result.focusRatingValue}${flagDesc}`;
             }
         }
 
@@ -409,7 +410,7 @@ export default class FocusTracker {
             newValue = 1;
         } else {
             newValue = (currentValue < 0 ? (0 - currentValue) : currentValue) + 1;
-            const maxScaleIndex = currentValue < 0 ? this.flagSymbols.length : this.ratingSymbols.length;
+            const maxScaleIndex = this.ratingSymbols.length;
             newValue = newValue > maxScaleIndex ? 0 : newValue;
             newValue = currentValue < 0 ? 0 - newValue : newValue;
         }

@@ -9,8 +9,6 @@ export interface FocusTrackerConfiguration {
     lastDisplayedDate: string;
     logPropertyName: string;
     ratingSymbols: string[];
-    flagSymbols: string[];
-    flagKeys: string[];
     titlePropertyNames: string[];
     daysInPast: number;
     daysInFuture: number;
@@ -26,7 +24,7 @@ export interface FocusTrackerConfiguration {
 
 export interface FocusTrackerSettings {
     defaultRatingMap: string;
-    defaultFlagMap: string;
+    // defaultFlagMap: string;
     defaultDaysPast: number;
     defaultDaysFuture: number;
     minDaysPast: number;
