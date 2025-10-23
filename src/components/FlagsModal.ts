@@ -21,7 +21,7 @@ export class FlagsModal extends Modal {
         contentEl.createEl('h3', { text: 'Add / Remove Flags' });
 
         const instructions = contentEl.createEl('div', { cls: 'flags-modal-instructions' });
-        instructions.setText('Double-click items on the left to remove; double-click items on the right to add.');
+        instructions.setText('Click items on the left to remove; click items on the right to add.');
 
         // Two column layout: left = current, right = available
         const cols = contentEl.createDiv({ cls: 'flags-modal-columns' });
@@ -38,8 +38,7 @@ export class FlagsModal extends Modal {
             selectedList.empty();
             this.selectedFlags.forEach((f, idx) => {
                 const el = selectedList.createEl('button', { cls: 'flag-chip', text: f });
-                // double-click to remove
-                el.ondblclick = () => {
+                el.onclick = () => {
                     this.selectedFlags.splice(idx, 1);
                     refreshSelected();
                 };
@@ -65,8 +64,7 @@ export class FlagsModal extends Modal {
                     const key = flagMap.keys[index];
                     if (key) button.setAttribute('title', key);
 
-                    // double-click to add (no duplicates)
-                    button.ondblclick = () => {
+                    button.onclick = () => {
                         if (!this.selectedFlags.includes(symbol)) {
                             this.selectedFlags.push(symbol);
                             refreshSelected();
