@@ -39,11 +39,12 @@ export const DEFAULT_MAPS = {
                 ["🏁", "Get started"],
                 ["📈", "Make progress"],
                 ["🐂", "Yak shaving"],
+                ["🍰", "Reward"],
             ]
         },
         "Outcome type": {
             flags: [
-                ["🏆", "Champion"],
+                ["🏆", "Championic"],
                 ["🏅", "Heroic"],
                 ["✅", "Success"],
                 ["🪜", "Made progress"],
