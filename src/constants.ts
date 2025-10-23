@@ -20,7 +20,7 @@ export const DEFAULT_MAPS = {
         }
     } as Record<string, RatingMap>,
     flags: {
-        activity: {
+        "Activity type": {
             symbols: [
                 "🏯",
                 "🔮",
@@ -38,7 +38,7 @@ export const DEFAULT_MAPS = {
                 "Other",
             ],
         },
-        planning: {
+        "Commitment type": {
             symbols: [
                 "🚀",
                 // "🏹",
@@ -59,7 +59,7 @@ export const DEFAULT_MAPS = {
                 "Yak shaving",
             ]
         },
-        results: {
+        "Outcome type": {
             symbols: [
                 // "👑",
                 // "🗿",
