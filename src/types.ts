@@ -49,9 +49,9 @@ export interface RatingMap {
     symbols: string[];
 }
 
+export type FlagDefinition = [symbol: string, key: string];
 export interface FlagMap {
-    symbols: string[];
-    keys: string[];
+    flags: FlagDefinition[];
 }
 
 // export type FocusLogsType = Record<string, number | string | FocusLogEntry>;

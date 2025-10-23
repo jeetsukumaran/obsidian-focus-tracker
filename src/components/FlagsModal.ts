@@ -56,12 +56,11 @@ export class FlagsModal extends Modal {
                 });
                 const paletteGrid = paletteGroupContainer.createDiv({ cls: 'flags-palette-grid' });
 
-                flagMap.symbols.forEach((symbol, index) => {
+                flagMap.flags.forEach(([symbol, key]) => {
                     const button = paletteGrid.createEl('button', { 
                         cls: 'flag-palette-item', 
                         text: symbol,
                     });
-                    const key = flagMap.keys[index];
                     if (key) button.setAttribute('title', key);
 
                     button.onclick = () => {
