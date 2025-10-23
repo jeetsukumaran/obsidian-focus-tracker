@@ -224,8 +224,8 @@ body {
 }
 
 .focus-tracker__cell--focal-date {
-    /* background-color: var(--focustracker-focal-date-color) !important; */
-    /* border: solid 1px var(--focustracker-focal-date-color); */
+    /* keep rule non-empty so linters don't complain; visuals handled via header pseudo-elements */
+    background-color: transparent;
 }
 
 .focus-tracker__cell--future {
@@ -247,8 +247,6 @@ body {
     left: 50%;
     transform: translateX(-50%);
     font-size: 8px;
-}
-.focus-tracker__header .focus-tracker__cell--today::after {
 }
 .focus-tracker__header .focus-tracker__cell--focal-date::after {
     border-top: solid 2px;
@@ -433,5 +431,87 @@ body {
 .focus-tracker__cell.focus-tracker__cell > p > a
 {
     color: var(--text-normal);
+}
+
+/* Flags Modal Styles */
+.flags-modal-instructions {
+    margin-bottom: 1.5em;
+    color: var(--text-muted);
+    font-size: 0.9em;
+}
+
+.flags-modal-columns {
+    display: flex;
+    gap: 2em;
+    margin-bottom: 2em;
+}
+
+.flags-modal-column {
+    flex: 1;
+}
+
+.flags-modal-column label {
+    font-weight: 600;
+    display: block;
+    margin-bottom: 1em;
+    color: var(--text-normal);
+}
+
+.flags-selected-list,
+.flags-palette-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5em;
+}
+
+.flag-chip,
+.flag-palette-item {
+    background-color: var(--background-primary);
+    border: 1px solid var(--background-modifier-border);
+    border-radius: 4px;
+    padding: 0.3em 0.6em;
+    cursor: pointer;
+    font-size: 1.1em;
+    line-height: 1;
+}
+
+.flag-chip:hover,
+.flag-palette-item:hover {
+    background-color: var(--background-modifier-hover);
+}
+
+.flags-palette-group {
+    margin-bottom: 1.5em;
+}
+
+.flags-palette-group-label {
+    font-weight: 600;
+    margin-bottom: 0.8em;
+    color: var(--text-normal);
+}
+
+.flags-modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.8em;
+    margin-top: 2em;
+    padding-top: 1em;
+    border-top: 1px solid var(--background-modifier-border);
+}
+
+.flags-modal-footer .setting-item {
+    border: none;
+    padding: 0;
+    margin: 0;
+}
+
+.flags-modal-footer button {
+    min-width: 80px;
+}
+
+/* Override Obsidian's default Setting margins in the modal footer */
+.flags-modal-footer .setting-item-control {
+    padding: 0;
+    margin: 0;
 }
 
