@@ -40,6 +40,7 @@ export const DEFAULT_MAPS = {
                 ["📈", "Make progress"],
                 ["🐂", "Yak shaving"],
                 ["🍰", "Reward"],
+                ["🌀", "Unplanned"],
             ]
         },
         "Outcome type": {
@@ -48,9 +49,8 @@ export const DEFAULT_MAPS = {
                 ["🏅", "Heroic"],
                 ["✅", "Success"],
                 ["🪜", "Made progress"],
+                ["🚧", "Infrastructure"],
                 ["⌛", "Clocked in the time"],
-                ["🐂", "Yak-shaving"],
-                ["🚧", "In-progress"],
                 ["⚠️", "Broken"],
                 ["⏩", "Forwarded"],
                 ["❎", "Canceled"],
