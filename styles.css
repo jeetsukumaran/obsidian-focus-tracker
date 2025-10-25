@@ -1,7 +1,7 @@
 body {
     /* Base sizing and typography */
     --focustracker-cell-fontfamily: "Ubuntu", sans-serif;
-    --focustracker-cell-font-size: 13px;
+    --focustracker-cell-font-size: 0.8em;
 
     /* Component dimensions */
     --focustracker-border-width: 1px;
@@ -20,7 +20,8 @@ body {
     --focustracker-header-border-color: var(--background-modifier-border);
     --focustracker-bottom-border-color: var(--background-modifier-border);
     --focustracker-date-column-spacing: 4px;
-    --focustracker-date-column-borders: 0px solid var(--background-modifier-border);
+    /* --focustracker-date-column-borders: 1px solid var(--background-modifier-border); */
+    --focustracker-date-column-borders: 1px solid var(--background-modifier-border);
 
     /* Special states */
     /* --focustracker-today-column-color: var(--background-modifier-success); */
@@ -197,6 +198,8 @@ body {
 
 .focus-tracker__cell--prefix {
     border-right: 1px solid var(--background-modifier-border);
+    font-family: var(--focustracker-cell-fontfamily);
+    font-size: var(--focustracker-cell-font-size);
 }
 
 .focus-tracker__cell--infix {
