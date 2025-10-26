@@ -41,6 +41,7 @@ export const DEFAULT_MAPS = {
                 ["🦬", "Yak shaving"],
                 ["🍰", "Reward"],
                 ["🌀", "Unplanned"],
+                ["❗", "Should have"],
             ]
         },
         "Outcome type": {
