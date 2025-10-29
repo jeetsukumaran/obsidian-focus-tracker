@@ -58,6 +58,9 @@ export const DEFAULT_MAPS = {
                 ["⛔", "Blocked"],
                 ["📦", "Boxed"],
                 ["🚩", "Fail"],
+                ["👻", "Ghosts"],
+                ["👺", "Goblins"],
+                ["👹", "Ogres"],
             ]
         },
         // academic: {
