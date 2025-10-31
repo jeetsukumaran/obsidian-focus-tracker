@@ -665,16 +665,9 @@ export default class FocusTracker {
         } else {
             cellContainer.addClass("focus-tracker__cell-container--no-flags")
         }
-
-        // Create rating symbol column
-        const ratingSymbolColumn = cellContainer.createEl('div', {
-            cls: 'focus-cell-rating',
-            text: config.ratingSymbol || "⚪",
-        });
-
         // Create flags column if there are flags
         if (config.flagSymbols && config.flagSymbols.length > 0) {
-            const flagsColumn = ratingSymbolColumn.createEl('div', {
+            const flagsColumn = cellContainer.createEl('div', {
                 cls: 'focus-cell-flags',
             });
             // Add each flag as a separate div
@@ -685,6 +678,13 @@ export default class FocusTracker {
                 });
             });
         }
+        // Create rating symbol column
+        const ratingSymbolColumn = cellContainer.createEl('div', {
+            cls: 'focus-cell-rating',
+            text: config.ratingSymbol || "⚪",
+        });
+
+
 
         focusCell.addEventListener("click", (e: MouseEvent) => {
             if (e.altKey) {
