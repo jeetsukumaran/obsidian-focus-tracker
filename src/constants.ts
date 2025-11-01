@@ -57,7 +57,7 @@ export const DEFAULT_MAPS = {
                 ["❎", "Canceled"],
                 ["⛔", "Blocked"],
                 ["📦", "Boxed"],
-                ["🚩", "Fail"],
+                ["🚩", "Failed"],
                 ["👻", "Ghosts"],
                 ["👺", "Goblins"],
                 ["👹", "Ogres"],

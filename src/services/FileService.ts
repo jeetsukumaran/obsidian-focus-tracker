@@ -61,43 +61,6 @@ export class FileService {
         return normalizeLogs(fmLogs);
     }
 
-    async setFocusEntry(path: string, date: string, entry: any): Promise<void> {
-        const file = this.app.vault.getAbstractFileByPath(path);
-        if (!file || !(file instanceof TFile)) {
-            new Notice(`${PLUGIN_NAME}: No file found for path: ${path}`);
-            return;
-        }
-
-        try {
-            const content = await this.app.vault.read(file);
-            const sections = content.split('---');
-            if (sections.length < 3) {
-                new Notice(`${PLUGIN_NAME}: Invalid frontmatter in file: ${path}`);
-                return;
-            }
-
-            let frontmatter = parseYaml(sections[1]) || {};
-            if (!frontmatter.focus_log) {
-                frontmatter.focus_log = {};
-            }
-            frontmatter.focus_log[date] = entry;
-
-            const newContent = [
-                sections[0],
-                '---\n',
-                Object.entries(frontmatter)
-                    .map(([key, value]) => `${key}: ${JSON.stringify(value, null, 2)}`)
-                    .join('\n'),
-                '\n---',
-                ...sections.slice(2)
-            ].join('');
-
-            await this.app.vault.modify(file, newContent);
-        } catch (error) {
-            new Notice(`${PLUGIN_NAME}: Failed to update focus entry: ${error}`);
-        }
-    }
-
     loadFiles(config: FocusTrackerConfiguration): TFile[] {
         // Ensure config and its properties exist
         if (!config) {
