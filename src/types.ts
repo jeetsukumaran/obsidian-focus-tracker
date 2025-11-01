@@ -31,10 +31,12 @@ export interface FocusTrackerSettings {
     minDaysFuture: number;
 }
 
+export type FlagEntry = string | [string, string];
+
 export interface FocusLogEntry {
     rating: number;
-    "pre-flags"?: string[],
-    "post-flags"?: string[],
+    "pre-flags"?: FlagEntry[],
+    "post-flags"?: FlagEntry[],
     remarks?: string;
 }
 

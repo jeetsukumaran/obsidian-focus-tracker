@@ -1,19 +1,27 @@
 import { App, Modal, Setting } from 'obsidian';
-
+import { FlagEntry } from '../types';
 import {
     DEFAULT_MAPS
 } from "../constants";
 
 export class FlagsModal extends Modal {
-    private selectedFlags: string[];
-    private onSave: (flags: string[]) => void;
-    private originalFlags: string[];
+    private selectedFlags: FlagEntry[];
+    private onSave: (flags: FlagEntry[]) => void;
+    private originalFlags: FlagEntry[];
 
-    constructor(app: App, initialFlags: string[] = [], onSave?: (flags: string[]) => void) {
+    constructor(app: App, initialFlags: FlagEntry[] = [], onSave?: (flags: FlagEntry[]) => void) {
         super(app);
         this.originalFlags = [...initialFlags];
         this.selectedFlags = [...initialFlags];
         this.onSave = onSave ?? (() => {});
+    }
+
+    private getFlagDisplay(flag: FlagEntry): { text: string; title?: string } {
+        if (Array.isArray(flag)) {
+            const [symbol, label] = flag;
+            return { text: symbol, title: `${symbol}  ${label}` };
+        }
+        return { text: flag };
     }
 
     onOpen() {
@@ -37,7 +45,9 @@ export class FlagsModal extends Modal {
         const refreshSelected = () => {
             selectedList.empty();
             this.selectedFlags.forEach((f, idx) => {
-                const el = selectedList.createEl('button', { cls: 'flag-chip', text: f });
+                const display = this.getFlagDisplay(f);
+                const el = selectedList.createEl('button', { cls: 'flag-chip', text: display.text });
+                if (display.title) el.setAttribute('title', display.title);
                 el.onclick = () => {
                     this.selectedFlags.splice(idx, 1);
                     refreshSelected();
@@ -64,8 +74,11 @@ export class FlagsModal extends Modal {
                     if (key) button.setAttribute('title', key);
 
                     button.onclick = () => {
-                        if (!this.selectedFlags.includes(symbol)) {
-                            this.selectedFlags.push(symbol);
+                        const flagEntry: FlagEntry = [symbol, key];
+                        if (!this.selectedFlags.some(f => 
+                            Array.isArray(f) ? f[0] === symbol : f === symbol
+                        )) {
+                            this.selectedFlags.push(flagEntry);
                             refreshSelected();
                         }
                     };
