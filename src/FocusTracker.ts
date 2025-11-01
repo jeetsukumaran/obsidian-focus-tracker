@@ -665,11 +665,10 @@ export default class FocusTracker {
         } else {
             cellContainer.addClass("focus-tracker__cell-container--no-flags")
         }
-        // Create flags column if there are flags
+        const flagsColumn = cellContainer.createEl('div', {
+            cls: 'focus-cell-flags',
+        });
         if (config.flagSymbols && config.flagSymbols.length > 0) {
-            const flagsColumn = cellContainer.createEl('div', {
-                cls: 'focus-cell-flags',
-            });
             // Add each flag as a separate div
             config.flagSymbols.forEach(flag => {
                 flagsColumn.createEl('div', {
