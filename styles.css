@@ -176,7 +176,7 @@ body {
 }
 
 .focus-tracker__header .focus-tracker__cell {
-    font-size: 80%;
+    /* font-size: 80%; */
     padding-bottom: 0.3rem;
     text-align: center;
     font-weight: 600;
@@ -308,8 +308,8 @@ body {
 
 .focus-cell-flags {
     padding: 0;
-    height: 2em;
-    width: 4em;
+    height: 1.5em;
+    width: 3em;
     display: flex;
     flex-direction: row;
     /* align-items: flex-start; */
@@ -317,7 +317,9 @@ body {
     /* justify-content: flex-start; */
     align-items: center;
     justify-content: center;
-    font-size: 0.8em;
+    /* font-size: 0.8em; */
+    /* font-size: var(--focustracker-cell-font-size); */
+    font-size: 1em;
     line-height: 1.4;
     /* filter: contrast(200%) saturate(200%);  */
     border-radius: 4px;
