@@ -31,12 +31,12 @@ export interface FocusTrackerSettings {
     minDaysFuture: number;
 }
 
-export type FlagEntry = string | [string, string];
+export type FlagTuple = [emoji: string, label: string];
 
 export interface FocusLogEntry {
     rating: number;
-    "pre-flags"?: FlagEntry[],
-    "post-flags"?: FlagEntry[],
+    "pre-flags"?: (string | FlagTuple)[],
+    "post-flags"?: (string | FlagTuple)[],
     remarks?: string;
 }
 
