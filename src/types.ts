@@ -33,8 +33,8 @@ export interface FocusTrackerSettings {
 
 export interface FocusLogEntry {
     rating: number;
-    planningFlags?: string[],
-    resultFlags?: string[],
+    "pre-flags"?: string[],
+    "post-flags"?: string[],
     remarks?: string;
 }
 

@@ -43,8 +43,8 @@ export default class FocusTracker {
     public id: string;
     public rootElement: HTMLElement;
     private _ratingSymbols: string[];
-    private _planningFlagSymbols: string[];
-    private _resultFlagSymbols: string[];
+    private _preFlagSymbols: string[];
+    private _postFlagSymbols: string[];
 
     constructor(
         src: string,
@@ -328,8 +328,8 @@ export default class FocusTracker {
     private getDisplayValues(entry: number | string | FocusLogEntry): {
         hasValue: boolean;
         ratingSymbol: string;
-        planningFlagSymbols: string[];
-        resultFlagSymbols: string[];
+        preFlagSymbols: string[];
+        postFlagSymbols: string[];
         tooltip: string;
         focusRatingValue: number;
         remarks?: string;
@@ -337,8 +337,8 @@ export default class FocusTracker {
         let result = {
             hasValue: false,
             ratingSymbol: "",
-            planningFlagSymbols: [] as string[],
-            resultFlagSymbols: [] as string[],
+            preFlagSymbols: [] as string[],
+            postFlagSymbols: [] as string[],
             tooltip: "",
             focusRatingValue: 0,
             remarks: undefined as string | undefined
@@ -347,8 +347,8 @@ export default class FocusTracker {
         if (typeof entry === 'object' && entry !== null) {
             result.focusRatingValue = entry.rating;
             result.remarks = entry.remarks;
-            result.planningFlagSymbols = normalizeFlags(entry.planningFlags)
-            result.resultFlagSymbols = normalizeFlags(entry.resultFlags)
+            result.preFlagSymbols = normalizeFlags(entry["pre-flags"])
+            result.postFlagSymbols = normalizeFlags(entry["post-flags"])
         } else if (typeof entry === 'number') {
             result.focusRatingValue = entry;
         } else if (typeof entry === 'string') {
@@ -425,7 +425,7 @@ export default class FocusTracker {
                 .onClick(() => {
                     // read current flags from element attributes if available
                     const activeEl = (document.querySelector(`[focusTrackerPath="${path}"][date="${dateString}"]`) as HTMLElement) || null;
-                    const currentFlagsAttr = activeEl ? activeEl.getAttribute('planningFlags') || '' : '';
+                    const currentFlagsAttr = activeEl ? activeEl.getAttribute('preFlags') || '' : '';
                     const currentFlags = currentFlagsAttr ? Array.from(currentFlagsAttr) : [];
                     new FlagsModal(this.app, currentFlags, async (flags: string[]) => {
                         await this.setFocusEntry(
@@ -446,7 +446,7 @@ export default class FocusTracker {
                 .setIcon('flag')
                 .onClick(() => {
                     const activeEl = (document.querySelector(`[focusTrackerPath="${path}"][date="${dateString}"]`) as HTMLElement) || null;
-                    const currentFlagsAttr = activeEl ? activeEl.getAttribute('resultFlags') || '' : '';
+                    const currentFlagsAttr = activeEl ? activeEl.getAttribute('postFlags') || '' : '';
                     const currentFlags = currentFlagsAttr ? Array.from(currentFlagsAttr) : [];
                     new FlagsModal(this.app, currentFlags, async (flags: string[]) => {
                         await this.setFocusEntry(
@@ -551,19 +551,19 @@ export default class FocusTracker {
             if (typeof currentEntry === 'object' && currentEntry !== null) {
                 newEntry = { ...currentEntry };
             } else if (typeof currentEntry === 'number') {
-                newEntry = { rating: currentEntry, planningFlags: [] as string[], resultFlags: []};
+                newEntry = { rating: currentEntry, "pre-flags": [] as string[], "post-flags": []};
             } else {
-                newEntry = { rating: 0, planningFlags: [] as string[], resultFlags: []};
+                newEntry = { rating: 0, "pre-flags": [] as string[], "post-flags": []};
             }
 
             if (newRating !== undefined) {
                 newEntry.rating = newRating;
             }
             if (newPlanningFlags !== undefined) {
-                newEntry.planningFlags = newPlanningFlags;
+                newEntry["pre-flags"] = newPlanningFlags;
             }
             if (newResultFlags !== undefined) {
-                newEntry.resultFlags = newResultFlags;
+                newEntry["post-flags"] = newResultFlags;
             }
             if (remarks !== undefined) {
                 if (remarks.trim() === '') {
@@ -614,8 +614,8 @@ export default class FocusTracker {
             const {
                 hasValue,
                 ratingSymbol,
-                planningFlagSymbols,
-                resultFlagSymbols,
+                preFlagSymbols,
+                postFlagSymbols,
                 tooltip,
                 focusRatingValue,
                 remarks
@@ -633,8 +633,8 @@ export default class FocusTracker {
                 focusRatingValue,
                 remarks,
                 ratingSymbol,
-                planningFlagSymbols,
-                resultFlagSymbols,
+                preFlagSymbols,
+                postFlagSymbols,
                 currentDate,
                 today
             });
@@ -652,8 +652,8 @@ export default class FocusTracker {
             focusRatingValue: number;
             remarks?: string;
             ratingSymbol: string;
-            planningFlagSymbols: string[];
-            resultFlagSymbols: string[];
+            preFlagSymbols: string[];
+            postFlagSymbols: string[];
             currentDate: Date;
             today: Date;
         }
@@ -666,65 +666,65 @@ export default class FocusTracker {
         if (config.remarks) {
             focusCell.setAttribute("focusRemarks", config.remarks);
         }
-        if (config.planningFlagSymbols && config.planningFlagSymbols.length > 0) {
-            // store planningFlags as a joined string so they can be returned and edited
-            focusCell.setAttribute('planningFlags', config.planningFlagSymbols.join(''));
+        if (config.preFlagSymbols && config.preFlagSymbols.length > 0) {
+            // store preFlags as a joined string so they can be returned and edited
+            focusCell.setAttribute('preFlags', config.preFlagSymbols.join(''));
         } else {
-            focusCell.setAttribute('planningFlags', '');
+            focusCell.setAttribute('preFlags', '');
         }
-        if (config.resultFlagSymbols && config.resultFlagSymbols.length > 0) {
-            // store resultFlags as a joined string so they can be returned and edited
-            focusCell.setAttribute('resultFlags', config.resultFlagSymbols.join(''));
+        if (config.postFlagSymbols && config.postFlagSymbols.length > 0) {
+            // store postFlags as a joined string so they can be returned and edited
+            focusCell.setAttribute('postFlags', config.postFlagSymbols.join(''));
         } else {
-            focusCell.setAttribute('resultFlags', '');
+            focusCell.setAttribute('postFlags', '');
         }
 
         const cellContainer = focusCell.createEl('div', {
             cls: 'focus-cell-container',
         });
-        const planningFlagsColumn = cellContainer.createEl('div', {
+        const preFlagsColumn = cellContainer.createEl('div', {
             cls: 'focus-cell-flags',
         });
         const ratingSymbolColumn = cellContainer.createEl('div', {
             cls: 'focus-cell-rating',
             text: config.ratingSymbol || "⚪",
         });
-        const resultFlagsColumn = cellContainer.createEl('div', {
+        const postFlagsColumn = cellContainer.createEl('div', {
             cls: 'focus-cell-flags',
         });
 
 
-        if (config.planningFlagSymbols && config.planningFlagSymbols.length > 0) {
+        if (config.preFlagSymbols && config.preFlagSymbols.length > 0) {
             cellContainer.addClass("focus-tracker__cell-container--has-flags")
-            planningFlagsColumn.addClass("focus-tracker__flags-cell--has-flags")
+            preFlagsColumn.addClass("focus-tracker__flags-cell--has-flags")
         } else {
             cellContainer.addClass("focus-tracker__cell-container--no-flags")
-            planningFlagsColumn.addClass("focus-tracker__flags-cell--no-flags")
+            preFlagsColumn.addClass("focus-tracker__flags-cell--no-flags")
         }
-        if (config.planningFlagSymbols && config.planningFlagSymbols.length > 0) {
-            // Add each planningFlag as a separate div
-            config.planningFlagSymbols.forEach(planningFlag => {
-                planningFlagsColumn.createEl('div', {
+        if (config.preFlagSymbols && config.preFlagSymbols.length > 0) {
+            // Add each preFlag as a separate div
+            config.preFlagSymbols.forEach(preFlag => {
+                preFlagsColumn.createEl('div', {
                     cls: 'focus-cell-flags',
-                    text: planningFlag
+                    text: preFlag
                 });
             });
         }
 
 
-        if (config.resultFlagSymbols && config.resultFlagSymbols.length > 0) {
+        if (config.postFlagSymbols && config.postFlagSymbols.length > 0) {
             cellContainer.addClass("focus-tracker__cell-container--has-flags")
-            resultFlagsColumn.addClass("focus-tracker__flags-cell--has-flags")
+            postFlagsColumn.addClass("focus-tracker__flags-cell--has-flags")
         } else {
             cellContainer.addClass("focus-tracker__cell-container--no-flags")
-            resultFlagsColumn.addClass("focus-tracker__flags-cell--no-flags")
+            postFlagsColumn.addClass("focus-tracker__flags-cell--no-flags")
         }
-        if (config.resultFlagSymbols && config.resultFlagSymbols.length > 0) {
-            // Add each resultFlag as a separate div
-            config.resultFlagSymbols.forEach(resultFlag => {
-                resultFlagsColumn.createEl('div', {
+        if (config.postFlagSymbols && config.postFlagSymbols.length > 0) {
+            // Add each postFlag as a separate div
+            config.postFlagSymbols.forEach(postFlag => {
+                postFlagsColumn.createEl('div', {
                     cls: 'focus-cell-flags',
-                    text: resultFlag
+                    text: postFlag
                 });
             });
         }
