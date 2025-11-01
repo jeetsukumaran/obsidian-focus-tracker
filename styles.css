@@ -14,16 +14,15 @@ body {
     --focustracker-tick-color: var(--checkbox-color);
     --focustracker-tick-hover-color: var(--color-base-30);
     --focustracker-row-hover-color: var(--color-base-10);
-    /* --focustracker-flag-container-background-color: var(--background-primary); */
 
     /* Layout configuration */
     --focustracker-alternate-row-color: var(--background-secondary-alt);
     --focustracker-date-column-spacing: 4px;
     /* --focustracker-date-column-border-color: 1px solid var(--focustracker-column-border-color); */
-    --focustracker-header-border-color: 1px solid var(--background-primary);
-    --focustracker-bottom-border-color: 1px solid var(--background-primary);
-    --focustracker-column-border-color: 1px solid var(--background-primary);
-    --focustracker-date-column-border-color: 1px solid var(--background-primary);
+    --focustracker-header-border-color: 1px solid var(--background-secondary);
+    --focustracker-bottom-border-color: 1px solid var(--background-secondary);
+    --focustracker-column-border-color: 1px solid var(--background-secondary);
+    --focustracker-date-column-border-color: 1px solid var(--background-secondary);
 
     /* Special states */
     /* --focustracker-today-column-color: var(--background-modifier-success); */
@@ -38,6 +37,8 @@ body {
     --focustracker-weekend-color: #00000020;
     --today-column-text-color: var(--text-muted);
     --focustracker-alternate-row-color: rgba(0, 0, 0, 0.1);
+    --focustracker-flag-container-background-color: #ffffff66;
+    --focustracker-flag-container-empty-background-color: #ffffff22;
 }
 
 .theme-dark {
@@ -45,6 +46,8 @@ body {
     --focustracker-weekend-color: #ffffff10;
     --focustracker-alternate-row-color: rgba(255, 255, 255, 0.1);
     --today-column-text-color: var(--text-muted);
+    --focustracker-flag-container-background-color: #00000099;
+    --focustracker-flag-container-empty-background-color: #00000044;
 }
 
 /* Main Container */
@@ -313,9 +316,17 @@ body {
     line-height: 1.5;
     /* filter: contrast(200%) saturate(200%);  */
     border-radius: 4px;
-    background-color: var(--focustracker-flag-container-background-color);
 }
 
+
+.focus-tracker__flags-cell--has-flags {
+    /* border-left: 1px solid #00000022;
+    border-right: 1px solid #00000022; */
+    background-color: var(--focustracker-flag-container-background-color);
+}
+.focus-tracker__flags-cell--no-flags {
+    background-color: var(--focustracker-flag-container-empty-background-color);
+}
 
 .focus-cell-rating {
     display: flex;

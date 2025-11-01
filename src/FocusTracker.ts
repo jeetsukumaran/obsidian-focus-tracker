@@ -660,14 +660,16 @@ export default class FocusTracker {
         const cellContainer = focusCell.createEl('div', {
             cls: 'focus-cell-container',
         });
-        if (config.flagSymbols && config.flagSymbols.length > 0) {
-            cellContainer.addClass("focus-tracker__cell-container--has-flags")
-        } else {
-            cellContainer.addClass("focus-tracker__cell-container--no-flags")
-        }
         const flagsColumn = cellContainer.createEl('div', {
             cls: 'focus-cell-flags',
         });
+        if (config.flagSymbols && config.flagSymbols.length > 0) {
+            cellContainer.addClass("focus-tracker__cell-container--has-flags")
+            flagsColumn.addClass("focus-tracker__flags-cell--has-flags")
+        } else {
+            cellContainer.addClass("focus-tracker__cell-container--no-flags")
+            flagsColumn.addClass("focus-tracker__flags-cell--no-flags")
+        }
         if (config.flagSymbols && config.flagSymbols.length > 0) {
             // Add each flag as a separate div
             config.flagSymbols.forEach(flag => {
