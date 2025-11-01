@@ -284,13 +284,19 @@ body {
 
 /* New CSS for the focus cell layout */
 .focus-cell-container {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 0px;
+    /* display: grid;
+    grid-template-columns: 1fr;
+    display: flex;
+    flex-direction: row; */
+    display: flex;
+    flex-direction: column; /* stack items vertically */
+    align-items: center;    /* center horizontally */
+    justify-content: center;/* center vertically */
+    gap: 1em;
     align-items: center;
     justify-content: center;
-    height: 4.5em;
-    width: 4em;
+    padding-bottom: 3em;
+    padding-top: 0.5em;
 }
 
 
@@ -303,13 +309,13 @@ body {
 } */
 
 .focus-cell-flags {
-    height: 4.5em;
+    height: 2em;
+    width: 4em;
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     /* align-items: flex-start; */
     /* justify-items: flex-start; */
     /* justify-content: flex-start; */
-    width: 2em;
     align-items: center;
     justify-content: center;
     padding: 0;
@@ -331,6 +337,7 @@ body {
     background-color: var(--focustracker-flag-container-empty-background-color);
 }
 
+
 .focus-cell-rating {
     display: flex;
     justify-content: center;
@@ -341,7 +348,6 @@ body {
     font-size: 1.0em;
     width: 2em;
 }
-
 
 /*
 .theme-light .focus-tick--false::before {

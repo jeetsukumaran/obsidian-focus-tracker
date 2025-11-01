@@ -73,12 +73,9 @@ export default class FocusTracker {
             let postfixColumns = this.processColumnConfig(parsedConfig['postfix-columns']);
 
             const ratingMapKey = parsedConfig['rating-map'] || this.settings.defaultRatingMap;
-            // const flagMapKey = parsedConfig['flag-map'] || this.settings.defaultFlagMap;
 
             const ratingMap = DEFAULT_MAPS.ratings[ratingMapKey] ||
                             DEFAULT_MAPS.ratings[this.settings.defaultRatingMap];
-            // const flagMap = DEFAULT_MAPS.flags[flagMapKey] ||
-            //                 DEFAULT_MAPS.flags[this.settings.defaultFlagMap];
 
             return {
                 ...DEFAULT_CONFIGURATION(),
@@ -87,8 +84,6 @@ export default class FocusTracker {
                 infixColumns,
                 postfixColumns,
                 ratingSymbols: ratingMap.symbols,
-                // flagSymbols: flagMap.symbols,
-                // flagKeys: flagMap.keys,
                 daysInPast: Math.max(
                     this.settings.minDaysPast,
                     parsedConfig['days-past'] || this.settings.defaultDaysPast
@@ -184,13 +179,6 @@ export default class FocusTracker {
         }
         return this._ratingSymbols;
     }
-
-    // public get flagSymbols(): string[] {
-    //     if (!this._flagSymbols) {
-    //         this._flagSymbols = [...this.configuration.flagSymbols];
-    //     }
-    //     return this._flagSymbols;
-    // }
 
     private async renderFocusLogs(
         path: string,
@@ -379,11 +367,6 @@ export default class FocusTracker {
                 result.ratingSymbol = this.getSymbol(this.ratingSymbols, result.focusRatingValue - 1);
             } else {
                 result.ratingSymbol = "⭕"
-                // let arrayIndex = (-1 * result.focusRatingValue) - 1;
-                // result.ratingSymbol = this.getSymbol(this.flagSymbols, arrayIndex);
-                // let flagKey = this.configuration.flagKeys?.[arrayIndex];
-                // let flagDesc = flagKey ? `: ${flagKey}` : "";
-                // result.tooltip = `Flag ${-1 * result.focusRatingValue}${flagDesc}`;
             }
         }
 
@@ -656,13 +639,21 @@ export default class FocusTracker {
             focusCell.setAttribute('focusFlags', '');
         }
 
-        // Create a container for the layout
         const cellContainer = focusCell.createEl('div', {
             cls: 'focus-cell-container',
         });
         const flagsColumn = cellContainer.createEl('div', {
             cls: 'focus-cell-flags',
         });
+        const ratingSymbolColumn = cellContainer.createEl('div', {
+            cls: 'focus-cell-rating',
+            text: config.ratingSymbol || "⚪",
+        });
+        // const postFlagsColumn = cellContainer.createEl('div', {
+        //     cls: 'focus-cell-flags',
+        // });
+
+
         if (config.flagSymbols && config.flagSymbols.length > 0) {
             cellContainer.addClass("focus-tracker__cell-container--has-flags")
             flagsColumn.addClass("focus-tracker__flags-cell--has-flags")
@@ -679,12 +670,6 @@ export default class FocusTracker {
                 });
             });
         }
-        // Create rating symbol column
-        const ratingSymbolColumn = cellContainer.createEl('div', {
-            cls: 'focus-cell-rating',
-            text: config.ratingSymbol || "⚪",
-        });
-
 
 
         focusCell.addEventListener("click", (e: MouseEvent) => {
