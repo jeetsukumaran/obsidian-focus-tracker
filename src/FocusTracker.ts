@@ -43,7 +43,8 @@ export default class FocusTracker {
     public id: string;
     public rootElement: HTMLElement;
     private _ratingSymbols: string[];
-    private _flagSymbols: string[];
+    private _planningFlagSymbols: string[];
+    private _resultFlagSymbols: string[];
 
     constructor(
         src: string,
@@ -327,7 +328,8 @@ export default class FocusTracker {
     private getDisplayValues(entry: number | string | FocusLogEntry): {
         hasValue: boolean;
         ratingSymbol: string;
-        flagSymbols: string[];
+        planningFlagSymbols: string[];
+        resultFlagSymbols: string[];
         tooltip: string;
         focusRatingValue: number;
         remarks?: string;
@@ -335,7 +337,8 @@ export default class FocusTracker {
         let result = {
             hasValue: false,
             ratingSymbol: "",
-            flagSymbols: [] as string[],
+            planningFlagSymbols: [] as string[],
+            resultFlagSymbols: [] as string[],
             tooltip: "",
             focusRatingValue: 0,
             remarks: undefined as string | undefined
@@ -344,7 +347,8 @@ export default class FocusTracker {
         if (typeof entry === 'object' && entry !== null) {
             result.focusRatingValue = entry.rating;
             result.remarks = entry.remarks;
-            result.flagSymbols = normalizeFlags(entry.flags)
+            result.planningFlagSymbols = normalizeFlags(entry.planningFlags)
+            result.resultFlagSymbols = normalizeFlags(entry.resultFlags)
         } else if (typeof entry === 'number') {
             result.focusRatingValue = entry;
         } else if (typeof entry === 'string') {
@@ -416,17 +420,39 @@ export default class FocusTracker {
         // Flags editor
         menu.addItem((item) =>
             item
-                .setTitle('Set flags')
+                .setTitle('Set planning flags')
                 .setIcon('flag')
                 .onClick(() => {
                     // read current flags from element attributes if available
                     const activeEl = (document.querySelector(`[focusTrackerPath="${path}"][date="${dateString}"]`) as HTMLElement) || null;
-                    const currentFlagsAttr = activeEl ? activeEl.getAttribute('focusFlags') || '' : '';
+                    const currentFlagsAttr = activeEl ? activeEl.getAttribute('planningFlags') || '' : '';
                     const currentFlags = currentFlagsAttr ? Array.from(currentFlagsAttr) : [];
                     new FlagsModal(this.app, currentFlags, async (flags: string[]) => {
                         await this.setFocusEntry(
                             path,
                             dateString,
+                            undefined,
+                            flags,
+                            undefined,
+                            undefined,
+                        );
+                    }).open();
+                })
+        );
+
+        menu.addItem((item) =>
+            item
+                .setTitle('Set result flags')
+                .setIcon('flag')
+                .onClick(() => {
+                    const activeEl = (document.querySelector(`[focusTrackerPath="${path}"][date="${dateString}"]`) as HTMLElement) || null;
+                    const currentFlagsAttr = activeEl ? activeEl.getAttribute('resultFlags') || '' : '';
+                    const currentFlags = currentFlagsAttr ? Array.from(currentFlagsAttr) : [];
+                    new FlagsModal(this.app, currentFlags, async (flags: string[]) => {
+                        await this.setFocusEntry(
+                            path,
+                            dateString,
+                            undefined,
                             undefined,
                             flags,
                             undefined,
@@ -448,6 +474,7 @@ export default class FocusTracker {
                             await this.setFocusEntry(
                                 path,
                                 dateString,
+                                undefined,
                                 undefined,
                                 undefined,
                                 result
@@ -501,7 +528,8 @@ export default class FocusTracker {
         focusTrackerPath: string | null,
         date: string | null,
         newRating?: number,
-        newFlags?: string[],
+        newPlanningFlags?: string[],
+        newResultFlags?: string[],
         remarks?: string
     ) {
         if (!focusTrackerPath || !date) {
@@ -523,16 +551,19 @@ export default class FocusTracker {
             if (typeof currentEntry === 'object' && currentEntry !== null) {
                 newEntry = { ...currentEntry };
             } else if (typeof currentEntry === 'number') {
-                newEntry = { rating: currentEntry, flags: [] as string[]};
+                newEntry = { rating: currentEntry, planningFlags: [] as string[], resultFlags: []};
             } else {
-                newEntry = { rating: 0, flags: [] as string[]};
+                newEntry = { rating: 0, planningFlags: [] as string[], resultFlags: []};
             }
 
             if (newRating !== undefined) {
                 newEntry.rating = newRating;
             }
-            if (newFlags !== undefined) {
-                newEntry.flags = newFlags;
+            if (newPlanningFlags !== undefined) {
+                newEntry.planningFlags = newPlanningFlags;
+            }
+            if (newResultFlags !== undefined) {
+                newEntry.resultFlags = newResultFlags;
             }
             if (remarks !== undefined) {
                 if (remarks.trim() === '') {
@@ -583,7 +614,8 @@ export default class FocusTracker {
             const {
                 hasValue,
                 ratingSymbol,
-                flagSymbols,
+                planningFlagSymbols,
+                resultFlagSymbols,
                 tooltip,
                 focusRatingValue,
                 remarks
@@ -601,7 +633,8 @@ export default class FocusTracker {
                 focusRatingValue,
                 remarks,
                 ratingSymbol,
-                flagSymbols,
+                planningFlagSymbols,
+                resultFlagSymbols,
                 currentDate,
                 today
             });
@@ -619,7 +652,8 @@ export default class FocusTracker {
             focusRatingValue: number;
             remarks?: string;
             ratingSymbol: string;
-            flagSymbols: string[];
+            planningFlagSymbols: string[];
+            resultFlagSymbols: string[];
             currentDate: Date;
             today: Date;
         }
@@ -632,41 +666,65 @@ export default class FocusTracker {
         if (config.remarks) {
             focusCell.setAttribute("focusRemarks", config.remarks);
         }
-        if (config.flagSymbols && config.flagSymbols.length > 0) {
-            // store flags as a joined string so they can be returned and edited
-            focusCell.setAttribute('focusFlags', config.flagSymbols.join(''));
+        if (config.planningFlagSymbols && config.planningFlagSymbols.length > 0) {
+            // store planningFlags as a joined string so they can be returned and edited
+            focusCell.setAttribute('planningFlags', config.planningFlagSymbols.join(''));
         } else {
-            focusCell.setAttribute('focusFlags', '');
+            focusCell.setAttribute('planningFlags', '');
+        }
+        if (config.resultFlagSymbols && config.resultFlagSymbols.length > 0) {
+            // store resultFlags as a joined string so they can be returned and edited
+            focusCell.setAttribute('resultFlags', config.resultFlagSymbols.join(''));
+        } else {
+            focusCell.setAttribute('resultFlags', '');
         }
 
         const cellContainer = focusCell.createEl('div', {
             cls: 'focus-cell-container',
         });
-        const flagsColumn = cellContainer.createEl('div', {
+        const planningFlagsColumn = cellContainer.createEl('div', {
             cls: 'focus-cell-flags',
         });
         const ratingSymbolColumn = cellContainer.createEl('div', {
             cls: 'focus-cell-rating',
             text: config.ratingSymbol || "⚪",
         });
-        // const postFlagsColumn = cellContainer.createEl('div', {
-        //     cls: 'focus-cell-flags',
-        // });
+        const resultFlagsColumn = cellContainer.createEl('div', {
+            cls: 'focus-cell-flags',
+        });
 
 
-        if (config.flagSymbols && config.flagSymbols.length > 0) {
+        if (config.planningFlagSymbols && config.planningFlagSymbols.length > 0) {
             cellContainer.addClass("focus-tracker__cell-container--has-flags")
-            flagsColumn.addClass("focus-tracker__flags-cell--has-flags")
+            planningFlagsColumn.addClass("focus-tracker__flags-cell--has-flags")
         } else {
             cellContainer.addClass("focus-tracker__cell-container--no-flags")
-            flagsColumn.addClass("focus-tracker__flags-cell--no-flags")
+            planningFlagsColumn.addClass("focus-tracker__flags-cell--no-flags")
         }
-        if (config.flagSymbols && config.flagSymbols.length > 0) {
-            // Add each flag as a separate div
-            config.flagSymbols.forEach(flag => {
-                flagsColumn.createEl('div', {
-                    cls: 'focus-cell-flag',
-                    text: flag
+        if (config.planningFlagSymbols && config.planningFlagSymbols.length > 0) {
+            // Add each planningFlag as a separate div
+            config.planningFlagSymbols.forEach(planningFlag => {
+                planningFlagsColumn.createEl('div', {
+                    cls: 'focus-cell-flags',
+                    text: planningFlag
+                });
+            });
+        }
+
+
+        if (config.resultFlagSymbols && config.resultFlagSymbols.length > 0) {
+            cellContainer.addClass("focus-tracker__cell-container--has-flags")
+            resultFlagsColumn.addClass("focus-tracker__flags-cell--has-flags")
+        } else {
+            cellContainer.addClass("focus-tracker__cell-container--no-flags")
+            resultFlagsColumn.addClass("focus-tracker__flags-cell--no-flags")
+        }
+        if (config.resultFlagSymbols && config.resultFlagSymbols.length > 0) {
+            // Add each resultFlag as a separate div
+            config.resultFlagSymbols.forEach(resultFlag => {
+                resultFlagsColumn.createEl('div', {
+                    cls: 'focus-cell-flags',
+                    text: resultFlag
                 });
             });
         }
