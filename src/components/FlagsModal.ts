@@ -23,16 +23,16 @@ export class FlagsModal extends Modal {
         const instructions = contentEl.createEl('div', { cls: 'flags-modal-instructions' });
         instructions.setText('Click items on the left to remove; click items on the right to add.');
 
-        // Two column layout: left = current, right = available
-        const cols = contentEl.createDiv({ cls: 'flags-modal-columns' });
-        const leftCol = cols.createDiv({ cls: 'flags-modal-column flags-current' });
-        const rightCol = cols.createDiv({ cls: 'flags-modal-column flags-available' });
+    // Two-row layout: top = current flags (single-row height), bottom = available emojis (tall, scrollable)
+    const rows = contentEl.createDiv({ cls: 'flags-modal-rows' });
+    const topRow = rows.createDiv({ cls: 'flags-modal-row flags-current' });
+    const bottomRow = rows.createDiv({ cls: 'flags-modal-row flags-available' });
 
-        leftCol.createEl('label', { text: 'Current flags' });
-        const selectedList = leftCol.createDiv({ cls: 'flags-selected-list' });
+    topRow.createEl('label', { text: 'Current flags', cls: 'flags-section-title' });
+    const selectedList = topRow.createDiv({ cls: 'flags-selected-list' });
 
-        rightCol.createEl('label', { text: 'Available flags' });
-        const availableContainer = rightCol.createDiv({ cls: 'flags-all-palettes' });
+    bottomRow.createEl('label', { text: 'Available flags', cls: 'flags-section-title' });
+    const availableContainer = bottomRow.createDiv({ cls: 'flags-all-palettes' });
 
         const refreshSelected = () => {
             selectedList.empty();
