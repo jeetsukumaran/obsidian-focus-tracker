@@ -426,7 +426,7 @@ export default class FocusTracker {
         // Flags editor
         menu.addItem((item) =>
             item
-                .setTitle('Set planning flags')
+                .setTitle('Set pre-flags')
                 .setIcon('flag')
                 .onClick(() => {
                     // read current flags from element attributes if available
@@ -448,7 +448,7 @@ export default class FocusTracker {
 
         menu.addItem((item) =>
             item
-                .setTitle('Set result flags')
+                .setTitle('Set post-flags')
                 .setIcon('flag')
                 .onClick(() => {
                     const activeEl = (document.querySelector(`[focusTrackerPath="${path}"][date="${dateString}"]`) as HTMLElement) || null;

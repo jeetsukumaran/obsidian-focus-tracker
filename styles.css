@@ -513,9 +513,9 @@ body {
 
 .flags-all-palettes,
 .flags-selected-list {
-    border-radius: 4px;
+    border-radius: 8px;
     padding: 1em;
-    background-color: var(--focustracker-flag-container-background-color)
+    background-color: var(--focustracker-background-color)
 }
 
 .flags-palette-grid {
