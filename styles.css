@@ -521,7 +521,7 @@ body {
 .flags-palette-grid {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.1em;
+    gap: 0.2em;
 }
 
 .flag-chip,
@@ -529,7 +529,8 @@ body {
     background-color: var(--background-primary);
     border: 1px solid var(--focustracker-column-border-color);
     border-radius: 4px;
-    padding: 0.3em 0.6em;
+    /* padding: 0.3em 0.6em; */
+    padding: 0em 0.5em; 
     cursor: pointer;
     font-size: 0.8em;
     line-height: 0.8;
