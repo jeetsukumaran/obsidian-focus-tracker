@@ -41,6 +41,7 @@ export const DEFAULT_MAPS = {
                 ["🦬", "Yak shaving"],
                 ["🍰", "Reward"],
                 ["🌀", "Unplanned"],
+                ["❗", "Should not have"],
                 ["❗", "Should have"],
             ]
         },
@@ -51,7 +52,7 @@ export const DEFAULT_MAPS = {
                 ["✅", "Success"],
                 ["🪜", "Made progress"],
                 ["🐂", "Shorn yaks"],
-                ["⌛", "Clocked in the time"],
+                ["⏱️", "Clocked in the time"],
                 ["🚧", "Incomplete"],
                 ["⏩", "Forwarded"],
                 ["❎", "Canceled"],
