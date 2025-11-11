@@ -40,6 +40,7 @@ export const DEFAULT_MAPS = {
                 ["📈", "Make progress"],
                 ["🦬", "Yak shaving"],
                 ["🍰", "Reward"],
+                ["🥚", "Potential"],
                 ["🌀", "Unplanned"],
                 ["🚨", "Should not have"],
                 ["❗", "Should have"],
