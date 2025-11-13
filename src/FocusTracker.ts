@@ -737,17 +737,17 @@ export default class FocusTracker {
         }
 
 
-        focusCell.addEventListener("click", (e: MouseEvent) => {
+        focusCell.addEventListener('contextmenu', (event) => {
+            event.preventDefault();
+            this.showFocusMenu(event, config.path, config.dateString, config.remarks);
+        });
+
+        ratingSymbolColumn.addEventListener("click", (e: MouseEvent) => {
             if (e.altKey) {
                 this.stepFocusLogEntry(focusCell, -1);
             } else {
                 this.stepFocusLogEntry(focusCell, 1);
             }
-        });
-
-        focusCell.addEventListener('contextmenu', (event) => {
-            event.preventDefault();
-            this.showFocusMenu(event, config.path, config.dateString, config.remarks);
         });
 
         if (isSameDate(config.currentDate, this.configuration.focalDate)) {
