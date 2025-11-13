@@ -419,6 +419,39 @@ export default class FocusTracker {
         const numValue = Number(attrValue);
         return isNaN(numValue) || numValue === 0 ? 0 : numValue;
     }
+    
+    private setPreFlags(event: MouseEvent, path: string, dateString: string) {
+        // read current flags from element attributes if available
+        const activeEl = (document.querySelector(`[focusTrackerPath="${path}"][date="${dateString}"]`) as HTMLElement) || null;
+        const currentFlagsAttr = activeEl ? activeEl.getAttribute('preFlags') || '[]' : '[]';
+        const currentFlags = JSON.parse(currentFlagsAttr);
+        new FlagsModal(this.app, currentFlags, async (flags: (string | [string, string])[]) => {
+            await this.setFocusEntry(
+                path,
+                dateString,
+                undefined,
+                flags,
+                undefined,
+                undefined,
+            );
+        }).open();
+    }
+
+    private setPostFlags(event: MouseEvent, path: string, dateString: string) {
+        const activeEl = (document.querySelector(`[focusTrackerPath="${path}"][date="${dateString}"]`) as HTMLElement) || null;
+        const currentFlagsAttr = activeEl ? activeEl.getAttribute('postFlags') || '[]' : '[]';
+        const currentFlags = JSON.parse(currentFlagsAttr);
+        new FlagsModal(this.app, currentFlags, async (flags: (string | [string, string])[]) => {
+            await this.setFocusEntry(
+                path,
+                dateString,
+                undefined,
+                undefined,
+                flags,
+                undefined,
+            );
+        }).open();
+    }
 
     private showFocusMenu(event: MouseEvent, path: string, dateString: string, currentRemarks?: string): void {
         const menu = new Menu();
@@ -429,20 +462,21 @@ export default class FocusTracker {
                 .setTitle('Set pre-flags')
                 .setIcon('flag')
                 .onClick(() => {
-                    // read current flags from element attributes if available
-                    const activeEl = (document.querySelector(`[focusTrackerPath="${path}"][date="${dateString}"]`) as HTMLElement) || null;
-                    const currentFlagsAttr = activeEl ? activeEl.getAttribute('preFlags') || '[]' : '[]';
-                    const currentFlags = JSON.parse(currentFlagsAttr);
-                    new FlagsModal(this.app, currentFlags, async (flags: (string | [string, string])[]) => {
-                        await this.setFocusEntry(
-                            path,
-                            dateString,
-                            undefined,
-                            flags,
-                            undefined,
-                            undefined,
-                        );
-                    }).open();
+                    this.setPreFlags(event, path, dateString);
+                    // // read current flags from element attributes if available
+                    // const activeEl = (document.querySelector(`[focusTrackerPath="${path}"][date="${dateString}"]`) as HTMLElement) || null;
+                    // const currentFlagsAttr = activeEl ? activeEl.getAttribute('preFlags') || '[]' : '[]';
+                    // const currentFlags = JSON.parse(currentFlagsAttr);
+                    // new FlagsModal(this.app, currentFlags, async (flags: (string | [string, string])[]) => {
+                    //     await this.setFocusEntry(
+                    //         path,
+                    //         dateString,
+                    //         undefined,
+                    //         flags,
+                    //         undefined,
+                    //         undefined,
+                    //     );
+                    // }).open();
                 })
         );
 
@@ -451,19 +485,7 @@ export default class FocusTracker {
                 .setTitle('Set post-flags')
                 .setIcon('flag')
                 .onClick(() => {
-                    const activeEl = (document.querySelector(`[focusTrackerPath="${path}"][date="${dateString}"]`) as HTMLElement) || null;
-                    const currentFlagsAttr = activeEl ? activeEl.getAttribute('postFlags') || '[]' : '[]';
-                    const currentFlags = JSON.parse(currentFlagsAttr);
-                    new FlagsModal(this.app, currentFlags, async (flags: (string | [string, string])[]) => {
-                        await this.setFocusEntry(
-                            path,
-                            dateString,
-                            undefined,
-                            undefined,
-                            flags,
-                            undefined,
-                        );
-                    }).open();
+                    this.setPostFlags(event, path, dateString);
                 })
         );
 
@@ -740,6 +762,12 @@ export default class FocusTracker {
         focusCell.addEventListener('contextmenu', (event) => {
             event.preventDefault();
             this.showFocusMenu(event, config.path, config.dateString, config.remarks);
+        });
+
+        preFlagsColumn.addEventListener("click", (e: MouseEvent) => {
+        });
+
+        postFlagsColumn.addEventListener("click", (e: MouseEvent) => {
         });
 
         ratingSymbolColumn.addEventListener("click", (e: MouseEvent) => {
