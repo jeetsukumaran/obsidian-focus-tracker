@@ -765,9 +765,11 @@ export default class FocusTracker {
         });
 
         preFlagsColumn.addEventListener("click", (e: MouseEvent) => {
+            this.setPreFlags(e, config.path, config.dateString);
         });
 
         postFlagsColumn.addEventListener("click", (e: MouseEvent) => {
+            this.setPostFlags(e, config.path, config.dateString);
         });
 
         ratingSymbolColumn.addEventListener("click", (e: MouseEvent) => {
