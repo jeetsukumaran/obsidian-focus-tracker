@@ -1,13 +1,13 @@
 {
 	"id": "focus-tracker",
 	"name": "Focus Tracker",
-	"version": "3.1.0",
+	"version": "4.0.0",
 	"description": "Track and align your focus.",
 	"minAppVersion": "1.4.14",
 	"author": "Jeet Sukumaran",
 	"authorUrl": "https://github.com/jeetsukumaran",
 	"fundingUrl": {
-	    "Buy Me a Coffee": "https://www.buymeacoffee.com/jeetsukumaran"
-    },
+		"Buy Me a Coffee": "https://www.buymeacoffee.com/jeetsukumaran"
+	},
 	"isDesktopOnly": false
 }
